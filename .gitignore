@@ -1,0 +1,8 @@
+*.kpf
+*.komodoproject
+*~
+*.orig
+.DS_Store
+*tmp*
+pkg/
+doc/
