@@ -63,6 +63,18 @@ module ActiveRecord
 			def alter_language_owner language, role, options = {}
 				execute "ALTER PROCEDURAL LANGUAGE #{quote_language(language)} OWNER TO #{quote_language(role)}"
 			end
+
+			# Returns an Array of available languages.
+			def languages(name = nil)
+				query(<<-SQL, name).map { |row| row[0] }
+					SELECT lanname
+					FROM pg_language;
+				SQL
+			end
+
+			def language_exists?(name)
+				languages.include?(name.to_s)
+			end
 		end
 	end
 end
