@@ -95,7 +95,7 @@ module ActiveRecord
 			#
 			#	### ruby
 			#	# using multiple columns
-			#	create_index('this_is_my_index', [ :id, :ref_id ], :using => :gin)
+			#	create_index('this_is_my_index', :foo, [ :id, :ref_id ], :using => :gin)
 			#	# => CREATE INDEX "this_is_my_index" ON "foo"("id", "ref_id");
 			#
 			#	# using expressions
