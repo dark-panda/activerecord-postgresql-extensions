@@ -4,10 +4,6 @@ require 'test/test_helper'
 class SequenceTests < Test::Unit::TestCase
 	include PostgreSQLExtensionsTestHelper
 
-	def setup
-		clear_statements!
-	end
-
 	def test_create_sequence
 		Mig.create_sequence(
 			'what_a_sequence_of_events',

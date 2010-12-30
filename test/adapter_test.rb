@@ -4,12 +4,6 @@ require 'test/test_helper'
 class AdapterExtensionTests < Test::Unit::TestCase
 	include PostgreSQLExtensionsTestHelper
 
-	ARBC = ActiveRecord::Base.connection
-
-	def setup
-		clear_statements!
-	end
-
 	def test_quote_table_name_with_schema_string
 		assert_equal(%{"foo"."bar"}, ARBC.quote_table_name('foo.bar'))
 	end

@@ -22,6 +22,8 @@ ActiveRecord::Base.establish_connection 'arunit'
 #ActiveRecord::Base.connection.drop_database('postgresql_extensions_unit_tests')
 #ActiveRecord::Base.connection.create_database('postgresql_extensions_unit_tests')
 
+ARBC = ActiveRecord::Base.connection
+
 class ActiveRecord::ConnectionAdapters::PostgreSQLAdapter
 	def statements
 		@statements ||= []
@@ -51,6 +53,10 @@ module PostgreSQLExtensionsTestHelper
 
 	def statements
 		ActiveRecord::Base.connection.statements
+	end
+
+	def setup
+		clear_statements!
 	end
 end
 

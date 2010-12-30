@@ -4,10 +4,6 @@ require 'test/test_helper'
 class FunctionsTests < Test::Unit::TestCase
 	include PostgreSQLExtensionsTestHelper
 
-	def setup
-		clear_statements!
-	end
-
 	def test_create_function
 		Mig.create_function(:test, :integer, :integer, :sql) do
 			"select 10;"
