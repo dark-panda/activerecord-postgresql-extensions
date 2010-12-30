@@ -31,4 +31,18 @@ class TablesTests < Test::Unit::TestCase
   FOREIGN KEY ("schabba_id", "doo_id") REFERENCES "bar" ("schabba_id", "doo_id")
 )} ], statements)
 	end
+
+	def test_default_with_expression
+		Mig.create_table('foo') do |t|
+			t.integer :foo_id, :default => { :expression => '1 + 1' }
+			t.integer :bar_id, :default => '1 + 1'
+		end
+
+		assert_equal([
+			%{CREATE TABLE "foo" (
+  "id" serial primary key,
+  "foo_id" integer DEFAULT 1 + 1,
+  "bar_id" integer DEFAULT '1 + 1'
+)} ], statements)
+	end
 end
