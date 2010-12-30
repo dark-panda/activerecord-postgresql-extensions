@@ -4,10 +4,6 @@ require 'test/test_helper'
 class SchemasTests < Test::Unit::TestCase
 	include PostgreSQLExtensionsTestHelper
 
-	def setup
-		clear_statements!
-	end
-
 	def test_create_schema
 		Mig.create_schema(:foo)
 		Mig.create_schema(:foo, :authorization => 'bar')

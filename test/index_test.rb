@@ -1,15 +1,8 @@
 
 require 'test/test_helper'
 
-class Mig < ActiveRecord::Migration
-end
-
 class IndexTests < Test::Unit::TestCase
 	include PostgreSQLExtensionsTestHelper
-
-	def setup
-		clear_statements!
-	end
 
 	def test_create_index
 		Mig.create_index(:foo_names_idx, :foo, [ :first_name, :last_name ])

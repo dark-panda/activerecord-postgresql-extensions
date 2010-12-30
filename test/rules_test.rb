@@ -4,10 +4,6 @@ require 'test/test_helper'
 class RulesTests < Test::Unit::TestCase
 	include PostgreSQLExtensionsTestHelper
 
-	def setup
-		clear_statements!
-	end
-
 	def test_create_rule
 		Mig.create_rule(
 			:ignore_root, :update, :users, :instead, :nothing, :conditions => 'user_id = 0'

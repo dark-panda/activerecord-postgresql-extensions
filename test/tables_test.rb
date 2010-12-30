@@ -4,10 +4,6 @@ require 'test/test_helper'
 class TablesTests < Test::Unit::TestCase
 	include PostgreSQLExtensionsTestHelper
 
-	def setup
-		clear_statements!
-	end
-
 	def test_foreign_key_in_column_definition
 		Mig.create_table('foo') do |t|
 			t.integer :foo_id, :references => {

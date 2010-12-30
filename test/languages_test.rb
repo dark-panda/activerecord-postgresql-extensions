@@ -4,10 +4,6 @@ require 'test/test_helper'
 class LanguagesTests < Test::Unit::TestCase
 	include PostgreSQLExtensionsTestHelper
 
-	def setup
-		clear_statements!
-	end
-
 	def test_create_language
 		Mig.create_language(:foo)
 		Mig.create_language(

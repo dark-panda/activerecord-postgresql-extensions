@@ -4,10 +4,6 @@ require 'test/test_helper'
 class PermissionsTests < Test::Unit::TestCase
 	include PostgreSQLExtensionsTestHelper
 
-	def setup
-		clear_statements!
-	end
-
 	def test_grant_table_privileges
 		Mig.grant_table_privileges(:foo, :select, :nobody)
 		Mig.grant_table_privileges(:foo, [ :select, :update, :delete, :insert ], [ :nobody, :somebody ])
