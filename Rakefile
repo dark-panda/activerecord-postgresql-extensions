@@ -12,7 +12,7 @@ begin
 	require 'jeweler'
 	Jeweler::Tasks.new do |gem|
 		gem.name = "postgresql-extensions"
-		gem.version = "0.0.1"
+		gem.version = "0.0.2"
 		gem.summary = "A whole bunch of extensions the Rails PostgreSQL adapter."
 		gem.description = gem.summary
 		gem.email = "code@zoocasa.com"
