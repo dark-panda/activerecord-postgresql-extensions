@@ -246,6 +246,34 @@ module ActiveRecord
 				quote_generic(name)
 			end
 
+			def extract_schema_name(name)
+				schema, name_part = extract_pg_identifier_from_name(name.to_s)
+				schema if name_part
+			end
+
+			def extract_table_name(name)
+				schema, name_part = extract_pg_identifier_from_name(name.to_s)
+
+				unless name_part
+					schema
+				else
+					table_name, name_part = extract_pg_identifier_from_name(name_part)
+					table_name
+				end
+			end
+
+			def extract_schema_and_table_names(name)
+				schema, name_part = extract_pg_identifier_from_name(name.to_s)
+
+				unless name_part
+					quote_column_name(schema)
+					[ nil, schema ]
+				else
+					table_name, name_part = extract_pg_identifier_from_name(name_part)
+					[ schema, table_name ]
+				end
+			end
+
 			# Copies the contents of a file into a table. This uses
 			# PostgreSQL's COPY FROM command.
 			#

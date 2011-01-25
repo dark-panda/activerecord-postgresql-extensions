@@ -116,7 +116,8 @@ module ActiveRecord
 				elsif base.current_schema
 					[ base.current_schema, self.table_name ]
 				else
-					[ '', self.table_name ]
+					schema, table_name = base.extract_schema_and_table_names(self.table_name)
+					[ schema || 'public', table_name ]
 				end
 
 				@post_processing ||= Array.new
