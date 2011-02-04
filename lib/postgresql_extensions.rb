@@ -14,6 +14,7 @@ require File.join(File.dirname(__FILE__), 'postgresql_sequences')
 require File.join(File.dirname(__FILE__), 'postgresql_triggers')
 require File.join(File.dirname(__FILE__), 'postgresql_views')
 require File.join(File.dirname(__FILE__), 'postgresql_geometry')
+require File.join(File.dirname(__FILE__), 'postgresql_types')
 require File.join(File.dirname(__FILE__), 'foreign_key_associations')
 
 ActiveRecord::Base.send(:include, ActiveRecord::ForeignKeyAssociations)
