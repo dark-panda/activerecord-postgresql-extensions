@@ -1,5 +1,6 @@
 
-require 'test/test_helper'
+$: << File.dirname(__FILE__)
+require 'test_helper'
 
 class SchemasTests < Test::Unit::TestCase
 	include PostgreSQLExtensionsTestHelper

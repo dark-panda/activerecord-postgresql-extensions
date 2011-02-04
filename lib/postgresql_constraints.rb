@@ -540,9 +540,15 @@ module ActiveRecord
 			def to_sql #:nodoc:
 				sql = String.new
 				base.with_schema(@schema) do
+					table = if ref_table.respond_to?(:join)
+						ref_table.join
+					else
+						ref_table
+					end
+
 					sql << "#{constraint_name}FOREIGN KEY ("
 					sql << Array(columns).collect { |c| base.quote_column_name(c) }.join(', ')
-					sql << ") REFERENCES #{base.quote_table_name(ref_table)}"
+					sql << ") REFERENCES #{base.quote_table_name(table)}"
 					sql << ' (%s)' % Array(ref_columns).collect { |c| base.quote_column_name(c) }.join(', ') if ref_columns
 					sql << " MATCH #{options[:match].to_s.upcase}" if options[:match]
 					sql << " ON DELETE #{options[:on_delete].to_s.gsub(/_/, ' ').upcase}" if options[:on_delete]
