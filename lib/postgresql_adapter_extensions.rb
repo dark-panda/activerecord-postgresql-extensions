@@ -6,7 +6,7 @@ module ActiveRecord
 				LOGGER_REGEXP = /^#{Rails.root}(?!\/vendor\/rails)/
 
 				def query_with_extra_logging(sql, name = nil) #:nodoc:
-					if ActiveRecord::Base.enable_extended_logging && Rails.logger.level == Logger::DEBUG
+					if ActiveRecord::Base.enable_extended_logging && Rails.logger && Rails.logger.level == Logger::DEBUG
 						unless (sql =~ /(pg_get_constraintdef|pg_attribute|pg_class)/)
 							Rails.logger.debug
 							Rails.logger.debug(caller.select { |x|
@@ -19,7 +19,7 @@ module ActiveRecord
 				alias_method_chain :query, :extra_logging
 
 				def execute_with_extra_logging(sql, name = nil) #:nodoc:
-					if ActiveRecord::Base.enable_extended_logging && Rails.logger.level == Logger::DEBUG
+					if ActiveRecord::Base.enable_extended_logging && Rails.logger && Rails.logger.level == Logger::DEBUG
 						unless (sql =~ /(pg_get_constraintdef|pg_attribute|pg_class)/)
 							Rails.logger.debug
 							Rails.logger.debug(caller.select { |x|
