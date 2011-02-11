@@ -95,6 +95,7 @@ module ActiveRecord
 			def to_sql #:nodoc:
 				sql = "CREATE TRIGGER #{base.quote_generic(name)} #{called.to_s.upcase} "
 				sql << Array(events).collect { |e| e.to_s.upcase }.join(' OR ')
+				sql << " OF " << Array(options[:of]).collect { |o| base.quote_generic(o) }.join(', ') if options[:of].present?
 				sql << " ON #{base.quote_table_name(table)}"
 				sql << " FOR EACH #{options[:for_each].to_s.upcase}" if options[:for_each]
 				sql << " EXECUTE PROCEDURE #{base.quote_function(function)}(#{options[:args]})"
