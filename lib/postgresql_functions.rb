@@ -191,9 +191,9 @@ module ActiveRecord
 			end
 
 			private
-				BEHAVIORS = [ 'immutable', 'stable', 'volatile' ].freeze
-				ON_NULL_INPUTS = [ 'called', 'returns', 'strict' ].freeze
-				SECURITIES = [ 'invoker', 'definer' ].freeze
+				BEHAVIORS = %w{ immutable stable volatile }.freeze
+				ON_NULL_INPUTS = %w{ called returns strict }.freeze
+				SECURITIES = %w{ invoker definer }.freeze
 
 				def assert_valid_behavior(option) #:nodoc:
 					if !BEHAVIORS.include? option.to_s.downcase
