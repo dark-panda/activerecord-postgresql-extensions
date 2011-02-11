@@ -560,8 +560,8 @@ module ActiveRecord
 			alias :to_s :to_sql
 
 			private
-				MATCH_TYPES = [ 'full', 'simple' ].freeze
-				ACTION_TYPES = [ 'no_action', 'restrict', 'cascade', 'set_null', 'set_default' ].freeze
+				MATCH_TYPES = %w{ full simple }.freeze
+				ACTION_TYPES = %w{ no_action restrict cascade set_null set_default }.freeze
 
 				def assert_valid_match_type(type) #:nodoc:
 					if !MATCH_TYPES.include? type.to_s

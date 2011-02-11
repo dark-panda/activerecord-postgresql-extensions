@@ -104,9 +104,9 @@ module ActiveRecord
 			alias :to_s :to_sql
 
 			private
-				CALLED_TYPES = [ 'before', 'after' ].freeze
-				EVENT_TYPES = [ 'insert', 'update', 'delete' ].freeze
-				FOR_EACH_TYPES = [ 'row', 'statement' ].freeze
+				CALLED_TYPES = %w{ before after }.freeze
+				EVENT_TYPES = %w{ insert update delete }.freeze
+				FOR_EACH_TYPES = %w{ row statement }.freeze
 
 				def assert_valid_called(c) #:nodoc:
 					if !CALLED_TYPES.include?(c.to_s.downcase)
