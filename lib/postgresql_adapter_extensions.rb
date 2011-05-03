@@ -397,11 +397,10 @@ module ActiveRecord
 
 			# Returns an Array of database views.
 			def views(name = nil)
-				schemas = schema_search_path.split(/,/).map { |p| quote(p.strip) }.join(',')
 				query(<<-SQL, name).map { |row| row[0] }
 					SELECT viewname
 					FROM pg_views
-					WHERE schemaname IN (#{schemas})
+					WHERE schemaname = ANY (current_schemas(false))
 				SQL
 			end
 
@@ -415,8 +414,7 @@ module ActiveRecord
 			end
 
 			def tables_with_views(name = nil) #:nodoc:
-				schemas = schema_search_path.split(/,/).map { |p| quote(p.strip) }.join(',')
-				tables_without_views(name) + views(name) - ignored_tables(name)
+				tables_without_views(name) + views(name)
 			end
 			alias_method_chain :tables, :views
 
