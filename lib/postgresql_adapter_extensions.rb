@@ -404,6 +404,28 @@ module ActiveRecord
 				SQL
 			end
 
+			def view_exists?(name)
+				name         = name.to_s
+				schema, view = name.split('.', 2)
+
+				unless view # A view was provided without a schema
+					view  = schema
+					schema = nil
+				end
+
+				if name =~ /^"/ # Handle quoted view names
+					view  = name
+					schema = nil
+				end
+
+				query(<<-SQL).first[0].to_i > 0
+					SELECT COUNT(*)
+					FROM pg_views
+					WHERE viewname = '#{view.gsub(/(^"|"$)/,'')}'
+					#{schema ? "AND schemaname = '#{schema}'" : ''}
+				SQL
+			end
+
 			# Returns an Array of tables to ignore.
 			def ignored_tables(name = nil)
 				query(<<-SQL, name).map { |row| row[0] }
@@ -606,6 +628,10 @@ module ActiveRecord
 
 			def sequence_exists?
 				!!(connection.sequence_exists?(sequence_name) if connection.respond_to?(:sequence_exists?))
+			end
+
+			def view_exists?
+				connection.view_exists?(table_name)
 			end
 		end
 	end
