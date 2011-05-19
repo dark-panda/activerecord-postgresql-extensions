@@ -1,5 +1,5 @@
 
-module ActiveRecord
+module PostgreSQLExtensions::ActiveRecord
 	# The ForeignKeyAssociations module attempts to automatically create
 	# associations based on your database schema by looking at foreign key
 	# relationships. It can be enabled by setting the

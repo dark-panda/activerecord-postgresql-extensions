@@ -1,21 +1,30 @@
 
 require 'active_record/connection_adapters/postgresql_adapter'
 
-require File.join(File.dirname(__FILE__), 'postgresql_adapter_extensions')
-require File.join(File.dirname(__FILE__), 'postgresql_constraints')
-require File.join(File.dirname(__FILE__), 'postgresql_tables')
-require File.join(File.dirname(__FILE__), 'postgresql_indexes')
-require File.join(File.dirname(__FILE__), 'postgresql_permissions')
-require File.join(File.dirname(__FILE__), 'postgresql_schemas')
-require File.join(File.dirname(__FILE__), 'postgresql_languages')
-require File.join(File.dirname(__FILE__), 'postgresql_rules')
-require File.join(File.dirname(__FILE__), 'postgresql_functions')
-require File.join(File.dirname(__FILE__), 'postgresql_sequences')
-require File.join(File.dirname(__FILE__), 'postgresql_triggers')
-require File.join(File.dirname(__FILE__), 'postgresql_views')
-require File.join(File.dirname(__FILE__), 'postgresql_geometry')
-require File.join(File.dirname(__FILE__), 'postgresql_types')
-require File.join(File.dirname(__FILE__), 'foreign_key_associations')
+module PostgreSQLExtensions
+end
 
-ActiveRecord::Base.send(:include, ActiveRecord::ForeignKeyAssociations)
+dirname = File.join(File.dirname(__FILE__), 'postgresql_extensions')
+
+%w{
+	postgresql_adapter_extensions
+	postgresql_constraints
+	postgresql_tables
+	postgresql_indexes
+	postgresql_permissions
+	postgresql_schemas
+	postgresql_languages
+	postgresql_rules
+	postgresql_functions
+	postgresql_sequences
+	postgresql_triggers
+	postgresql_views
+	postgresql_geometry
+	postgresql_types
+	foreign_key_associations
+}.each do |file|
+	require File.join(dirname, file)
+end
+
+ActiveRecord::Base.send(:include, PostgreSQLExtensions::ActiveRecord::ForeignKeyAssociations)
 
