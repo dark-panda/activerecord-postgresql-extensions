@@ -134,7 +134,7 @@ module ActiveRecord
 
 			# A generic quoting method for PostgreSQL.
 			def quote_generic(g)
-				%("#{g.to_s.gsub(/"/, '""')}")
+				PGconn.quote_ident(g.to_s)
 			end
 
 			# A generic quoting method for PostgreSQL that specifically ignores
