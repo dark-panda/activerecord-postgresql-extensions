@@ -8,6 +8,8 @@ require 'rdoc/task'
 
 $:.push 'lib'
 
+version = File.read('VERSION') rescue ''
+
 begin
   require 'jeweler'
   Jeweler::Tasks.new do |gem|
@@ -32,6 +34,7 @@ end
 desc 'Build docs'
 Rake::RDocTask.new do |t|
   require 'rdoc'
+  t.title = "PostgreSQL Extensions #{version}"
   t.main = 'README.rdoc'
   t.rdoc_dir = 'doc'
   t.rdoc_files.include('README.rdoc', 'lib/**/*.rb')
