@@ -3,25 +3,25 @@ $: << File.dirname(__FILE__)
 require 'test_helper'
 
 class TablesTests < Test::Unit::TestCase
-	include PostgreSQLExtensionsTestHelper
+  include PostgreSQLExtensionsTestHelper
 
-	def test_foreign_key_in_column_definition
-		Mig.create_table('foo') do |t|
-			t.integer :foo_id, :references => {
-				:table => :foo,
-				:on_delete => :set_null,
-				:on_update => :cascade
-			}
+  def test_foreign_key_in_column_definition
+    Mig.create_table('foo') do |t|
+      t.integer :foo_id, :references => {
+        :table => :foo,
+        :on_delete => :set_null,
+        :on_update => :cascade
+      }
 
-			t.integer :bar_id, :references => :bar
+      t.integer :bar_id, :references => :bar
 
-			t.integer :baz_id, :references => [ :baz ]
+      t.integer :baz_id, :references => [ :baz ]
 
-			t.foreign_key [ :schabba_id, :doo_id ], :bar, [ :schabba_id, :doo_id ]
-		end
+      t.foreign_key [ :schabba_id, :doo_id ], :bar, [ :schabba_id, :doo_id ]
+    end
 
-		assert_equal([
-			%{CREATE TABLE "foo" (
+    assert_equal([
+      %{CREATE TABLE "foo" (
   "id" serial primary key,
   "foo_id" integer,
   "bar_id" integer,
@@ -31,19 +31,19 @@ class TablesTests < Test::Unit::TestCase
   FOREIGN KEY ("baz_id") REFERENCES "baz",
   FOREIGN KEY ("schabba_id", "doo_id") REFERENCES "bar" ("schabba_id", "doo_id")
 )} ], statements)
-	end
+  end
 
-	def test_default_with_expression
-		Mig.create_table('foo') do |t|
-			t.integer :foo_id, :default => { :expression => '1 + 1' }
-			t.integer :bar_id, :default => '1 + 1'
-		end
+  def test_default_with_expression
+    Mig.create_table('foo') do |t|
+      t.integer :foo_id, :default => { :expression => '1 + 1' }
+      t.integer :bar_id, :default => '1 + 1'
+    end
 
-		assert_equal([
-			%{CREATE TABLE "foo" (
+    assert_equal([
+      %{CREATE TABLE "foo" (
   "id" serial primary key,
   "foo_id" integer DEFAULT 1 + 1,
   "bar_id" integer DEFAULT '1 + 1'
 )} ], statements)
-	end
+  end
 end
