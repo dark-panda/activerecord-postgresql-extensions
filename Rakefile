@@ -37,6 +37,6 @@ Rake::RDocTask.new do |t|
   t.title = "PostgreSQL Extensions #{version}"
   t.main = 'README.rdoc'
   t.rdoc_dir = 'doc'
-  t.rdoc_files.include('README.rdoc', 'lib/**/*.rb')
+  t.rdoc_files.include('README.rdoc', 'MIT-LICENSE', 'lib/**/*.rb')
 end
 
