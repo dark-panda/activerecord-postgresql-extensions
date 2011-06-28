@@ -1,4 +1,32 @@
 
 = PostgreSQL ActiveRecord Extensions
 
-Test
+What we've got here is a collection of extensions to the ActiveRecord
+PostgreSQL adapter including:
+
+* support for constraints in migrations including CHECK constraints, foreign
+  keys, unique constraints and so forth. Constraints can be added per column
+  and per table.
+
+* some methods for manipulating all sorts of stuff like procedural languages,
+  functions, sequences, views, schemas and triggers.
+
+* better support for creating indexes with expressions so you can use functions
+  and GIST and GIN indexes.
+
+* support for manipulating role privileges.
+
+* support for some PostgreSQL-specific statements like INHERITS and LIKE when
+  creating tables.
+
+* support for automatically detecting foreign key relationships and building
+  ActiveRecord associations accordingly. This associations can be overriden
+  as necessary and are sane enough that they won't try to overwrite existing
+  associations.
+
+== First Public Release Notice!
+
+This is the first public release of this gem, so while it has been kind to us
+and our software, we can't guarantee that for everyone. That said, we do hope
+that someone out there finds it useful and enjoys the new-found powers of
+PostgreSQL!
