@@ -1,3 +1,0 @@
-
-require 'postgresql_extensions'
-

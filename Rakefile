@@ -13,11 +13,11 @@ version = File.read('VERSION') rescue ''
 begin
   require 'jeweler'
   Jeweler::Tasks.new do |gem|
-    gem.name = "postgresql-extensions"
-    gem.summary = "A whole bunch of extensions the Rails PostgreSQL adapter."
+    gem.name = "activerecord-postgresql-extensions"
+    gem.summary = "A whole bunch of extensions the ActiveRecord PostgreSQL adapter."
     gem.description = gem.summary
     gem.email = "code@zoocasa.com"
-    gem.homepage = "http://github.com/zoocasa/postgresql-extensions"
+    gem.homepage = "http://github.com/zoocasa/activerecord-postgresql-extensions"
     gem.authors =    [ "J Smith" ]
   end
   Jeweler::GemcutterTasks.new
@@ -34,7 +34,7 @@ end
 desc 'Build docs'
 Rake::RDocTask.new do |t|
   require 'rdoc'
-  t.title = "PostgreSQL Extensions #{version}"
+  t.title = "ActiveRecord PostgreSQL Extensions #{version}"
   t.main = 'README.rdoc'
   t.rdoc_dir = 'doc'
   t.rdoc_files.include('README.rdoc', 'MIT-LICENSE', 'lib/**/*.rb')

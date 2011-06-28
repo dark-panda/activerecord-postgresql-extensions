@@ -6,7 +6,7 @@ gem 'activerecord', ACTIVERECORD_GEM_VERSION
 
 require 'active_record'
 require 'test/unit'
-require File.join(File.dirname(__FILE__), *%w{ .. lib postgresql_extensions })
+require File.join(File.dirname(__FILE__), *%w{ .. lib activerecord-postgresql-extensions })
 
 puts "Testing against ActiveRecord #{Gem.loaded_specs['activerecord'].version.to_s}"
 
