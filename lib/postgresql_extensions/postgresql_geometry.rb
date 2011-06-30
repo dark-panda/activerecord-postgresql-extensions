@@ -82,7 +82,7 @@ module ActiveRecord
 
         column = self[column_name] || ColumnDefinition.new(base, column_name, :geometry)
         column.default = opts[:default]
-        column.null = opts[:default]
+        column.null = opts[:null]
 
         unless @columns.include?(column)
           @columns << column
