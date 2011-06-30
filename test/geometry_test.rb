@@ -18,7 +18,7 @@ class GeometryTests < Test::Unit::TestCase
   CONSTRAINT "enforce_dims_the_geom" CHECK (ndims("the_geom") = 2)
 )},
   %{DELETE FROM "geometry_columns" WHERE f_table_catalog = '' AND f_table_schema = 'public' AND f_table_name = 'foo' AND f_geometry_column = 'the_geom'},
-  %{INSERT INTO "geometry_columns" VALUES ('', 'public', 'foo', 'the_geom', 2, 4326, 'geometry')},
+  %{INSERT INTO "geometry_columns" VALUES ('', 'public', 'foo', 'the_geom', 2, 4326, 'GEOMETRY')},
   %{CREATE INDEX "foo_the_geom_gist_index" ON "foo" USING "gist"("the_geom")}
     ], statements)
   end
@@ -36,7 +36,7 @@ class GeometryTests < Test::Unit::TestCase
   CONSTRAINT "enforce_dims_the_geom" CHECK (ndims("the_geom") = 2)
 )},
   %{DELETE FROM "geometry_columns" WHERE f_table_catalog = '' AND f_table_schema = 'public' AND f_table_name = 'foo' AND f_geometry_column = 'the_geom'},
-  %{INSERT INTO "geometry_columns" VALUES ('', 'public', 'foo', 'the_geom', 2, 4326, 'geometry')},
+  %{INSERT INTO "geometry_columns" VALUES ('', 'public', 'foo', 'the_geom', 2, 4326, 'GEOMETRY')},
   %{CREATE INDEX "foo_the_geom_gist_index" ON "foo" USING "gist"("the_geom")}
     ], statements)
   end

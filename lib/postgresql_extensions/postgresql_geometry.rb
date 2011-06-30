@@ -140,7 +140,7 @@ module ActiveRecord
             base.quote(column_name.to_s),
             opts[:ndims].to_i,
             opts[:srid].to_i,
-            base.quote(opts[:geometry_type].to_s)
+            base.quote(opts[:geometry_type].to_s.upcase)
           )
         end
 
