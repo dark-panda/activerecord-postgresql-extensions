@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{activerecord-postgresql-extensions}
-  s.version = "0.0.7"
+  s.version = "0.0.8"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["J Smith"]
-  s.date = %q{2011-06-28}
+  s.date = %q{2011-07-04}
   s.description = %q{A whole bunch of extensions the ActiveRecord PostgreSQL adapter.}
   s.email = %q{code@zoocasa.com}
   s.extra_rdoc_files = [
@@ -20,6 +20,7 @@ Gem::Specification.new do |s|
     "README.rdoc",
     "Rakefile",
     "VERSION",
+    "activerecord-postgresql-extensions.gemspec",
     "lib/activerecord-postgresql-extensions.rb",
     "lib/postgresql_extensions/foreign_key_associations.rb",
     "lib/postgresql_extensions/postgresql_adapter_extensions.rb",
