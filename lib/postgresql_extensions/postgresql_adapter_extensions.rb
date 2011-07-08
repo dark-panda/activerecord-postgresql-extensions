@@ -600,6 +600,20 @@ module ActiveRecord
       end
       alias_method_chain :change_column_default, :expression
     end
+
+    class PostgreSQLColumn < Column
+      def simplified_type_with_additional_types(field_type)
+        case field_type
+          when 'geometry'
+            :geometry
+          when 'tsvector'
+            :tsvector
+          else
+            simplified_type_without_additional_types(field_type)
+        end
+      end
+      alias_method_chain :simplified_type, :additional_types
+    end
   end
 end
 
