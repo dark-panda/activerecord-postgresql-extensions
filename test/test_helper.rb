@@ -8,8 +8,6 @@ require 'active_record'
 require 'test/unit'
 require File.join(File.dirname(__FILE__), *%w{ .. lib activerecord-postgresql-extensions })
 
-puts "Testing against ActiveRecord #{Gem.loaded_specs['activerecord'].version.to_s}"
-
 ActiveRecord::Base.configurations = {
   'arunit' => {
     :adapter => 'postgresql',
@@ -23,6 +21,11 @@ ActiveRecord::Base.establish_connection 'arunit'
 #ActiveRecord::Base.connection.create_database('postgresql_extensions_unit_tests')
 
 ARBC = ActiveRecord::Base.connection
+
+puts "Testing against ActiveRecord #{Gem.loaded_specs['activerecord'].version.to_s}"
+if postgresql_version = ARBC.query('SELECT version()').flatten.to_s
+  puts "PostgreSQL info from version(): #{postgresql_version}"
+end
 
 class ActiveRecord::ConnectionAdapters::PostgreSQLAdapter
   def statements
