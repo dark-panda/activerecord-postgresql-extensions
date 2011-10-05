@@ -50,4 +50,35 @@ class AdapterExtensionTests < Test::Unit::TestCase
     assert_equal(:integer, col.send(:simplified_type, 'integer'))
     assert_equal(nil, col.send(:simplified_type, 'complete_nonsense'))
   end
+
+  def test_set_role
+    ARBC.set_role('foo')
+    ARBC.set_role('foo', :duration => :local)
+    ARBC.set_role('foo', :duration => :session)
+
+    assert_equal([
+      %{SET ROLE "foo"},
+      %{SET LOCAL ROLE "foo"},
+      %{SET SESSION ROLE "foo"}
+    ], ARBC.statements)
+
+    assert_raise(ArgumentError) do
+      ARBC.set_role('foo', :duration => :nonsense)
+    end
+  end
+
+  def test_reset_role
+    ARBC.reset_role
+    assert_equal([ 'RESET ROLE' ], ARBC.statements)
+  end
+
+  def test_current_role
+    ARBC.current_role
+    ARBC.current_user
+
+    assert_equal([
+      'SELECT current_role',
+      'SELECT current_role'
+    ], ARBC.statements)
+  end
 end

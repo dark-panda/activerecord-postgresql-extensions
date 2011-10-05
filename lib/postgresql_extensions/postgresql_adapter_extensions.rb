@@ -426,6 +426,43 @@ module ActiveRecord
         SQL
       end
 
+      def roles(name = nil)
+        query(<<-SQL, name).map { |row| row[0] }
+          SELECT rolname
+          FROM pg_roles
+        SQL
+      end
+
+      def role_exists?(name)
+        roles.include?(name)
+      end
+
+      # Sets the current database role/user. The :duration option can be set to
+      # :session or :local as described in the PostgreSQL docs.
+      def set_role(role, options = {})
+        duration = if options[:duration]
+          if [ :session, :local ].include?(options[:duration])
+            options[:duration].to_s.upcase
+          else
+            raise ArgumentError.new("The :duration option must be one of :session or :local.")
+          end
+        end
+
+        sql = 'SET '
+        sql << "#{duration} " if duration
+        sql << "ROLE #{quote_role(role)}"
+        execute(sql, "Setting current role")
+      end
+
+      def reset_role
+        execute('RESET ROLE')
+      end
+
+      def current_role
+        execute('SELECT current_role')
+      end
+      alias :current_user :current_role
+
       # Returns an Array of tables to ignore.
       def ignored_tables(name = nil)
         query(<<-SQL, name).map { |row| row[0] }
