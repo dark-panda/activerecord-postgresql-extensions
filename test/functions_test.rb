@@ -6,11 +6,11 @@ class FunctionsTests < Test::Unit::TestCase
   include PostgreSQLExtensionsTestHelper
 
   def test_create_function
-    Mig.create_function(:test, :integer, :integer, :sql) do
+    ARBC.create_function(:test, :integer, :integer, :sql) do
       "select 10;"
     end
 
-    Mig.create_function(:test, :integer, :integer, :sql, {
+    ARBC.create_function(:test, :integer, :integer, :sql, {
       :force => true,
       :delimiter => '$__$',
       :behavior => :immutable,
@@ -43,8 +43,8 @@ LANGUAGE "sql"
   end
 
   def test_drop_function
-    Mig.drop_function(:test, :integer)
-    Mig.drop_function(:test, :integer, :if_exists => true, :cascade => true)
+    ARBC.drop_function(:test, :integer)
+    ARBC.drop_function(:test, :integer, :if_exists => true, :cascade => true)
 
     assert_equal([
       "DROP FUNCTION \"test\"(integer)",
@@ -53,7 +53,7 @@ LANGUAGE "sql"
   end
 
   def test_rename_function
-    Mig.rename_function(:test, 'integer, text', :foo)
+    ARBC.rename_function(:test, 'integer, text', :foo)
 
     assert_equal([
       "ALTER FUNCTION \"test\"(integer, text) RENAME TO \"foo\""
@@ -61,7 +61,7 @@ LANGUAGE "sql"
   end
 
   def test_alter_function_owner
-    Mig.alter_function_owner(:test, 'integer, text', :admin)
+    ARBC.alter_function_owner(:test, 'integer, text', :admin)
 
     assert_equal([
       "ALTER FUNCTION \"test\"(integer, text) OWNER TO \"admin\""
@@ -69,7 +69,7 @@ LANGUAGE "sql"
   end
 
   def test_alter_function_schema
-    Mig.alter_function_schema(:test, 'integer, text', :geospatial)
+    ARBC.alter_function_schema(:test, 'integer, text', :geospatial)
 
     assert_equal([
       "ALTER FUNCTION \"test\"(integer, text) SET SCHEMA \"geospatial\""
@@ -77,9 +77,9 @@ LANGUAGE "sql"
   end
 
   def test_alter_function
-    Mig.alter_function('my_function', 'integer', :rename_to => 'another_function')
-    Mig.alter_function('another_function', 'integer', :owner_to => 'jdoe')
-    Mig.alter_function('my_function', 'integer') do |f|
+    ARBC.alter_function('my_function', 'integer', :rename_to => 'another_function')
+    ARBC.alter_function('another_function', 'integer', :owner_to => 'jdoe')
+    ARBC.alter_function('my_function', 'integer') do |f|
       f.rename_to 'another_function'
       f.owner_to 'jdoe'
       f.set_schema 'foo'

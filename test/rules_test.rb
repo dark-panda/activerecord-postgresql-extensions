@@ -6,10 +6,10 @@ class RulesTests < Test::Unit::TestCase
   include PostgreSQLExtensionsTestHelper
 
   def test_create_rule
-    Mig.create_rule(
+    ARBC.create_rule(
       :ignore_root, :update, :users, :instead, :nothing, :conditions => 'user_id = 0'
     )
-    Mig.create_rule(
+    ARBC.create_rule(
       :ignore_root, :update, :users, :instead, 'SELECT * FROM non_admins', {
         :force => true,
         :conditions => 'user_id > 0'
@@ -23,7 +23,7 @@ class RulesTests < Test::Unit::TestCase
   end
 
   def test_drop_rule
-    Mig.drop_rule(:foo, :bar)
+    ARBC.drop_rule(:foo, :bar)
 
     assert_equal([
       "DROP RULE \"foo\" ON \"bar\"",

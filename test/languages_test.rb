@@ -6,8 +6,8 @@ class LanguagesTests < Test::Unit::TestCase
   include PostgreSQLExtensionsTestHelper
 
   def test_create_language
-    Mig.create_language(:foo)
-    Mig.create_language(
+    ARBC.create_language(:foo)
+    ARBC.create_language(
       :foo,
       :trusted => true,
       :call_handler => 'plpgsql',
@@ -21,8 +21,8 @@ class LanguagesTests < Test::Unit::TestCase
   end
 
   def test_drop_language
-    Mig.drop_language(:foo)
-    Mig.drop_language(:foo, :if_exists => true, :cascade => true)
+    ARBC.drop_language(:foo)
+    ARBC.drop_language(:foo, :if_exists => true, :cascade => true)
 
     assert_equal([
       "DROP PROCEDURAL LANGUAGE \"foo\"",
@@ -31,7 +31,7 @@ class LanguagesTests < Test::Unit::TestCase
   end
 
   def test_alter_language_name
-    Mig.alter_language_name(:foo, :bar)
+    ARBC.alter_language_name(:foo, :bar)
 
     assert_equal([
       "ALTER PROCEDURAL LANGUAGE \"foo\" RENAME TO \"bar\""
@@ -39,7 +39,7 @@ class LanguagesTests < Test::Unit::TestCase
   end
 
   def test_alter_language_owner
-    Mig.alter_language_owner(:foo, :bar)
+    ARBC.alter_language_owner(:foo, :bar)
 
     assert_equal([
       "ALTER PROCEDURAL LANGUAGE \"foo\" OWNER TO \"bar\""
