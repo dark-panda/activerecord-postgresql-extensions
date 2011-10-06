@@ -35,7 +35,7 @@ end
 
 desc 'Test PostgreSQL extensions'
 Rake::TestTask.new(:test) do |t|
-  t.pattern = 'test/**/*_test.rb'
+  t.pattern = 'test/**/*_tests.rb'
   t.verbose = false
 end
 
