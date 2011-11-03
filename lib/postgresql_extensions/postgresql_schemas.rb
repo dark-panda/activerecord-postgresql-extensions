@@ -42,7 +42,7 @@ module ActiveRecord
 
       # Changes a schema's owner.
       def alter_schema_owner schema, role
-        execute "ALTER SCHEMA #{quote_schema(schema)} OWNER TO #{quote_schema(role)}"
+        execute "ALTER SCHEMA #{quote_schema(schema)} OWNER TO #{quote_role(role)}"
       end
     end
   end
