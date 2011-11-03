@@ -22,6 +22,7 @@ dirname = File.join(File.dirname(__FILE__), 'postgresql_extensions')
   postgresql_geometry
   postgresql_types
   postgresql_roles
+  postgresql_text_search
   foreign_key_associations
 }.each do |file|
   require File.join(dirname, file)
