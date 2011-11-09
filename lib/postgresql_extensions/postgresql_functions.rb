@@ -171,13 +171,13 @@ module ActiveRecord
       #  # ALTER FUNCTION "my_function"(integer) OWNER TO "jdoe";
       #  # ALTER FUNCTION "my_function"(integer) RENAME TO "another_function";
       def alter_function(name, args, options = {})
+        alterer = PostgreSQLFunctionAlterer.new(self, name, args, options)
+
         if block_given?
-          alterer = PostgreSQLFunctionAlterer.new(self, name, args)
           yield alterer
-          execute alterer.to_s unless alterer.empty?
-        else
-          execute PostgreSQLFunctionAlterer.new(self, name, args, options).to_s
         end
+
+        execute alterer.to_s unless alterer.empty?
       end
     end
 
