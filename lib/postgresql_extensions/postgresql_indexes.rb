@@ -125,17 +125,17 @@ module ActiveRecord
         sql << 'IF EXISTS ' if options[:if_exists]
         sql << Array(name).collect { |i| quote_generic(i) }.join(', ')
         sql << ' CASCADE' if options[:cascade]
-        execute sql
+        execute("#{sql};")
       end
 
       # Renames an index.
       def rename_index(name, new_name, options = {})
-        execute "ALTER INDEX #{quote_generic(name)} RENAME TO #{quote_generic(new_name)}"
+        execute "ALTER INDEX #{quote_generic(name)} RENAME TO #{quote_generic(new_name)};"
       end
 
       # Changes an index's tablespace.
       def alter_index_tablespace(name, tablespace, options = {})
-        execute "ALTER INDEX #{quote_generic(name)} SET TABLESPACE #{quote_tablespace(tablespace)}"
+        execute "ALTER INDEX #{quote_generic(name)} SET TABLESPACE #{quote_tablespace(tablespace)};"
       end
     end
 
@@ -181,7 +181,7 @@ module ActiveRecord
         sql << " WITH (FILLFACTOR = #{options[:fill_factor].to_i})" if options[:fill_factor]
         sql << " TABLESPACE #{base.quote_tablespace(options[:tablespace])}" if options[:tablespace]
         sql << " WHERE #{options[:conditions] || options[:where]}" if options[:conditions] || options[:where]
-        sql
+        "#{sql};"
       end
       alias :to_s :to_sql
 

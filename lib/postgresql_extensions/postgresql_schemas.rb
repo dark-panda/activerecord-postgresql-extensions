@@ -18,7 +18,7 @@ module ActiveRecord
       def create_schema schema, options = {}
         sql = "CREATE SCHEMA #{quote_schema(schema)}"
         sql << " AUTHORIZATION #{quote_role(options[:authorization])}" if options[:authorization]
-        execute sql
+        execute("#{sql};")
       end
 
       # Drops a schema.
@@ -32,17 +32,17 @@ module ActiveRecord
         sql << 'IF EXISTS ' if options[:if_exists]
         sql << Array(schemas).collect { |s| quote_schema(s) }.join(', ')
         sql << ' CASCADE' if options[:cascade]
-        execute sql
+        execute("#{sql};")
       end
 
       # Alter's a schema's name.
       def alter_schema_name old_schema, new_schema
-        execute "ALTER SCHEMA #{quote_schema(old_schema)} RENAME TO #{quote_schema(new_schema)}"
+        execute "ALTER SCHEMA #{quote_schema(old_schema)} RENAME TO #{quote_schema(new_schema)};"
       end
 
       # Changes a schema's owner.
       def alter_schema_owner schema, role
-        execute "ALTER SCHEMA #{quote_schema(schema)} OWNER TO #{quote_role(role)}"
+        execute "ALTER SCHEMA #{quote_schema(schema)} OWNER TO #{quote_role(role)};"
       end
     end
   end

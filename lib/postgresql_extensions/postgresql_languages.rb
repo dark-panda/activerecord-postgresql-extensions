@@ -37,7 +37,7 @@ module ActiveRecord
         sql << "PROCEDURAL LANGUAGE #{quote_language(language)}"
         sql << " HANDLER #{quote_language(options[:call_handler])}" if options[:call_handler]
         sql << " VALIDATOR #{options[:validator]}" if options[:validator]
-        execute sql
+        execute("#{sql};")
       end
 
       # Drops a language.
@@ -51,17 +51,17 @@ module ActiveRecord
         sql << 'IF EXISTS ' if options[:if_exists]
         sql << quote_language(language)
         sql << ' CASCADE' if options[:cascade]
-        execute sql
+        execute("#{sql};")
       end
 
       # Renames a language.
       def alter_language_name old_language, new_language, options = {}
-        execute "ALTER PROCEDURAL LANGUAGE #{quote_language(old_language)} RENAME TO #{quote_language(new_language)}"
+        execute "ALTER PROCEDURAL LANGUAGE #{quote_language(old_language)} RENAME TO #{quote_language(new_language)};"
       end
 
       # Changes a language's owner.
       def alter_language_owner language, role, options = {}
-        execute "ALTER PROCEDURAL LANGUAGE #{quote_language(language)} OWNER TO #{quote_language(role)}"
+        execute "ALTER PROCEDURAL LANGUAGE #{quote_language(language)} OWNER TO #{quote_language(role)};"
       end
 
       # Returns an Array of available languages.

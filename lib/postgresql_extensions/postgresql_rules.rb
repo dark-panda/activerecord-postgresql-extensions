@@ -52,7 +52,7 @@ module ActiveRecord
 
       # Drops a PostgreSQL rule.
       def drop_rule(name, table)
-        execute "DROP RULE #{quote_rule(name)} ON #{quote_table_name(table)}"
+        execute "DROP RULE #{quote_rule(name)} ON #{quote_table_name(table)};"
       end
     end
 
@@ -89,6 +89,8 @@ module ActiveRecord
         else
           commands.to_s
         end
+
+        "#{sql};"
       end
       alias :to_s :to_sql
 

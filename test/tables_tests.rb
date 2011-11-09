@@ -30,7 +30,7 @@ class TablesTests < Test::Unit::TestCase
   FOREIGN KEY ("bar_id") REFERENCES "bar",
   FOREIGN KEY ("baz_id") REFERENCES "baz",
   FOREIGN KEY ("schabba_id", "doo_id") REFERENCES "bar" ("schabba_id", "doo_id")
-)} ], statements)
+);} ], statements)
   end
 
   def test_default_with_expression
@@ -44,6 +44,6 @@ class TablesTests < Test::Unit::TestCase
   "id" serial primary key,
   "foo_id" integer DEFAULT 1 + 1,
   "bar_id" integer DEFAULT '1 + 1'
-)} ], statements)
+);} ], statements)
   end
 end

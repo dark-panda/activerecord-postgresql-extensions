@@ -68,12 +68,12 @@ module ActiveRecord
         sql << 'IF EXISTS ' if options[:if_exists]
         sql << "#{quote_generic(name)} ON #{quote_table_name(table)}"
         sql << ' CASCADE' if options[:cascade]
-        execute sql
+        execute("#{sql};")
       end
 
       # Renames a trigger.
       def rename_trigger(name, table, new_name, options = {})
-        execute "ALTER TRIGGER #{quote_generic(name)} ON #{quote_table_name(table)} RENAME TO #{quote_generic(new_name)}"
+        execute "ALTER TRIGGER #{quote_generic(name)} ON #{quote_table_name(table)} RENAME TO #{quote_generic(new_name)};"
       end
     end
 
@@ -99,7 +99,7 @@ module ActiveRecord
         sql << " ON #{base.quote_table_name(table)}"
         sql << " FOR EACH #{options[:for_each].to_s.upcase}" if options[:for_each]
         sql << " EXECUTE PROCEDURE #{base.quote_function(function)}(#{options[:args]})"
-        sql
+        "#{sql};"
       end
       alias :to_s :to_sql
 

@@ -450,16 +450,16 @@ module ActiveRecord
 
         sql = 'SET '
         sql << "#{duration} " if duration
-        sql << "ROLE #{quote_role(role)}"
+        sql << "ROLE #{quote_role(role)};"
         execute(sql, "Setting current role")
       end
 
       def reset_role
-        execute('RESET ROLE')
+        execute('RESET ROLE;')
       end
 
       def current_role
-        execute('SELECT current_role')
+        execute('SELECT current_role;')
       end
       alias :current_user :current_role
 
@@ -468,7 +468,7 @@ module ActiveRecord
         query(<<-SQL, name).map { |row| row[0] }
           SELECT tablename
           FROM pg_tables
-          WHERE schemaname IN ('pg_catalog')
+          WHERE schemaname IN ('pg_catalog');
         SQL
       end
 
@@ -483,7 +483,7 @@ module ActiveRecord
       alias_method_chain :schema_search_path=, :csv_fix
 
       def schema_search_path_with_csv_fix #:nodoc:
-        @schema_search_path ||= query('SHOW search_path')[0][0].gsub(/, /, ',')
+        @schema_search_path ||= query('SHOW search_path;')[0][0].gsub(/, /, ',')
       end
       alias_method_chain :schema_search_path, :csv_fix
 
@@ -543,6 +543,7 @@ module ActiveRecord
             a.attnum = conkey
               AND
             a.attrelid = conrelid
+          ;
         SQL
 
         query(sql, name).inject([]) do |memo, (tbl, column, referenced_column)|
@@ -603,6 +604,7 @@ module ActiveRecord
             a.attnum = conkey
               AND
             a.attrelid = conrelid
+          ;
         SQL
 
         query(sql, name).inject([]) do |memo, (tbl, column, referenced_column)|
@@ -630,7 +632,7 @@ module ActiveRecord
 
       def change_column_default_with_expression(table_name, column_name, default) #:nodoc:
         if default.is_a?(Hash) && default.has_key?(:expression)
-          execute "ALTER TABLE #{quote_table_name(table_name)} ALTER COLUMN #{quote_column_name(column_name)} SET DEFAULT #{default[:expression]}"
+          execute "ALTER TABLE #{quote_table_name(table_name)} ALTER COLUMN #{quote_column_name(column_name)} SET DEFAULT #{default[:expression]};"
         else
           change_column_default_without_expression(table_name, column_name, default)
         end

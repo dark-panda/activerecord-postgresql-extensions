@@ -29,12 +29,12 @@ class IndexTests < Test::Unit::TestCase
     })
 
     assert_equal([
-      "CREATE INDEX \"foo_names_idx\" ON \"foo\"(\"first_name\", \"last_name\")",
-      "CREATE INDEX \"foo_bar_id_idx\" ON \"foo\"(\"bar_id\")",
-      "CREATE INDEX \"foo_coalesce_bar_id_idx\" ON \"foo\"((COALESCE(bar_id, 0)))",
-      "CREATE INDEX \"foo_search_idx\" ON \"foo\" USING \"gin\"(\"search\")",
-      "CREATE INDEX \"foo_names_idx\" ON \"foo\"(\"name\" \"text_pattern_ops\")",
-      "CREATE UNIQUE INDEX CONCURRENTLY \"foo_bar_id_idx\" ON \"foo\"(\"bar_id\" ASC NULLS LAST) WITH (FILLFACTOR = 10) TABLESPACE \"fubar\" WHERE bar_id IS NOT NULL"
+      "CREATE INDEX \"foo_names_idx\" ON \"foo\"(\"first_name\", \"last_name\");",
+      "CREATE INDEX \"foo_bar_id_idx\" ON \"foo\"(\"bar_id\");",
+      "CREATE INDEX \"foo_coalesce_bar_id_idx\" ON \"foo\"((COALESCE(bar_id, 0)));",
+      "CREATE INDEX \"foo_search_idx\" ON \"foo\" USING \"gin\"(\"search\");",
+      "CREATE INDEX \"foo_names_idx\" ON \"foo\"(\"name\" \"text_pattern_ops\");",
+      "CREATE UNIQUE INDEX CONCURRENTLY \"foo_bar_id_idx\" ON \"foo\"(\"bar_id\" ASC NULLS LAST) WITH (FILLFACTOR = 10) TABLESPACE \"fubar\" WHERE bar_id IS NOT NULL;"
     ], statements)
   end
 
@@ -44,9 +44,9 @@ class IndexTests < Test::Unit::TestCase
     Mig.drop_index(:foo_names_idx, :cascade => true)
 
     assert_equal([
-      "DROP INDEX \"foo_names_idx\"",
-      "DROP INDEX IF EXISTS \"foo_names_idx\"",
-      "DROP INDEX \"foo_names_idx\" CASCADE"
+      "DROP INDEX \"foo_names_idx\";",
+      "DROP INDEX IF EXISTS \"foo_names_idx\";",
+      "DROP INDEX \"foo_names_idx\" CASCADE;"
     ], statements)
   end
 
@@ -54,7 +54,7 @@ class IndexTests < Test::Unit::TestCase
     Mig.rename_index(:foo_names_idx, :foo_renamed_idx)
 
     assert_equal([
-      "ALTER INDEX \"foo_names_idx\" RENAME TO \"foo_renamed_idx\""
+      "ALTER INDEX \"foo_names_idx\" RENAME TO \"foo_renamed_idx\";"
     ], statements)
   end
 
@@ -62,7 +62,7 @@ class IndexTests < Test::Unit::TestCase
     Mig.alter_index_tablespace(:foo_names_idx, :fubar)
 
     assert_equal([
-      "ALTER INDEX \"foo_names_idx\" SET TABLESPACE \"fubar\""
+      "ALTER INDEX \"foo_names_idx\" SET TABLESPACE \"fubar\";"
     ], statements)
   end
 end

@@ -122,7 +122,7 @@ module ActiveRecord
         sql << 'IF EXISTS ' if options[:if_exists]
         sql << "#{quote_function(name)}(#{args})"
         sql << ' CASCADE' if options[:cascade]
-        execute sql
+        execute "#{sql};"
       end
 
       # Renames a function.
@@ -271,7 +271,7 @@ module ActiveRecord
         sql << "    COST #{options[:cost].to_i}\n" if options[:cost]
         sql << "    ROWS #{options[:rows].to_i}\n" if options[:rows]
         sql << "    " << (set_options(options[:set]) * "\n    ") if options[:set]
-        sql.strip
+        "#{sql.strip};"
       end
       alias :to_s :to_sql
     end
@@ -291,7 +291,7 @@ module ActiveRecord
       end
 
       def to_sql #:nodoc:
-        @sql.join(";\n")
+        "#{@sql.join(";\n")};"
       end
       alias :to_s :to_sql
 

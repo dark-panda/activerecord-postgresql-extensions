@@ -25,7 +25,7 @@ module ActiveRecord
         end
 
         sql << ")"
-        execute(sql)
+        execute("#{sql};")
       end
 
       def add_text_search_configuration_mapping(name, tokens, dictionaries)
@@ -64,14 +64,14 @@ module ActiveRecord
           quote_generic(dictionary)
         }.join(', ')
 
-        execute(sql)
+        execute("#{sql};")
       end
 
       def replace_text_search_configuration_dictionary(name, old_dictionary, new_dictionary)
         sql = "ALTER TEXT SEARCH CONFIGURATION #{quote_generic_with_schema(name)} ALTER MAPPING REPLACE "
         sql << "#{quote_generic(old_dictionary)} WITH #{quote_generic(new_dictionary)}"
 
-        execute(sql)
+        execute("#{sql};")
       end
 
       def alter_text_search_configuration_mapping_replace_dictionary(name, mappings, old_dictionary, new_dictionary)
@@ -85,7 +85,7 @@ module ActiveRecord
         }.join(', ')
         sql << " REPLACE #{quote_generic(old_dictionary)} WITH #{quote_generic(new_dictionary)}"
 
-        execute(sql)
+        execute("#{sql};")
       end
 
       def drop_text_search_configuration_mapping(name, *args)
@@ -107,22 +107,22 @@ module ActiveRecord
           quote_generic(token_type)
         }.join(', ')
 
-        execute(sql)
+        execute("#{sql};")
       end
 
        def rename_text_search_configuration(old_name, new_name)
-        execute("ALTER TEXT SEARCH CONFIGURATION %s RENAME TO %s" % [
+        execute("ALTER TEXT SEARCH CONFIGURATION %s RENAME TO %s;" % [
           quote_generic_with_schema(old_name),
           quote_generic_with_schema(new_name)
         ])
       end
 
       def alter_text_search_configuration_owner(name, role)
-        execute "ALTER TEXT SEARCH CONFIGURATION #{quote_generic_with_schema(name)} OWNER TO #{quote_role(role)}"
+        execute "ALTER TEXT SEARCH CONFIGURATION #{quote_generic_with_schema(name)} OWNER TO #{quote_role(role)};"
       end
 
       def alter_text_search_configuration_schema(name, schema)
-        execute "ALTER TEXT SEARCH CONFIGURATION #{quote_generic_with_schema(name)} SET SCHEMA #{quote_schema(schema)}"
+        execute "ALTER TEXT SEARCH CONFIGURATION #{quote_generic_with_schema(name)} SET SCHEMA #{quote_schema(schema)};"
       end
 
       # Drops a text search configuration.
@@ -137,7 +137,7 @@ module ActiveRecord
         sql << quote_generic_with_schema(name)
         sql << ' CASCADE' if options[:cascade]
 
-        execute sql
+        execute("#{sql};")
       end
 
       def create_text_search_dictionary(name, template, options = {})
@@ -153,7 +153,7 @@ module ActiveRecord
 
         sql << ')'
 
-        execute(sql)
+        execute("#{sql};")
       end
 
       # ==== Options
@@ -166,7 +166,7 @@ module ActiveRecord
         sql << quote_generic_with_schema(name)
         sql << ' CASCADE' if options[:cascade]
 
-        execute sql
+        execute("#{sql};")
       end
 
       def alter_text_search_dictionary(name, options)
@@ -180,22 +180,22 @@ module ActiveRecord
         }.join(', ')
         sql << ')'
 
-        execute(sql)
+        execute("#{sql};")
       end
 
       def rename_text_search_dictionary(old_name, new_name)
-        execute("ALTER TEXT SEARCH DICTIONARY %s RENAME TO %s" % [
+        execute("ALTER TEXT SEARCH DICTIONARY %s RENAME TO %s;" % [
           quote_generic_with_schema(old_name),
           quote_generic_with_schema(new_name)
         ])
       end
 
       def alter_text_search_dictionary_owner(name, role)
-        execute "ALTER TEXT SEARCH DICTIONARY #{quote_generic_with_schema(name)} OWNER TO #{quote_role(role)}"
+        execute "ALTER TEXT SEARCH DICTIONARY #{quote_generic_with_schema(name)} OWNER TO #{quote_role(role)};"
       end
 
       def alter_text_search_dictionary_schema(name, schema)
-        execute "ALTER TEXT SEARCH DICTIONARY #{quote_generic_with_schema(name)} SET SCHEMA #{quote_schema(schema)}"
+        execute "ALTER TEXT SEARCH DICTIONARY #{quote_generic_with_schema(name)} SET SCHEMA #{quote_schema(schema)};"
       end
 
 
@@ -217,7 +217,7 @@ module ActiveRecord
         sql << "LEXIZE = #{quote_function(options[:lexize])}"
         sql << ')'
 
-        execute(sql)
+        execute("#{sql};")
       end
 
       # ==== Options
@@ -230,18 +230,18 @@ module ActiveRecord
         sql << quote_generic_with_schema(name)
         sql << ' CASCADE' if options[:cascade]
 
-        execute sql
+        execute("#{sql};")
       end
 
       def rename_text_search_template(old_name, new_name)
-        execute("ALTER TEXT SEARCH TEMPLATE %s RENAME TO %s" % [
+        execute("ALTER TEXT SEARCH TEMPLATE %s RENAME TO %s;" % [
           quote_generic_with_schema(old_name),
           quote_generic_with_schema(new_name)
         ])
       end
 
       def alter_text_search_template_schema(name, schema)
-        execute "ALTER TEXT SEARCH TEMPLATE #{quote_generic_with_schema(name)} SET SCHEMA #{quote_schema(schema)}"
+        execute "ALTER TEXT SEARCH TEMPLATE #{quote_generic_with_schema(name)} SET SCHEMA #{quote_schema(schema)};"
       end
 
 
@@ -265,7 +265,7 @@ module ActiveRecord
 
         sql << ')'
 
-        execute(sql)
+        execute("#{sql};")
       end
 
       # ==== Options
@@ -278,18 +278,18 @@ module ActiveRecord
         sql << quote_generic_with_schema(name)
         sql << ' CASCADE' if options[:cascade]
 
-        execute sql
+        execute("#{sql};")
       end
 
       def rename_text_search_parser(old_name, new_name)
-        execute("ALTER TEXT SEARCH PARSER %s RENAME TO %s" % [
+        execute("ALTER TEXT SEARCH PARSER %s RENAME TO %s;" % [
           quote_generic_with_schema(old_name),
           quote_generic_with_schema(new_name)
         ])
       end
 
       def alter_text_search_parser_schema(name, schema)
-        execute "ALTER TEXT SEARCH PARSER #{quote_generic_with_schema(name)} SET SCHEMA #{quote_schema(schema)}"
+        execute "ALTER TEXT SEARCH PARSER #{quote_generic_with_schema(name)} SET SCHEMA #{quote_schema(schema)};"
       end
 
       private

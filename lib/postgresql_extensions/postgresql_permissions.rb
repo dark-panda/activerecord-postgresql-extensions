@@ -80,7 +80,7 @@ module ActiveRecord
         sql << ' TO '
         sql << Array(role_names).collect { |r| quote_role(r) }.join(', ')
         sql << ' WITH ADMIN OPTION' if options[:with_admin_option]
-        execute sql
+        execute("#{sql};")
       end
 
       # Revokes table privileges. You can specify multiple tables,
@@ -155,7 +155,7 @@ module ActiveRecord
         sql << ' FROM '
         sql << Array(role_names).collect { |r| quote_role(r) }.join(', ')
         sql << ' CASCADE' if options[:cascade]
-        execute sql
+        execute("#{sql};")
       end
     end
 
@@ -244,7 +244,7 @@ module ActiveRecord
         end.join(', ')
 
         sql << ' WITH GRANT OPTION' if options[:with_grant_option]
-        sql
+        "#{sql};"
       end
       alias :to_s :to_sql
     end
@@ -314,7 +314,7 @@ module ActiveRecord
         end.join(', ')
 
         sql << ' CASCADE' if options[:cascade]
-        sql
+        "#{sql};"
       end
       alias :to_s :to_sql
     end

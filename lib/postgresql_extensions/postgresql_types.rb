@@ -6,7 +6,7 @@ module ActiveRecord
     class PostgreSQLAdapter < AbstractAdapter
       # Returns an Array of available languages.
       def types(name = nil)
-        query(%{SELECT typname FROM pg_type}, name).map { |row| row[0] }
+        query(%{SELECT typname FROM pg_type;}, name).map { |row| row[0] }
       end
 
       def type_exists?(name)

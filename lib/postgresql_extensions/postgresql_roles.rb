@@ -24,7 +24,7 @@ module ActiveRecord
         sql = 'DROP ROLE '
         sql << 'IF EXISTS ' if options[:if_exists]
         sql << Array(name).collect { |r| quote_role(r) }.join(', ')
-        execute sql
+        execute("#{sql};")
       end
       alias :drop_user :drop_role
     end
@@ -112,7 +112,7 @@ module ActiveRecord
           sql << Array(options[:admin]).collect { |r| base.quote_role(r) }.join(', ')
         end
 
-        sql.join(' ')
+        "#{sql.join(' ')};"
       end
       alias :to_s :to_sql
 

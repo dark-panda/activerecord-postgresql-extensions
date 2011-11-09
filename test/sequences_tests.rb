@@ -21,8 +21,8 @@ class SequenceTests < Test::Unit::TestCase
     )
 
     assert_equal([
-      "CREATE SEQUENCE \"what_a_sequence_of_events\" START WITH 10",
-      "CREATE SEQUENCE \"what_a_sequence_of_events\" INCREMENT BY 2 NO MINVALUE MAXVALUE 10 CACHE 2 OWNED BY \"foo\".\"id\""
+      "CREATE SEQUENCE \"what_a_sequence_of_events\" START WITH 10;",
+      "CREATE SEQUENCE \"what_a_sequence_of_events\" INCREMENT BY 2 NO MINVALUE MAXVALUE 10 CACHE 2 OWNED BY \"foo\".\"id\";"
     ], statements)
   end
 
@@ -34,7 +34,7 @@ class SequenceTests < Test::Unit::TestCase
     )
 
     assert_equal([
-      "DROP SEQUENCE IF EXISTS \"foo_id_seq\" CASCADE"
+      "DROP SEQUENCE IF EXISTS \"foo_id_seq\" CASCADE;"
     ], statements)
   end
 
@@ -42,7 +42,7 @@ class SequenceTests < Test::Unit::TestCase
     Mig.rename_sequence(:foo, :bar)
 
     assert_equal([
-      'ALTER SEQUENCE "foo" RENAME TO "bar"'
+      'ALTER SEQUENCE "foo" RENAME TO "bar";'
     ], statements)
   end
 
@@ -51,8 +51,8 @@ class SequenceTests < Test::Unit::TestCase
     Mig.alter_sequence_schema(:foo, :public)
 
     assert_equal([
-      'ALTER SEQUENCE "foo" SET SCHEMA "bar"',
-      'ALTER SEQUENCE "foo" SET SCHEMA PUBLIC',
+      'ALTER SEQUENCE "foo" SET SCHEMA "bar";',
+      'ALTER SEQUENCE "foo" SET SCHEMA PUBLIC;',
     ], statements)
   end
 
@@ -61,8 +61,8 @@ class SequenceTests < Test::Unit::TestCase
     Mig.set_sequence_value(:foo, 42, :is_called => false)
 
     assert_equal([
-      "SELECT setval('foo', 42, true)",
-      "SELECT setval('foo', 42, false)"
+      "SELECT setval('foo', 42, true);",
+      "SELECT setval('foo', 42, false);"
     ], statements)
   end
 
@@ -83,8 +83,8 @@ class SequenceTests < Test::Unit::TestCase
     )
 
     assert_equal([
-      "ALTER SEQUENCE \"what_a_sequence_of_events\" RESTART WITH 10",
-      "ALTER SEQUENCE \"what_a_sequence_of_events\" INCREMENT BY 2 NO MINVALUE MAXVALUE 10 START WITH 10 CACHE 2 OWNED BY \"foo\".\"id\""
+      "ALTER SEQUENCE \"what_a_sequence_of_events\" RESTART WITH 10;",
+      "ALTER SEQUENCE \"what_a_sequence_of_events\" INCREMENT BY 2 NO MINVALUE MAXVALUE 10 START WITH 10 CACHE 2 OWNED BY \"foo\".\"id\";"
     ], statements)
   end
 end

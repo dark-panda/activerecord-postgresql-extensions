@@ -57,9 +57,9 @@ class AdapterExtensionTests < Test::Unit::TestCase
     ARBC.set_role('foo', :duration => :session)
 
     assert_equal([
-      %{SET ROLE "foo"},
-      %{SET LOCAL ROLE "foo"},
-      %{SET SESSION ROLE "foo"}
+      %{SET ROLE "foo";},
+      %{SET LOCAL ROLE "foo";},
+      %{SET SESSION ROLE "foo";}
     ], ARBC.statements)
 
     assert_raise(ArgumentError) do
@@ -69,7 +69,7 @@ class AdapterExtensionTests < Test::Unit::TestCase
 
   def test_reset_role
     ARBC.reset_role
-    assert_equal([ 'RESET ROLE' ], ARBC.statements)
+    assert_equal([ 'RESET ROLE;' ], ARBC.statements)
   end
 
   def test_current_role
@@ -77,8 +77,8 @@ class AdapterExtensionTests < Test::Unit::TestCase
     ARBC.current_user
 
     assert_equal([
-      'SELECT current_role',
-      'SELECT current_role'
+      'SELECT current_role;',
+      'SELECT current_role;'
     ], ARBC.statements)
   end
 end

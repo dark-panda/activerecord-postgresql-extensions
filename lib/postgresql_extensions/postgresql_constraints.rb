@@ -31,7 +31,7 @@ module ActiveRecord
       def add_check_constraint(table, expression, options = {})
         sql = "ALTER TABLE #{quote_table_name(table)} ADD "
         sql << PostgreSQLCheckConstraint.new(self, expression, options).to_s
-        execute sql
+        execute("#{sql};")
       end
 
       # Adds a UNIQUE constraint to the table. See
@@ -39,7 +39,7 @@ module ActiveRecord
       def add_unique_constraint(table, columns, options = {})
         sql = "ALTER TABLE #{quote_table_name(table)} ADD "
         sql << PostgreSQLUniqueConstraint.new(self, columns, options).to_s
-        execute sql
+        execute("#{sql};")
       end
 
       # Adds a FOREIGN KEY constraint to the table. See
@@ -47,7 +47,7 @@ module ActiveRecord
       def add_foreign_key(table, columns, ref_table, *args)
         sql = "ALTER TABLE #{quote_table_name(table)} ADD "
         sql << PostgreSQLForeignKeyConstraint.new(self, columns, ref_table, *args).to_s
-        execute sql
+        execute("#{sql};")
       end
 
       # Drops a constraint from the table. Use this to drop CHECK,
@@ -60,7 +60,7 @@ module ActiveRecord
       def drop_constraint(table, name, options = {})
         sql = "ALTER TABLE #{quote_table_name(table)} DROP CONSTRAINT #{quote_generic(name)}"
         sql << ' CASCADE' if options[:cascade]
-        execute sql
+        execute("#{sql};")
       end
     end
 

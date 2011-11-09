@@ -55,22 +55,22 @@ module ActiveRecord
         sql << 'IF EXISTS ' if options[:if_exists]
         sql << Array(name).collect { |v| quote_view_name(v) }.join(', ')
         sql << ' CASCADE' if options[:cascade]
-        execute sql
+        execute("#{sql};")
       end
 
       # Renames a view.
       def rename_view(name, new_name, options = {})
-        execute "ALTER TABLE #{quote_view_name(name)} RENAME TO #{quote_generic_ignore_schema(new_name)}"
+        execute "ALTER TABLE #{quote_view_name(name)} RENAME TO #{quote_generic_ignore_schema(new_name)};"
       end
 
       # Change the ownership of a view.
       def alter_view_owner(name, role, options = {})
-        execute "ALTER TABLE #{quote_view_name(name)} OWNER TO #{quote_role(role)}"
+        execute "ALTER TABLE #{quote_view_name(name)} OWNER TO #{quote_role(role)};"
       end
 
       # Alter a view's schema.
       def alter_view_schema(name, schema, options = {})
-        execute "ALTER TABLE #{quote_view_name(name)} SET SCHEMA #{quote_schema(schema)}"
+        execute "ALTER TABLE #{quote_view_name(name)} SET SCHEMA #{quote_schema(schema)};"
       end
     end
 
@@ -95,7 +95,7 @@ module ActiveRecord
           end.join(', ') << ') '
         end
         sql << "AS #{query}"
-        sql
+        "#{sql};"
       end
       alias :to_s :to_sql
     end

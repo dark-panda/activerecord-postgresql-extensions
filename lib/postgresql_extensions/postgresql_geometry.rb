@@ -127,14 +127,14 @@ module ActiveRecord
             "DELETE FROM \"geometry_columns\" WHERE f_table_catalog = '' AND " +
             "f_table_schema = %s AND " +
             "f_table_name = %s AND " +
-            "f_geometry_column = %s",
+            "f_geometry_column = %s;",
             base.quote(current_schema.to_s),
             base.quote(current_table_name.to_s),
             base.quote(column_name.to_s)
           )
 
           @post_processing << sprintf(
-            "INSERT INTO \"geometry_columns\" VALUES ('', %s, %s, %s, %d, %d, %s)",
+            "INSERT INTO \"geometry_columns\" VALUES ('', %s, %s, %s, %d, %d, %s);",
             base.quote(current_schema.to_s),
             base.quote(current_table_name.to_s),
             base.quote(column_name.to_s),

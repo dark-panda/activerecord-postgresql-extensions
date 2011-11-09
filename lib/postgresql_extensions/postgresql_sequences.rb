@@ -69,17 +69,17 @@ module ActiveRecord
         sql << 'IF EXISTS ' if options[:if_exists]
         sql << Array(name).collect { |s| quote_sequence(s) }.join(', ')
         sql << ' CASCADE' if options[:cascade]
-        execute sql
+        execute("#{sql};")
       end
 
       # Renames the sequence.
       def rename_sequence(name, rename, options = {})
-        execute "ALTER SEQUENCE #{quote_sequence(name)} RENAME TO #{quote_generic_ignore_schema(rename)}"
+        execute "ALTER SEQUENCE #{quote_sequence(name)} RENAME TO #{quote_generic_ignore_schema(rename)};"
       end
 
       # Alters the sequence's schema.
       def alter_sequence_schema(name, schema, options = {})
-        execute "ALTER SEQUENCE #{quote_sequence(name)} SET SCHEMA #{quote_schema(schema)}"
+        execute "ALTER SEQUENCE #{quote_sequence(name)} SET SCHEMA #{quote_schema(schema)};"
       end
 
       # Alters any of the various options for a sequence. See
@@ -112,7 +112,7 @@ module ActiveRecord
           else
             'false'
           end <<
-          ')'
+          ');'
       end
 
       # Returns an Array of available sequences.
@@ -193,7 +193,7 @@ module ActiveRecord
         if action != :create && options.has_key?(:restart_with)
           sql << "RESTART WITH #{options[:restart_with].to_i}"
         end
-        sql.join(' ')
+        "#{sql.join(' ')};"
       end
       alias :to_s :to_sql
 

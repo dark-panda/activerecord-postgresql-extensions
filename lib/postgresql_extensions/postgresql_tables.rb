@@ -13,7 +13,7 @@ module ActiveRecord
     class PostgreSQLAdapter < AbstractAdapter
       # Set the schema of a table.
       def alter_table_schema table_name, schema, options = {}
-        execute "ALTER TABLE #{quote_schema(table_name)} SET SCHEMA #{quote_schema(schema)}"
+        execute "ALTER TABLE #{quote_schema(table_name)} SET SCHEMA #{quote_schema(schema)};"
       end
 
       alias :original_create_table :create_table
@@ -131,7 +131,7 @@ module ActiveRecord
         sql << 'IF EXISTS ' if options[:if_exists]
         sql << Array(tables).collect { |t| quote_table_name(t) }.join(', ')
         sql << ' CASCADE' if options[:cascade]
-        execute sql
+        execute("#{sql};")
       end
 
       alias :original_rename_table :rename_table
@@ -140,7 +140,7 @@ module ActiveRecord
       # capabilities. You can still access the original method via
       # original_rename_table.
       def rename_table(name, new_name, options = {})
-        execute "ALTER TABLE #{quote_table_name(name)} RENAME TO #{quote_generic_ignore_schema(new_name)}"
+        execute "ALTER TABLE #{quote_table_name(name)} RENAME TO #{quote_generic_ignore_schema(new_name)};"
       end
 
       private
@@ -195,7 +195,7 @@ module ActiveRecord
         sql << "ON COMMIT #{options[:on_commit].to_s.upcase}" if options[:on_commit]
         sql << "#{options[:options]}" if options[:options]
         sql << "TABLESPACE #{base.quote_tablespace(options[:tablespace])}" if options[:tablespace]
-        sql
+        "#{sql};"
       end
       alias :to_s :to_sql
 

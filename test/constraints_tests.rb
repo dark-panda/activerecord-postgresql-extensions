@@ -26,7 +26,7 @@ CREATE TABLE "foo" (
   "email" text,
   UNIQUE ("id", "bar_id"),
   UNIQUE ("name", "email") USING INDEX TABLESPACE "fubar"
-)
+);
 EOF
   end
 
@@ -40,7 +40,7 @@ CREATE TABLE "foo" (
   "id" serial primary key,
   "bar_id" integer,
   UNIQUE ("bar_id")
-)
+);
 EOF
   end
 
@@ -55,8 +55,8 @@ EOF
     )
 
     assert_equal([
-      "ALTER TABLE \"foo\" ADD UNIQUE (\"bar_id\")",
-      "ALTER TABLE \"foo\" ADD CONSTRAINT \"bar_id_unique\" UNIQUE (\"bar_id\") WITH (FILLFACTOR=10) USING INDEX TABLESPACE \"fubar\""
+      "ALTER TABLE \"foo\" ADD UNIQUE (\"bar_id\");",
+      "ALTER TABLE \"foo\" ADD CONSTRAINT \"bar_id_unique\" UNIQUE (\"bar_id\") WITH (FILLFACTOR=10) USING INDEX TABLESPACE \"fubar\";"
     ], statements)
   end
 
@@ -68,11 +68,11 @@ EOF
     Mig.add_foreign_key(:foo, :bar_id, :bar, :deferrable => :immediate)
 
     assert_equal([
-      "ALTER TABLE \"foo\" ADD FOREIGN KEY (\"bar_id\") REFERENCES \"bar\"",
-      "ALTER TABLE \"foo\" ADD CONSTRAINT \"bar_fk\" FOREIGN KEY (\"bar_id\") REFERENCES \"bar\" (\"ogc_fid\")",
-      "ALTER TABLE \"foo\" ADD FOREIGN KEY (\"one_id\", \"bar_id\") REFERENCES \"bar\" (\"one_id\", \"bar_id\") MATCH FULL",
-      "ALTER TABLE \"foo\" ADD FOREIGN KEY (\"bar_id\") REFERENCES \"bar\" ON DELETE SET DEFAULT",
-      "ALTER TABLE \"foo\" ADD FOREIGN KEY (\"bar_id\") REFERENCES \"bar\" DEFERRABLE INITIALLY IMMEDIATE"
+      "ALTER TABLE \"foo\" ADD FOREIGN KEY (\"bar_id\") REFERENCES \"bar\";",
+      "ALTER TABLE \"foo\" ADD CONSTRAINT \"bar_fk\" FOREIGN KEY (\"bar_id\") REFERENCES \"bar\" (\"ogc_fid\");",
+      "ALTER TABLE \"foo\" ADD FOREIGN KEY (\"one_id\", \"bar_id\") REFERENCES \"bar\" (\"one_id\", \"bar_id\") MATCH FULL;",
+      "ALTER TABLE \"foo\" ADD FOREIGN KEY (\"bar_id\") REFERENCES \"bar\" ON DELETE SET DEFAULT;",
+      "ALTER TABLE \"foo\" ADD FOREIGN KEY (\"bar_id\") REFERENCES \"bar\" DEFERRABLE INITIALLY IMMEDIATE;"
     ], statements)
   end
 
@@ -81,8 +81,8 @@ EOF
     Mig.drop_constraint(:foo, :bar, :cascade => true)
 
     assert_equal([
-      "ALTER TABLE \"foo\" DROP CONSTRAINT \"bar\"",
-      "ALTER TABLE \"foo\" DROP CONSTRAINT \"bar\" CASCADE"
+      "ALTER TABLE \"foo\" DROP CONSTRAINT \"bar\";",
+      "ALTER TABLE \"foo\" DROP CONSTRAINT \"bar\" CASCADE;"
     ], statements)
   end
 
@@ -91,8 +91,8 @@ EOF
     Mig.add_check_constraint(:foo, 'length(name) < 100', :name => 'name_length_check')
 
     assert_equal([
-      "ALTER TABLE \"foo\" ADD CHECK (length(name) < 100)",
-      "ALTER TABLE \"foo\" ADD CONSTRAINT \"name_length_check\" CHECK (length(name) < 100)"
+      "ALTER TABLE \"foo\" ADD CHECK (length(name) < 100);",
+      "ALTER TABLE \"foo\" ADD CONSTRAINT \"name_length_check\" CHECK (length(name) < 100);"
     ], statements)
   end
 end
