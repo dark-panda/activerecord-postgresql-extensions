@@ -47,23 +47,22 @@ module ActiveRecord
       # For instance, all of the following examples should produce the
       # same output.
       #
-      #  ### ruby
-      #  # with options Hash
-      #  alter_extension(:foo, :collation => 'en_CA.UTF-8')
-      #  alter_extension(:foo, :add_collation => 'en_CA.UTF-8')
+      #   # with options Hash
+      #   alter_extension(:foo, :collation => 'en_CA.UTF-8')
+      #   alter_extension(:foo, :add_collation => 'en_CA.UTF-8')
       #
-      #  # block mode
-      #  alter_extension(:foo) do |e|
-      #    e.collation 'en_CA.UTF-8'
-      #  end
+      #   # block mode
+      #   alter_extension(:foo) do |e|
+      #     e.collation 'en_CA.UTF-8'
+      #   end
       #
-      #  alter_extension(:foo) do |e|
-      #    e.add_collation 'en_CA.UTF-8'
-      #  end
+      #   alter_extension(:foo) do |e|
+      #     e.add_collation 'en_CA.UTF-8'
+      #   end
       #
-      #  # All produce
-      #  #
-      #  # ALTER EXTENSION "foo" ADD COLLATION "en_CA.UTF-8";
+      #   # All produce
+      #   #
+      #   # ALTER EXTENSION "foo" ADD COLLATION "en_CA.UTF-8";
       #
       # Three versions of each option are available:
       #

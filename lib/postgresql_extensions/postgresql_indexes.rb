@@ -93,18 +93,17 @@ module ActiveRecord
       #
       # ==== Examples
       #
-      #  ### ruby
-      #  # using multiple columns
-      #  create_index('this_is_my_index', :foo, [ :id, :ref_id ], :using => :gin)
-      #  # => CREATE INDEX "this_is_my_index" ON "foo"("id", "ref_id");
+      #   # using multiple columns
+      #   create_index('this_is_my_index', :foo, [ :id, :ref_id ], :using => :gin)
+      #   # => CREATE INDEX "this_is_my_index" ON "foo"("id", "ref_id");
       #
-      #  # using expressions
-      #  create_index('this_is_another_idx', :foo, { :expression => 'COALESCE(ref_id, 0)' })
-      #  # => CREATE INDEX "this_is_another_idx" ON "foo"((COALESCE(ref_id, 0)));
+      #   # using expressions
+      #   create_index('this_is_another_idx', :foo, { :expression => 'COALESCE(ref_id, 0)' })
+      #   # => CREATE INDEX "this_is_another_idx" ON "foo"((COALESCE(ref_id, 0)));
       #
-      #  # additional options
-      #  create_index('search_idx', :foo, :tsvector, :using => :gin)
-      #  # => CREATE INDEX "search_idx" ON "foo" USING "gin"("tsvector");
+      #   # additional options
+      #   create_index('search_idx', :foo, :tsvector, :using => :gin)
+      #   # => CREATE INDEX "search_idx" ON "foo" USING "gin"("tsvector");
       def create_index(name, table, columns, options = {})
         execute PostgreSQLIndexDefinition.new(self, name, table, columns, options).to_s
       end

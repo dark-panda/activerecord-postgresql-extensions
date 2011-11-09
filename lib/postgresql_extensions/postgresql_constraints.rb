@@ -119,18 +119,17 @@ module ActiveRecord
     #
     # ==== Example
     #
-    #  ### ruby
-    #  create_table(:foo) do |t|
-    #    t.integer :fancy_id, :check => "fancy_id != 10"
-    #  end
+    #   create_table(:foo) do |t|
+    #     t.integer :fancy_id, :check => "fancy_id != 10"
+    #   end
     #
-    #  # Produces:
-    #  #
-    #  # CREATE TABLE "foo" (
-    #  #   "id" serial primary key,
-    #  #   "fancy_id" integer DEFAULT NULL NULL,
-    #  #   CHECK (fancy_id != 10)
-    #  # );
+    #   # Produces:
+    #   #
+    #   # CREATE TABLE "foo" (
+    #   #   "id" serial primary key,
+    #   #   "fancy_id" integer DEFAULT NULL NULL,
+    #   #   CHECK (fancy_id != 10)
+    #   # );
     #
     # You can also provide an Array to <tt>:check</tt> with multiple CHECK
     # constraints. Each CHECK constraint can be either a String containing
@@ -140,10 +139,9 @@ module ActiveRecord
     # automatically. Thus, the  following is equivalent to the example
     # above:
     #
-    #  ### ruby
-    #  create_table(:foo) do |t|
-    #    t.integer :fancy_id, :check => [ { :expression => "fancy_id != 10" } ]
-    #  end
+    #   create_table(:foo) do |t|
+    #     t.integer :fancy_id, :check => [ { :expression => "fancy_id != 10" } ]
+    #   end
     #
     # See below for additional options.
     #
@@ -154,36 +152,35 @@ module ActiveRecord
     #
     # ==== Examples
     #
-    #  ### ruby
-    #  create_table(:foo) do |t|
-    #    t.integer :fancy_id
-    #    t.integer :another_fancy_id
-    #    t.check_constraint 'fancy_id != another_fancy_id'
-    #  end
+    #   create_table(:foo) do |t|
+    #     t.integer :fancy_id
+    #     t.integer :another_fancy_id
+    #     t.check_constraint 'fancy_id != another_fancy_id'
+    #   end
     #
-    #  # Produces:
-    #  #
-    #  # CREATE TABLE "foo" (
-    #  #   "id" serial primary key,
-    #  #   "fancy_id" integer DEFAULT NULL NULL,
-    #  #   "another_fancy_id" integer DEFAULT NULL NULL,
-    #  #   CHECK (fancy_id != another_fancy_id)
-    #  # );
+    #   # Produces:
+    #   #
+    #   # CREATE TABLE "foo" (
+    #   #   "id" serial primary key,
+    #   #   "fancy_id" integer DEFAULT NULL NULL,
+    #   #   "another_fancy_id" integer DEFAULT NULL NULL,
+    #   #   CHECK (fancy_id != another_fancy_id)
+    #   # );
     #
-    #  create_table(:foo) do |t|
-    #    t.integer :fancy_id
-    #    t.integer :another_fancy_id
-    #    t.check_constraint 'fancy_id != another_fancy_id', :name => 'my_constraint'
-    #  end
+    #   create_table(:foo) do |t|
+    #     t.integer :fancy_id
+    #     t.integer :another_fancy_id
+    #     t.check_constraint 'fancy_id != another_fancy_id', :name => 'my_constraint'
+    #   end
     #
-    #  # Produces:
-    #  #
-    #  # CREATE TABLE "foo" (
-    #  #   "id" serial primary key,
-    #  #   "fancy_id" integer DEFAULT NULL NULL,
-    #  #   "another_fancy_id" integer DEFAULT NULL NULL,
-    #  #   CONSTRAINT "my_constraint" CHECK (fancy_id != another_fancy_id)
-    #  # );
+    #   # Produces:
+    #   #
+    #   # CREATE TABLE "foo" (
+    #   #   "id" serial primary key,
+    #   #   "fancy_id" integer DEFAULT NULL NULL,
+    #   #   "another_fancy_id" integer DEFAULT NULL NULL,
+    #   #   CONSTRAINT "my_constraint" CHECK (fancy_id != another_fancy_id)
+    #   # );
     #
     # See below for additional options.
     #
@@ -194,12 +191,11 @@ module ActiveRecord
     #
     # ==== Example
     #
-    #  ### ruby
-    #  add_check_constraint(:foo, 'fancy_id != 10')
+    #   add_check_constraint(:foo, 'fancy_id != 10')
     #
-    #  # Produces:
-    #  #
-    #  # ALTER TABLE "foo" ADD CHECK (fancy_id != 10);
+    #   # Produces:
+    #   #
+    #   # ALTER TABLE "foo" ADD CHECK (fancy_id != 10);
     #
     # See below for additional options.
     #
@@ -254,18 +250,17 @@ module ActiveRecord
     #
     # ==== Example:
     #
-    #  ### ruby
-    #  create_table(:foo) do |t|
-    #    t.integer :fancy_id, :unique => true
-    #  end
+    #   create_table(:foo) do |t|
+    #     t.integer :fancy_id, :unique => true
+    #   end
     #
-    #  # Produces:
-    #  #
-    #  # CREATE TABLE "foo" (
-    #  #   "id" serial primary key,
-    #  #   "fancy_id" integer DEFAULT NULL NULL,
-    #  #   UNIQUE ("fancy_id")
-    #  # );
+    #   # Produces:
+    #   #
+    #   # CREATE TABLE "foo" (
+    #   #   "id" serial primary key,
+    #   #   "fancy_id" integer DEFAULT NULL NULL,
+    #   #   UNIQUE ("fancy_id")
+    #   # );
     #
     # You can provide additional options to the UNIQUE constraint by
     # passing a Hash instead of true. See below for details on these
@@ -279,21 +274,20 @@ module ActiveRecord
     #
     # ==== Example:
     #
-    #  ### ruby
-    #  create_table(:foo) do |t|
-    #    t.integer :fancy_id
-    #    t.integer :another_fancy_id
-    #    t.unique_constraint [ :fancy_id, :another_fancy_id ]
-    #  end
+    #   create_table(:foo) do |t|
+    #     t.integer :fancy_id
+    #     t.integer :another_fancy_id
+    #     t.unique_constraint [ :fancy_id, :another_fancy_id ]
+    #   end
     #
-    #  # Produces:
-    #  #
-    #  # CREATE TABLE "foo" (
-    #  #   "id" serial primary key,
-    #  #   "fancy_id" integer DEFAULT NULL NULL,
-    #  #   "another_fancy_id" integer DEFAULT NULL NULL,
-    #  #   UNIQUE ("fancy_id", "another_fancy_id")
-    #  # );
+    #   # Produces:
+    #   #
+    #   # CREATE TABLE "foo" (
+    #   #   "id" serial primary key,
+    #   #   "fancy_id" integer DEFAULT NULL NULL,
+    #   #   "another_fancy_id" integer DEFAULT NULL NULL,
+    #   #   UNIQUE ("fancy_id", "another_fancy_id")
+    #   # );
     #
     # See below for additional options.
     #
@@ -312,18 +306,17 @@ module ActiveRecord
     #
     # ==== Examples:
     #
-    #  ### ruby
-    #  # using the constraint method:
-    #  add_unique_constraint(:foo, [ :fancy_id, :another_fancy_id ])
-    #  # => ALTER TABLE "foo" ADD UNIQUE ("fancy_id", "another_fancy_id");
+    #   # using the constraint method:
+    #   add_unique_constraint(:foo, [ :fancy_id, :another_fancy_id ])
+    #   # => ALTER TABLE "foo" ADD UNIQUE ("fancy_id", "another_fancy_id");
     #
-    #  # using create_index:
-    #  create_index('my_index_name', :foo, [ :fancy_id, :another_fancy_id ], :unique => true)
-    #  # => CREATE UNIQUE INDEX "my_index_name" ON "foo"("fancy_id", "another_fancy_id");
+    #   # using create_index:
+    #   create_index('my_index_name', :foo, [ :fancy_id, :another_fancy_id ], :unique => true)
+    #   # => CREATE UNIQUE INDEX "my_index_name" ON "foo"("fancy_id", "another_fancy_id");
     #
-    #  # using the standard ActiveRecord add_index:
-    #  add_index(:foo, [ :fancy_id, :another_fancy_id ], :unique => true)
-    #  # => CREATE UNIQUE INDEX "index_foo_on_fancy_id_and_another_fancy_id" ON "foo" ("fancy_id", "another_fancy_id");
+    #   # using the standard ActiveRecord add_index:
+    #   add_index(:foo, [ :fancy_id, :another_fancy_id ], :unique => true)
+    #   # => CREATE UNIQUE INDEX "index_foo_on_fancy_id_and_another_fancy_id" ON "foo" ("fancy_id", "another_fancy_id");
     #
     # You'll notice that in create_index we must manually supply a name
     # while add_index can generate one for us automatically. See the
@@ -395,18 +388,17 @@ module ActiveRecord
     #
     # ==== Example:
     #
-    #  ### ruby
-    #  create_table(:foo) do |t|
-    #    t.integer :bar_id, :references => { :table => :bar, :column => :id }
-    #  end
+    #   create_table(:foo) do |t|
+    #     t.integer :bar_id, :references => { :table => :bar, :column => :id }
+    #   end
     #
-    #  # Produces:
-    #  #
-    #  # CREATE TABLE "foo" (
-    #  #   "id" serial primary key,
-    #  #   "bar_id" integer DEFAULT NULL NULL,
-    #  #   FOREIGN KEY ("bar_id") REFERENCES "bar" ("id")
-    #  # );
+    #   # Produces:
+    #   #
+    #   # CREATE TABLE "foo" (
+    #   #   "id" serial primary key,
+    #   #   "bar_id" integer DEFAULT NULL NULL,
+    #   #   FOREIGN KEY ("bar_id") REFERENCES "bar" ("id")
+    #   # );
     #
     # You can leave out the :column option if you are following the Rails
     # standards for foreign key referral, as PostgreSQL automatically
@@ -426,54 +418,52 @@ module ActiveRecord
     #
     # The following example produces the same result as above:
     #
-    #  ### ruby
-    #  create_table(:foo) do |t|
-    #    t.integer :bar_id
-    #    t.foreign_key :bar_id, :bar, :id
-    #  end
+    #   create_table(:foo) do |t|
+    #     t.integer :bar_id
+    #     t.foreign_key :bar_id, :bar, :id
+    #   end
     #
-    #  # Produces:
-    #  #
-    #  # CREATE TABLE "foo" (
-    #  #   "id" serial primary key,
-    #  #   "bar_id" integer DEFAULT NULL NULL,
-    #  #   FOREIGN KEY ("bar_id") REFERENCES "bar" ("id")
-    #  # );
+    #   # Produces:
+    #   #
+    #   # CREATE TABLE "foo" (
+    #   #   "id" serial primary key,
+    #   #   "bar_id" integer DEFAULT NULL NULL,
+    #   #   FOREIGN KEY ("bar_id") REFERENCES "bar" ("id")
+    #   # );
     #
     # Defining a FOREIGN KEY constraint on the table-level allows you to
     # create multicolumn foreign keys. You can define these super advanced
     # foreign keys thusly:
     #
-    #  ### ruby
-    #  create_table(:foo) {}
+    #   create_table(:foo) {}
     #
-    #  create_table(:bar) do |t|
-    #    t.integer :foo_id
-    #    t.unique_constraint [ :id, :foo_id ]
-    #  end
+    #   create_table(:bar) do |t|
+    #     t.integer :foo_id
+    #     t.unique_constraint [ :id, :foo_id ]
+    #   end
     #
-    #  create_table(:funk) do |t|
-    #    t.integer :bar_id
-    #    t.foreign_key [ :id, :bar_id ], :bar, [ :id, :foo_id ]
-    #  end
+    #   create_table(:funk) do |t|
+    #     t.integer :bar_id
+    #     t.foreign_key [ :id, :bar_id ], :bar, [ :id, :foo_id ]
+    #   end
     #
-    #  # Produces:
-    #  #
-    #  # CREATE TABLE "foo" (
-    #  #   "id" serial primary key
-    #  # );
-    #  #
-    #  # CREATE TABLE "bar" (
-    #  #   "id" serial primary key,
-    #  #   "foo_id" integer DEFAULT NULL NULL,
-    #  #   UNIQUE ("id", "foo_id")
-    #  # );
-    #  #
-    #  # CREATE TABLE "funk" (
-    #  #   "id" serial primary key,
-    #  #   "bar_id" integer DEFAULT NULL NULL,
-    #  #   FOREIGN KEY ("id", "bar_id") REFERENCES "bar" ("id", "foo_id")
-    #  # );
+    #   # Produces:
+    #   #
+    #   # CREATE TABLE "foo" (
+    #   #   "id" serial primary key
+    #   # );
+    #   #
+    #   # CREATE TABLE "bar" (
+    #   #   "id" serial primary key,
+    #   #   "foo_id" integer DEFAULT NULL NULL,
+    #   #   UNIQUE ("id", "foo_id")
+    #   # );
+    #   #
+    #   # CREATE TABLE "funk" (
+    #   #   "id" serial primary key,
+    #   #   "bar_id" integer DEFAULT NULL NULL,
+    #   #   FOREIGN KEY ("id", "bar_id") REFERENCES "bar" ("id", "foo_id")
+    #   # );
     #
     # === Table Manipulation
     #
@@ -482,18 +472,17 @@ module ActiveRecord
     #
     # ==== Examples:
     #
-    #  ### ruby
-    #  add_foreign_key(:foo, :bar_id, :bar)
-    #  # => ALTER TABLE "funk" ADD FOREIGN KEY ("bar_id") REFERENCES "bar";
+    #   add_foreign_key(:foo, :bar_id, :bar)
+    #   # => ALTER TABLE "funk" ADD FOREIGN KEY ("bar_id") REFERENCES "bar";
     #
-    #  add_foreign_key(:foo, :bar_id, :bar, :id)
-    #  # => ALTER TABLE "funk" ADD FOREIGN KEY ("bar_id") REFERENCES "bar"("id");
+    #   add_foreign_key(:foo, :bar_id, :bar, :id)
+    #   # => ALTER TABLE "funk" ADD FOREIGN KEY ("bar_id") REFERENCES "bar"("id");
     #
-    #  add_foreign_key(:foo, [ :bar_id, :blort_id ], :bar, [ :id, :blort_id ],
-    #    :name => 'my_fk', :match => :simple
-    #  )
-    #  # => ALTER TABLE "foo" ADD CONSTRAINT "my_fk" FOREIGN KEY ("id", "blort_id")
-    #  #    REFERENCES "bar" ("id", "blort_id") MATCH SIMPLE;
+    #   add_foreign_key(:foo, [ :bar_id, :blort_id ], :bar, [ :id, :blort_id ],
+    #     :name => 'my_fk', :match => :simple
+    #   )
+    #   # => ALTER TABLE "foo" ADD CONSTRAINT "my_fk" FOREIGN KEY ("id", "blort_id")
+    #   #    REFERENCES "bar" ("id", "blort_id") MATCH SIMPLE;
     #
     # === Options for FOREIGN KEY Constraints
     #

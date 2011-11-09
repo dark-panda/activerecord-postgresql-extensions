@@ -30,16 +30,15 @@ module ActiveRecord
       #
       # ==== Examples
       #
-      #  ### ruby
-      #  create_view(:foo_view, 'SELECT * FROM bar')
-      #  # => CREATE VIEW "foo_view" AS SELECT * FROM bar;
+      #   create_view(:foo_view, 'SELECT * FROM bar')
+      #   # => CREATE VIEW "foo_view" AS SELECT * FROM bar;
       #
-      #  create_view(
-      #    { :geospatial => :foo_view },
-      #    'SELECT * FROM bar',
-      #    :columns => [ :id, :name, :the_geom ]
-      #  )
-      #  # => CREATE VIEW "geospatial"."foo_view" ("id", "name", "the_geom") AS SELECT * FROM bar;
+      #   create_view(
+      #     { :geospatial => :foo_view },
+      #     'SELECT * FROM bar',
+      #     :columns => [ :id, :name, :the_geom ]
+      #   )
+      #   # => CREATE VIEW "geospatial"."foo_view" ("id", "name", "the_geom") AS SELECT * FROM bar;
       def create_view(name, query, options = {})
         execute PostgreSQLViewDefinition.new(self, name, query, options).to_s
       end

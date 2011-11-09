@@ -37,15 +37,14 @@ module ActiveRecord
       #
       # ==== Examples
       #
-      #  ### ruby
-      #  create_rule(
-      #    'check_it_out_rule',
-      #    :select,
-      #    :child,
-      #    :instead,
-      #    'select * from public.another', :conditions => 'id = 1'
-      #  )
-      #  # => CREATE RULE "check_it_out_rule" AS ON SELECT TO "child" WHERE id = 1 DO INSTEAD select * from public.another;
+      #   create_rule(
+      #     'check_it_out_rule',
+      #     :select,
+      #     :child,
+      #     :instead,
+      #     'select * from public.another', :conditions => 'id = 1'
+      #   )
+      #   # => CREATE RULE "check_it_out_rule" AS ON SELECT TO "child" WHERE id = 1 DO INSTEAD select * from public.another;
       def create_rule(name, event, table, action, commands, options = {})
         execute PostgreSQLRuleDefinition.new(self, name, event, table, action, commands, options).to_s
       end

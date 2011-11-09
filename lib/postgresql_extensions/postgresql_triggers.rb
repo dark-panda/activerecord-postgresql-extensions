@@ -41,17 +41,16 @@ module ActiveRecord
       #
       # ==== Example
       #
-      #  ### ruby
-      #  create_trigger(
-      #    'willie_nelsons_trigger',
-      #    :before,
-      #    :update,
-      #    { :nylon => :guitar },
-      #    'strum_trigger',
-      #    :for_each => :row
-      #  )
-      #  # => CREATE TRIGGER "willie_nelsons_trigger" BEFORE UPDATE
-      #  #    ON "nylon"."guitar" FOR EACH ROW EXECUTE PROCEDURE "test_trigger"();
+      #   create_trigger(
+      #     'willie_nelsons_trigger',
+      #     :before,
+      #     :update,
+      #     { :nylon => :guitar },
+      #     'strum_trigger',
+      #     :for_each => :row
+      #   )
+      #   # => CREATE TRIGGER "willie_nelsons_trigger" BEFORE UPDATE
+      #   #    ON "nylon"."guitar" FOR EACH ROW EXECUTE PROCEDURE "test_trigger"();
       def create_trigger(name, called, events, table, function, options = {})
         execute PostgreSQLTriggerDefinition.new(self, name, called, events, table, function, options).to_s
       end

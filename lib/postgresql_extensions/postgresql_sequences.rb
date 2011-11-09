@@ -42,17 +42,16 @@ module ActiveRecord
       #
       # ==== Example
       #
-      #  ### ruby
-      #  create_sequence(
-      #    'what_a_sequence_of_events',
-      #    :increment => 2,
-      #    :cache => 2,
-      #    :min_value => nil,
-      #    :max_value => 10,
-      #    :owned_by => [ :foo, :id ]
-      #  )
-      #  # => CREATE SEQUENCE "what_a_sequence_of_events" INCREMENT BY 2
-      #  #    NO MINVALUE MAXVALUE 10 CACHE 2 OWNED BY "foo"."id";
+      #   create_sequence(
+      #     'what_a_sequence_of_events',
+      #     :increment => 2,
+      #     :cache => 2,
+      #     :min_value => nil,
+      #     :max_value => 10,
+      #     :owned_by => [ :foo, :id ]
+      #   )
+      #   # => CREATE SEQUENCE "what_a_sequence_of_events" INCREMENT BY 2
+      #   #    NO MINVALUE MAXVALUE 10 CACHE 2 OWNED BY "foo"."id";
       def create_sequence(name, options = {})
         execute PostgreSQLSequenceDefinition.new(self, :create, name, options).to_s
       end

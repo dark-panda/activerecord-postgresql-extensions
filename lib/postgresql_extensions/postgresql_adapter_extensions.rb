@@ -57,16 +57,15 @@ module ActiveRecord
       #
       # Examples:
       #
-      #  ### ruby
-      #  # should produce '"geospatial"."my_tables"
-      #  with_schema :geospatial do
-      #    quote_table_name('my_table')
-      #  end
+      #   # should produce '"geospatial"."my_tables"'
+      #   with_schema :geospatial do
+      #     quote_table_name('my_table')
+      #   end
       #
-      #  # should produce 'SELECT * FROM "geospatial"."models"'
-      #  with_schema :geospatial do
-      #    Model.find(:all)
-      #  end
+      #   # should produce 'SELECT * FROM "geospatial"."models"'
+      #   with_schema :geospatial do
+      #     Model.find(:all)
+      #   end
       def with_schema schema
         scoped_schemas << schema
         begin
@@ -81,30 +80,28 @@ module ActiveRecord
       #
       # Example:
       #
-      #  ### ruby
-      #  with_schema :geospatial do
-      #    create_table(:test) do |t|
-      #      ignore_schema do
-      #        t.integer(
-      #          :ref_id,
-      #          :references => {
-      #            :table => :refs,
-      #            :column => :id,
-      #            :deferrable => true
-      #          }
-      #        )
-      #      end
-      #    end
-      #  end
+      #   with_schema :geospatial do
+      #     create_table(:test) do |t|
+      #       ignore_schema do
+      #         t.integer(
+      #           :ref_id,
+      #           :references => {
+      #             :table => :refs,
+      #             :column => :id,
+      #             :deferrable => true
+      #           }
+      #         )
+      #       end
+      #     end
+      #   end
       #
-      # Should produce:
-      #
-      #  ### sql
-      #  CREATE TABLE "geospatial"."test" (
-      #    "id" serial primary key,
-      #    "ref_id" integer DEFAULT NULL NULL,
-      #    FOREIGN KEY ("ref_id") REFERENCES "refs" ("id")
-      #  )
+      #   # Produces:
+      #   #
+      #   # CREATE TABLE "geospatial"."test" (
+      #   #   "id" serial primary key,
+      #   #   "ref_id" integer DEFAULT NULL NULL,
+      #   #   FOREIGN KEY ("ref_id") REFERENCES "refs" ("id")
+      #   # )
       #
       # Here we see that we used the geospatial schema when naming the
       # test table and dropped back to not specifying a schema when
@@ -112,8 +109,7 @@ module ActiveRecord
       # used ignore_schema, the foreign key would have been defined
       # thusly:
       #
-      #  ### sql
-      #  FOREIGN KEY ("ref_id") REFERENCES "geospatial"."refs" ("id")
+      #   FOREIGN KEY ("ref_id") REFERENCES "geospatial"."refs" ("id")
       def ignore_schema
         with_schema nil do
           yield
@@ -209,22 +205,21 @@ module ActiveRecord
       #
       # Example of using a Hash as a table name:
       #
-      #  ### ruby
-      #  quote_table_name(:geospatial => :epois) # => "geospatial"."epois"
-      #  # => "geospatial"."epois"
+      #   quote_table_name(:geospatial => :epois) # => "geospatial"."epois"
+      #   # => "geospatial"."epois"
       #
-      #  quote_table_name(:epois)
-      #  # => "epois"
+      #   quote_table_name(:epois)
+      #   # => "epois"
       #
-      #  with_schema(:geospatial) { quote_table_name(:epois) }
-      #  # => "geospatial"."epois"
+      #   with_schema(:geospatial) { quote_table_name(:epois) }
+      #   # => "geospatial"."epois"
       #
-      #  with_schema(:geospatial) do
-      #    ignore_schema do
-      #      quote_table_name(:epois)
-      #    end
-      #  end
-      #  # => "epois"
+      #   with_schema(:geospatial) do
+      #     ignore_schema do
+      #       quote_table_name(:epois)
+      #     end
+      #   end
+      #   # => "epois"
       def quote_table_name_with_schemas(name)
         if current_schema || name.is_a?(Hash)
           quote_generic_with_schema(name)

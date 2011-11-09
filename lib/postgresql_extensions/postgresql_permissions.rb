@@ -204,12 +204,11 @@ module ActiveRecord
     #
     # ==== Examples
     #
-    #  ### ruby
-    #  grant_table_privileges([ :table1, :table2 ], :select, :joe)
-    #  # => GRANT SELECT ON TABLE "table1", "table2" TO "joe"
+    #   grant_table_privileges([ :table1, :table2 ], :select, :joe)
+    #   # => GRANT SELECT ON TABLE "table1", "table2" TO "joe"
     #
-    #  grant_sequence_privileges(:my_seq, [ :select, :update ], :public)
-    #  # => GRANT SELECT, UPDATE ON SEQUENCE "my_seq" TO PUBLIC
+    #   grant_sequence_privileges(:my_seq, [ :select, :update ], :public)
+    #   # => GRANT SELECT, UPDATE ON SEQUENCE "my_seq" TO PUBLIC
     #
     # You can specify the <tt>:with_grant_option</tt> in any of the
     # grant_*_privilege methods to add a WITH GRANT OPTION clause to
@@ -264,12 +263,11 @@ module ActiveRecord
     #
     # ==== Examples
     #
-    #  ### ruby
-    #  revoke_table_privileges([ :table1, :table2 ], :select, :joe)
-    #  # => REVOKE SELECT ON TABLE "table1", "table2" FROM "joe"
+    #   revoke_table_privileges([ :table1, :table2 ], :select, :joe)
+    #   # => REVOKE SELECT ON TABLE "table1", "table2" FROM "joe"
     #
-    #  revoke_sequence_privileges(:my_seq, [ :select, :update ], :public)
-    #  # => REVOKE SELECT, UPDATE ON SEQUENCE "my_seq" FROM PUBLIC
+    #   revoke_sequence_privileges(:my_seq, [ :select, :update ], :public)
+    #   # => REVOKE SELECT, UPDATE ON SEQUENCE "my_seq" FROM PUBLIC
     #
     # You can specify the <tt>:grant_option_for</tt> in any of the
     # revoke_*_privilege methods to add a GRANT OPTION FOR clause to

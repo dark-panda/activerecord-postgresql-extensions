@@ -91,20 +91,19 @@ module ActiveRecord
       #
       # ==== Example
       #
-      #  ### ruby
-      #  create_function('tester_function', 'integer',
-      #    'integer', 'sql', :behavior => :immutable, :set => { :search_path => :from_current }, :force => true) do
-      #    "select $1;"
-      #  end
+      #   create_function('tester_function', 'integer',
+      #     'integer', 'sql', :behavior => :immutable, :set => { :search_path => :from_current }, :force => true) do
+      #     "select $1;"
+      #   end
       #
-      #  # Produces
-      #  #
-      #  # CREATE OR REPLACE FUNCTION "tester_function"(integer) RETURNS integer AS $$
-      #  #   select $1;
-      #  # $$
-      #  # LANGUAGE "sql"
-      #  #   IMMUTABLE
-      #  #   SET "search_path" FROM CURRENT;
+      #   # Produces:
+      #   #
+      #   # CREATE OR REPLACE FUNCTION "tester_function"(integer) RETURNS integer AS $$
+      #   #   select $1;
+      #   # $$
+      #   # LANGUAGE "sql"
+      #   #   IMMUTABLE
+      #   #   SET "search_path" FROM CURRENT;
       def create_function(name, args, returns, language, options = {})
         body = yield.to_s
         execute PostgreSQLFunctionDefinition.new(self, name, args, returns, language, body, options).to_s
@@ -155,21 +154,20 @@ module ActiveRecord
       #
       # Both of the following examples should produce the same output.
       #
-      #  ### ruby
-      #  # with options Hash
-      #  alter_function('my_function', 'integer', :rename_to => 'another_function')
-      #  alter_function('another_function', 'integer', :owner_to => 'jdoe')
+      #   # with options Hash
+      #   alter_function('my_function', 'integer', :rename_to => 'another_function')
+      #   alter_function('another_function', 'integer', :owner_to => 'jdoe')
       #
-      #  # block mode
-      #  alter_function('my_function', 'integer') do |f|
-      #    f.rename_to 'another_function'
-      #    f.owner_to 'jdoe'
-      #  end
+      #   # block mode
+      #   alter_function('my_function', 'integer') do |f|
+      #     f.rename_to 'another_function'
+      #     f.owner_to 'jdoe'
+      #   end
       #
-      #  # Produces
-      #  #
-      #  # ALTER FUNCTION "my_function"(integer) OWNER TO "jdoe";
-      #  # ALTER FUNCTION "my_function"(integer) RENAME TO "another_function";
+      #   # Produces:
+      #   #
+      #   # ALTER FUNCTION "my_function"(integer) OWNER TO "jdoe";
+      #   # ALTER FUNCTION "my_function"(integer) RENAME TO "another_function";
       def alter_function(name, args, options = {})
         alterer = PostgreSQLFunctionAlterer.new(self, name, args, options)
 

@@ -69,24 +69,23 @@ module ActiveRecord
       #
       # ==== Examples
       #
-      #  ### ruby
-      #  create_table(:foo, :inherits => :parent) do |t|
-      #    t.integer :bar_id, :references => :bar
-      #    t.like :base, :including => [ :defaults, :indexes ], :excluding => :constraints
-      #    t.check_constraint "bar_id < 100"
-      #    t.unique_constraint :bar_id
-      #  end
+      #   create_table(:foo, :inherits => :parent) do |t|
+      #     t.integer :bar_id, :references => :bar
+      #     t.like :base, :including => [ :defaults, :indexes ], :excluding => :constraints
+      #     t.check_constraint "bar_id < 100"
+      #     t.unique_constraint :bar_id
+      #   end
       #
-      #  # Produces:
-      #  #
-      #  # CREATE TABLE "foo" (
-      #  #   "id" serial primary key,
-      #  #   "bar_id" integer DEFAULT NULL NULL,
-      #  #   LIKE "base" INCLUDING DEFAULTS INCLUDING INDEXES EXCLUDING CONSTRAINTS,
-      #  #   FOREIGN KEY ("bar_id") REFERENCES "bar",
-      #  #   CHECK (bar_id < 100),
-      #  #   UNIQUE ("bar_id")
-      #  # ) INHERITS ("parent");
+      #   # Produces:
+      #   #
+      #   # CREATE TABLE "foo" (
+      #   #   "id" serial primary key,
+      #   #   "bar_id" integer DEFAULT NULL NULL,
+      #   #   LIKE "base" INCLUDING DEFAULTS INCLUDING INDEXES EXCLUDING CONSTRAINTS,
+      #   #   FOREIGN KEY ("bar_id") REFERENCES "bar",
+      #   #   CHECK (bar_id < 100),
+      #   #   UNIQUE ("bar_id")
+      #   # ) INHERITS ("parent");
       #
       # This is a fairly convoluted example, but there you have it.
       #
