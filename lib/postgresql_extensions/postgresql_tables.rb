@@ -46,6 +46,9 @@ module ActiveRecord
       # * <tt>:cascade_drop</tt> - when using the <tt>:force</tt>, this
       #   Jedi mindtrick will pass along the :cascade option to
       #   drop_table.
+      # * <tt>:of_type</tt> - for "OF type_name" clauses.
+      # * <tt>:if_not_exists</tt> - adds the "IF NOT EXISTS" clause.
+      # * <tt>:unlogged</tt> - creates an UNLOGGED table.
       #
       # We're expanding the doors of table definition perception with
       # this exciting new addition to the world of ActiveRecord
@@ -182,7 +185,12 @@ module ActiveRecord
       def to_sql #:nodoc:
         sql = 'CREATE '
         sql << 'TEMPORARY ' if options[:temporary]
-        sql << "TABLE #{base.quote_table_name(table_name)} (\n  "
+        sql << 'UNLOGGED ' if options[:unlogged]
+        sql << 'TABLE '
+        sql << 'IF NOT EXISTS ' if options[:if_not_exists]
+        sql << "#{base.quote_table_name(table_name)} "
+        sql << "OF #{base.quote_table_name(options[:of_type])} " if options[:of_type]
+        sql << "(\n  "
 
         ary = @columns.collect(&:to_sql)
         ary << @like if @like
@@ -190,10 +198,10 @@ module ActiveRecord
         sql << ary * ",\n  "
         sql << "\n)"
 
-        sql << "INHERITS (" << Array(options[:inherits]).collect { |i| base.quote_table_name(i) }.join(', ') << ')' if options[:inherits]
-        sql << "ON COMMIT #{options[:on_commit].to_s.upcase}" if options[:on_commit]
-        sql << "#{options[:options]}" if options[:options]
-        sql << "TABLESPACE #{base.quote_tablespace(options[:tablespace])}" if options[:tablespace]
+        sql << "\nINHERITS (" << Array(options[:inherits]).collect { |i| base.quote_table_name(i) }.join(', ') << ')' if options[:inherits]
+        sql << "\nON COMMIT #{options[:on_commit].to_s.upcase.gsub(/_/, ' ')}" if options[:on_commit]
+        sql << "\n#{options[:options]}" if options[:options]
+        sql << "\nTABLESPACE #{base.quote_tablespace(options[:tablespace])}" if options[:tablespace]
         "#{sql};"
       end
       alias :to_s :to_sql
