@@ -10,6 +10,7 @@ dirname = File.join(File.dirname(__FILE__), 'postgresql_extensions')
   postgresql_adapter_extensions
   postgresql_constraints
   postgresql_tables
+  postgresql_tablespaces
   postgresql_indexes
   postgresql_permissions
   postgresql_schemas
