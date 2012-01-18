@@ -61,7 +61,7 @@ module ActiveRecord
 
       # Changes a language's owner.
       def alter_language_owner language, role, options = {}
-        execute "ALTER PROCEDURAL LANGUAGE #{quote_language(language)} OWNER TO #{quote_language(role)};"
+        execute "ALTER PROCEDURAL LANGUAGE #{quote_language(language)} OWNER TO #{quote_role(role)};"
       end
 
       # Returns an Array of available languages.
