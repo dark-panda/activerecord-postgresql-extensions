@@ -105,7 +105,7 @@ module ActiveRecord
         end
 
         table_definition = PostgreSQLTableDefinition.new(self, table_name, options)
-        yield table_definition
+        yield table_definition if block_given?
 
         execute table_definition.to_s
         unless table_definition.post_processing.blank?
