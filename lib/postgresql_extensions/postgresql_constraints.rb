@@ -76,7 +76,7 @@ module ActiveRecord
       private
         DEFERRABLE_TYPES = [ 'true', 'false', 'immediate', 'deferred' ].freeze
         def assert_valid_deferrable_option option
-          if !DEFERRABLE_TYPES.include? option.to_s.downcase
+          if !DEFERRABLE_TYPES.include?(option.to_s.downcase)
             raise ActiveRecord::InvalidDeferrableOption.new(option)
           end unless option.nil?
         end
@@ -553,13 +553,13 @@ module ActiveRecord
         ACTION_TYPES = %w{ no_action restrict cascade set_null set_default }.freeze
 
         def assert_valid_match_type(type) #:nodoc:
-          if !MATCH_TYPES.include? type.to_s
+          if !MATCH_TYPES.include?(type.to_s)
             raise ActiveRecord::InvalidMatchType.new(type)
           end
         end
 
         def assert_valid_action(type) #:nodoc:
-          if !ACTION_TYPES.include? type.to_s
+          if !ACTION_TYPES.include?(type.to_s)
             raise ActiveRecord::InvalidForeignKeyAction.new(type)
           end
         end

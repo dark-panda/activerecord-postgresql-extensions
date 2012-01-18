@@ -31,7 +31,7 @@ module ActiveRecord
       # You don't often see people using the <tt>:handler</tt> and
       # <tt>:validator</tt> options, and they're really just kind of
       # here for the sake of completeness.
-      def create_language language, options = {}
+      def create_language(language, options = {})
         sql = 'CREATE '
         sql << 'TRUSTED ' if options[:trusted]
         sql << "PROCEDURAL LANGUAGE #{quote_language(language)}"
@@ -46,7 +46,7 @@ module ActiveRecord
       #
       # * <tt>:if_exists</tt> - adds IF EXISTS.
       # * <tt>:cascade</tt> - adds CASCADE.
-      def drop_language language, options = {}
+      def drop_language(language, options = {})
         sql = 'DROP PROCEDURAL LANGUAGE '
         sql << 'IF EXISTS ' if options[:if_exists]
         sql << quote_language(language)
@@ -55,12 +55,12 @@ module ActiveRecord
       end
 
       # Renames a language.
-      def alter_language_name old_language, new_language, options = {}
+      def alter_language_name(old_language, new_language, options = {})
         execute "ALTER PROCEDURAL LANGUAGE #{quote_language(old_language)} RENAME TO #{quote_language(new_language)};"
       end
 
       # Changes a language's owner.
-      def alter_language_owner language, role, options = {}
+      def alter_language_owner(language, role, options = {})
         execute "ALTER PROCEDURAL LANGUAGE #{quote_language(language)} OWNER TO #{quote_role(role)};"
       end
 

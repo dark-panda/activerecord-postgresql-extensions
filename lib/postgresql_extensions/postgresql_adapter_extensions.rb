@@ -66,7 +66,7 @@ module ActiveRecord
       #   with_schema :geospatial do
       #     Model.find(:all)
       #   end
-      def with_schema schema
+      def with_schema(schema)
         scoped_schemas << schema
         begin
           yield
@@ -483,13 +483,17 @@ module ActiveRecord
       alias_method_chain :schema_search_path, :csv_fix
 
       def disable_referential_integrity_with_views #:nodoc:
-        if supports_disable_referential_integrity?() then
-          execute((tables - views).collect { |name| "ALTER TABLE #{quote_table_name(name)} DISABLE TRIGGER ALL" }.join(";"))
+        if supports_disable_referential_integrity? then
+          execute((tables - views).collect { |name|
+            "ALTER TABLE #{quote_table_name(name)} DISABLE TRIGGER ALL"
+          }.join(";"))
         end
         yield
       ensure
-        if supports_disable_referential_integrity?() then
-          execute((tables - views).collect { |name| "ALTER TABLE #{quote_table_name(name)} ENABLE TRIGGER ALL" }.join(";"))
+        if supports_disable_referential_integrity? then
+          execute((tables - views).collect { |name|
+            "ALTER TABLE #{quote_table_name(name)} ENABLE TRIGGER ALL"
+          }.join(";"))
         end
       end
       alias_method_chain :disable_referential_integrity, :views

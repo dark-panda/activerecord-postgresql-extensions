@@ -12,7 +12,7 @@ module ActiveRecord
   module ConnectionAdapters
     class PostgreSQLAdapter < AbstractAdapter
       # Set the schema of a table.
-      def alter_table_schema table_name, schema, options = {}
+      def alter_table_schema(table_name, schema, options = {})
         execute "ALTER TABLE #{quote_schema(table_name)} SET SCHEMA #{quote_schema(schema)};"
       end
 
@@ -300,7 +300,7 @@ module ActiveRecord
       alias_method_chain :column, :constraints
 
       private
-        LIKE_TYPES = [ 'defaults', 'constraints', 'indexes' ].freeze
+        LIKE_TYPES = %w{ defaults constraints indexes }.freeze
 
         def assert_valid_like_types(likes) #:nodoc:
           unless likes.blank?

@@ -221,7 +221,7 @@ module ActiveRecord
         end
 
         def assert_valid_action(option) #:nodoc:
-          if !ACTIONS.include? option.to_s.downcase
+          if !ACTIONS.include?(option.to_s.downcase)
             raise ArgumentError.new("Excepted :add or :drop for PostgreSQLExtensionAlterer action.")
           end unless option.nil?
         end

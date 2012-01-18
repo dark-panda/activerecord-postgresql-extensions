@@ -194,19 +194,19 @@ module ActiveRecord
         SECURITIES = %w{ invoker definer }.freeze
 
         def assert_valid_behavior(option) #:nodoc:
-          if !BEHAVIORS.include? option.to_s.downcase
+          if !BEHAVIORS.include?(option.to_s.downcase)
             raise ActiveRecord::InvalidFunctionBehavior.new(option)
           end unless option.nil?
         end
 
         def assert_valid_on_null_input(option) #:nodoc:
-          if !ON_NULL_INPUTS.include? option.to_s.downcase
+          if !ON_NULL_INPUTS.include?(option.to_s.downcase)
             raise ActiveRecord::InvalidFunctionOnNullInputValue.new(option)
           end unless option.nil?
         end
 
         def assert_valid_security(option) #:nodoc:
-          if !SECURITIES.include? option.to_s.downcase
+          if !SECURITIES.include?(option.to_s.downcase)
             raise ActiveRecord::InvalidFunctionSecurityValue.new(option)
           end unless option.nil?
         end

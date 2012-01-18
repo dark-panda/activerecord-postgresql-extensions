@@ -73,12 +73,12 @@ module ActiveRecord
 
       # Renames the sequence.
       def rename_sequence(name, rename, options = {})
-        execute "ALTER SEQUENCE #{quote_sequence(name)} RENAME TO #{quote_generic_ignore_schema(rename)};"
+        execute("ALTER SEQUENCE #{quote_sequence(name)} RENAME TO #{quote_generic_ignore_schema(rename)};")
       end
 
       # Alters the sequence's schema.
       def alter_sequence_schema(name, schema, options = {})
-        execute "ALTER SEQUENCE #{quote_sequence(name)} SET SCHEMA #{quote_schema(schema)};"
+        execute("ALTER SEQUENCE #{quote_sequence(name)} SET SCHEMA #{quote_schema(schema)};")
       end
 
       # Alters any of the various options for a sequence. See
@@ -90,7 +90,7 @@ module ActiveRecord
       # function <tt>setval</tt> with a false value in the third
       # parameter.
       def alter_sequence(name, options = {})
-        execute PostgreSQLSequenceDefinition.new(self, :alter, name, options).to_s
+        execute(PostgreSQLSequenceDefinition.new(self, :alter, name, options).to_s)
       end
 
       # Calls the <tt>setval</tt> function on the sequence.
