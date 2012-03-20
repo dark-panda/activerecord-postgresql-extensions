@@ -65,3 +65,6 @@ end
 
 class Mig < ActiveRecord::Migration
 end
+
+class Foo < ActiveRecord::Base
+end
