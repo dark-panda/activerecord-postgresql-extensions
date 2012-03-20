@@ -484,14 +484,14 @@ module ActiveRecord
 
       def disable_referential_integrity_with_views #:nodoc:
         if supports_disable_referential_integrity? then
-          execute((tables - views).collect { |name|
+          execute(tables_without_views.collect { |name|
             "ALTER TABLE #{quote_table_name(name)} DISABLE TRIGGER ALL"
           }.join(";"))
         end
         yield
       ensure
         if supports_disable_referential_integrity? then
-          execute((tables - views).collect { |name|
+          execute(tables_without_views.collect { |name|
             "ALTER TABLE #{quote_table_name(name)} ENABLE TRIGGER ALL"
           }.join(";"))
         end
