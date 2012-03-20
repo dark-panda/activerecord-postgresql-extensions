@@ -14,6 +14,30 @@ module ActiveRecord
     end
   end
 
+  class Base
+    class << self
+      # Enable triggers. If no triggers are specified, all triggers will
+      # be enabled.
+      def enable_triggers(*triggers)
+        self.connection.enable_triggers(self.table_name, *triggers)
+      end
+
+      # Disable triggers. If no triggers are specified, all triggers will
+      # be disabled.
+      def disable_triggers(*triggers)
+        self.connection.disable_triggers(self.table_name, *triggers)
+      end
+
+      # Temporarily disable triggers. If no triggers are specified, all
+      # triggers will be disabled.
+      def without_triggers(*triggers)
+        self.connection.without_triggers(self.table_name, *triggers) do
+          yield
+        end
+      end
+    end
+  end
+
   module ConnectionAdapters
     class PostgreSQLAdapter < AbstractAdapter
       # Creates a PostgreSQL trigger.

@@ -498,6 +498,49 @@ module ActiveRecord
       end
       alias_method_chain :disable_referential_integrity, :views
 
+      # Enable triggers. If no triggers are specified, all triggers will
+      # be enabled.
+      def enable_triggers(table, *triggers)
+        quoted_table_name = quote_table_name(table)
+        triggers = if triggers.present?
+          triggers.collect { |trigger|
+            quote_generic(trigger)
+          }
+        else
+          'ALL'
+        end
+
+        Array(triggers).each do |trigger|
+          execute("ALTER TABLE #{quoted_table_name} ENABLE TRIGGER #{trigger};")
+        end
+      end
+
+      # Disable triggers. If no triggers are specified, all triggers will
+      # be disabled.
+      def disable_triggers(table, *triggers)
+        quoted_table_name = quote_table_name(table)
+        triggers = if triggers.present?
+          triggers.collect { |trigger|
+            quote_generic(trigger)
+          }
+        else
+          'ALL'
+        end
+
+        Array(triggers).each do |trigger|
+          execute("ALTER TABLE #{quoted_table_name} DISABLE TRIGGER #{trigger};")
+        end
+      end
+
+      # Temporarily disable triggers. If no triggers are specified, all
+      # triggers will be disabled.
+      def without_triggers(table, *triggers)
+        disable_triggers(table, *triggers)
+        yield
+      ensure
+        enable_triggers(table, *triggers)
+      end
+
       # Returns an Array of foreign keys for a particular table. The
       # Array itself is an Array of Arrays, where each particular Array
       # contains the table being referenced, the foreign key and the

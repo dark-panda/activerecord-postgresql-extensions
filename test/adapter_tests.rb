@@ -81,4 +81,64 @@ class AdapterExtensionTests < Test::Unit::TestCase
       'SELECT current_role;'
     ], ARBC.statements)
   end
+
+  def test_enable_triggers
+    ARBC.enable_triggers(:foo)
+    ARBC.enable_triggers(:foo, :bar)
+    ARBC.enable_triggers(:foo, :bar, :baz)
+
+    assert_equal([
+      %{ALTER TABLE "foo" ENABLE TRIGGER ALL;},
+      %{ALTER TABLE "foo" ENABLE TRIGGER "bar";},
+      %{ALTER TABLE "foo" ENABLE TRIGGER "bar";},
+      %{ALTER TABLE "foo" ENABLE TRIGGER "baz";}
+    ], ARBC.statements)
+  end
+
+  def test_disable_triggers
+    ARBC.disable_triggers(:foo)
+    ARBC.disable_triggers(:foo, :bar)
+    ARBC.disable_triggers(:foo, :bar, :baz)
+
+    assert_equal([
+      %{ALTER TABLE "foo" DISABLE TRIGGER ALL;},
+      %{ALTER TABLE "foo" DISABLE TRIGGER "bar";},
+      %{ALTER TABLE "foo" DISABLE TRIGGER "bar";},
+      %{ALTER TABLE "foo" DISABLE TRIGGER "baz";}
+    ], ARBC.statements)
+  end
+
+  def test_without_triggers
+    begin
+      ARBC.without_triggers(:foo) do
+        raise "WHAT HAPPEN"
+      end
+    rescue
+    end
+
+    begin
+      ARBC.without_triggers(:foo, :bar) do
+        raise "WHAT HAPPEN"
+      end
+    rescue
+    end
+
+    begin
+      ARBC.without_triggers(:foo, :bar, :baz) do
+        raise "WHAT HAPPEN"
+      end
+    rescue
+    end
+
+    assert_equal([
+      %{ALTER TABLE "foo" DISABLE TRIGGER ALL;},
+      %{ALTER TABLE "foo" ENABLE TRIGGER ALL;},
+      %{ALTER TABLE "foo" DISABLE TRIGGER "bar";},
+      %{ALTER TABLE "foo" ENABLE TRIGGER "bar";},
+      %{ALTER TABLE "foo" DISABLE TRIGGER "bar";},
+      %{ALTER TABLE "foo" DISABLE TRIGGER "baz";},
+      %{ALTER TABLE "foo" ENABLE TRIGGER "bar";},
+      %{ALTER TABLE "foo" ENABLE TRIGGER "baz";}
+    ], ARBC.statements)
+  end
 end
