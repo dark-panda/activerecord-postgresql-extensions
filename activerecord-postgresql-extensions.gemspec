@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = "activerecord-postgresql-extensions"
-  s.version = "0.0.11"
+  s.version = "0.0.12"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["J Smith"]
-  s.date = "2011-11-09"
+  s.date = "2012-03-22"
   s.description = "A whole bunch of extensions the ActiveRecord PostgreSQL adapter."
   s.email = "code@zoocasa.com"
   s.extra_rdoc_files = [
@@ -36,6 +36,7 @@ Gem::Specification.new do |s|
     "lib/postgresql_extensions/postgresql_schemas.rb",
     "lib/postgresql_extensions/postgresql_sequences.rb",
     "lib/postgresql_extensions/postgresql_tables.rb",
+    "lib/postgresql_extensions/postgresql_tablespaces.rb",
     "lib/postgresql_extensions/postgresql_text_search.rb",
     "lib/postgresql_extensions/postgresql_triggers.rb",
     "lib/postgresql_extensions/postgresql_types.rb",
@@ -53,12 +54,14 @@ Gem::Specification.new do |s|
     "test/schemas_tests.rb",
     "test/sequences_tests.rb",
     "test/tables_tests.rb",
+    "test/tablespace_tests.rb",
     "test/test_helper.rb",
-    "test/text_search_tests.rb"
+    "test/text_search_tests.rb",
+    "test/trigger_tests.rb"
   ]
   s.homepage = "http://github.com/zoocasa/activerecord-postgresql-extensions"
   s.require_paths = ["lib"]
-  s.rubygems_version = "1.8.11"
+  s.rubygems_version = "1.8.15"
   s.summary = "A whole bunch of extensions the ActiveRecord PostgreSQL adapter."
 
   if s.respond_to? :specification_version then
