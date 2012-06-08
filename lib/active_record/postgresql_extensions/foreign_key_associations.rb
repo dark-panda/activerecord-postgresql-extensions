@@ -1,5 +1,5 @@
 
-module PostgreSQLExtensions::ActiveRecord
+module ActiveRecord::PostgreSQLExtensions
   # The ForeignKeyAssociations module attempts to automatically create
   # associations based on your database schema by looking at foreign key
   # relationships. It can be enabled by setting the
@@ -365,3 +365,11 @@ ActiveRecord::Base.class_eval do
   # convention of "FirstModelSecondModel".
   cattr_accessor :strict_foreign_key_has_many_throughs
 end
+
+# for backwards compatibility with the older module name.
+module PostgreSQLExtensions
+  module ActiveRecord
+    ForeignKeyAssociations = ::ActiveRecord::PostgreSQLExtensions::ForeignKeyAssociations
+  end
+end
+

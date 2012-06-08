@@ -8,6 +8,7 @@ gem 'rdoc', '~> 3.12'
 require 'rubygems/package_task'
 require 'rake/testtask'
 require 'rdoc/task'
+require 'bundler/gem_tasks'
 
 if RUBY_VERSION >= '1.9'
   begin
@@ -19,22 +20,7 @@ end
 
 $:.push 'lib'
 
-version = File.read('VERSION') rescue ''
-
-begin
-  require 'jeweler'
-  Jeweler::Tasks.new do |gem|
-    gem.name = "activerecord-postgresql-extensions"
-    gem.summary = "A whole bunch of extensions the ActiveRecord PostgreSQL adapter."
-    gem.description = gem.summary
-    gem.email = "code@zoocasa.com"
-    gem.homepage = "http://github.com/zoocasa/activerecord-postgresql-extensions"
-    gem.authors =    [ "J Smith" ]
-  end
-  Jeweler::GemcutterTasks.new
-rescue LoadError
-  puts "Jeweler (or a dependency) not available. Install it with: sudo gem install jeweler"
-end
+version = ActiveRecord::PostgreSQLExtensions::VERSION
 
 desc 'Test PostgreSQL extensions'
 Rake::TestTask.new(:test) do |t|
