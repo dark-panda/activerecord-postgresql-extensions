@@ -193,7 +193,7 @@ module ActiveRecord
         sql << "(\n  "
 
         ary = @columns.collect(&:to_sql)
-        ary << @like if @like
+        ary << @like if defined?(@like) && @like
         ary << @table_constraints unless @table_constraints.empty?
         sql << ary * ",\n  "
         sql << "\n)"

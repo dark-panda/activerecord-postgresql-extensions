@@ -306,7 +306,13 @@ module ActiveRecord
 
       private
         def build_statement(k, v) #:nodoc:
-          sql = "ALTER FUNCTION #{base.quote_function(@new_name || name)}(#{args}) "
+          new_name = if defined?(@new_name) && @new_name
+            @new_name
+          else
+            self.name
+          end
+
+          sql = "ALTER FUNCTION #{base.quote_function(new_name)}(#{args}) "
           sql << case k
             when :rename_to
               "RENAME TO #{base.quote_generic_ignore_schema(v)}".tap { @new_name = v }

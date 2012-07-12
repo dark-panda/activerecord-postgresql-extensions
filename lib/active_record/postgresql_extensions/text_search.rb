@@ -110,7 +110,7 @@ module ActiveRecord
         execute("#{sql};")
       end
 
-       def rename_text_search_configuration(old_name, new_name)
+      def rename_text_search_configuration(old_name, new_name)
         execute("ALTER TEXT SEARCH CONFIGURATION %s RENAME TO %s;" % [
           quote_generic_with_schema(old_name),
           quote_generic_with_schema(new_name)
