@@ -25,7 +25,8 @@ version = ActiveRecord::PostgreSQLExtensions::VERSION
 desc 'Test PostgreSQL extensions'
 Rake::TestTask.new(:test) do |t|
   t.test_files = FileList['test/**/*_tests.rb']
-  t.verbose = false
+  t.verbose = !!ENV['VERBOSE_TESTS']
+  t.warning = !!ENV['WARNINGS']
 end
 
 desc 'Build docs'
