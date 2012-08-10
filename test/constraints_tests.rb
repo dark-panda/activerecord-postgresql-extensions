@@ -95,4 +95,63 @@ EOF
       "ALTER TABLE \"foo\" ADD CONSTRAINT \"name_length_check\" CHECK (length(name) < 100);"
     ], statements)
   end
+
+  def test_add_exclude_constraint
+    Mig.add_exclude_constraint(:foo, :element => 'length(name)', :with => '=')
+
+    Mig.add_exclude_constraint(:foo, {
+      :element => 'length(name)',
+      :with => '='
+    }, {
+      :name => 'exclude_name_length'
+    })
+
+    Mig.add_exclude_constraint(:foo, {
+      :element => 'length(name)',
+      :with => '='
+    }, {
+      :name => 'exclude_name_length',
+      :using => :gist
+    })
+
+    Mig.add_exclude_constraint(:foo, [{
+      :element => 'length(name)',
+      :with => '='
+    }, {
+      :element => 'length(title)',
+      :with => '='
+    }])
+
+    Mig.add_exclude_constraint(:foo, {
+      :element => 'length(name)',
+      :with => '='
+    }, {
+      :conditions => Foo.send(:sanitize_sql, {
+        :id => [1,2,3,4]
+      })
+    })
+
+    Mig.add_exclude_constraint(:foo, {
+      :element => 'length(name)',
+      :with => '='
+    }, {
+      :tablespace => 'fubar',
+      :index_parameters => 'FILLFACTOR=10'
+    })
+
+    escaped_array = if ActiveRecord::VERSION::STRING >= "3.0"
+      "(1, 2, 3, 4)"
+    else
+      "(1,2,3,4)"
+    end
+
+    assert_equal([
+      %{ALTER TABLE "foo" ADD EXCLUDE (length(name) WITH =);},
+      %{ALTER TABLE "foo" ADD CONSTRAINT "exclude_name_length" EXCLUDE (length(name) WITH =);},
+      %{ALTER TABLE "foo" ADD CONSTRAINT "exclude_name_length" EXCLUDE USING "gist" (length(name) WITH =);},
+      %{ALTER TABLE "foo" ADD EXCLUDE (length(name) WITH =, length(title) WITH =);},
+      %{ALTER TABLE "foo" ADD EXCLUDE (length(name) WITH =) WHERE ("foos"."id" IN #{escaped_array});},
+      %{ALTER TABLE "foo" ADD EXCLUDE (length(name) WITH =) WITH (FILLFACTOR=10) USING INDEX TABLESPACE "fubar";}
+    ], statements)
+  end
 end

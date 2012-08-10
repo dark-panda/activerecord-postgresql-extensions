@@ -50,8 +50,16 @@ module ActiveRecord
         execute("#{sql};")
       end
 
+      # Adds an EXCLUDE constraint to the table. See
+      # PostgreSQLExcludeConstraint for details.
+      def add_exclude_constraint(table, excludes, options = {})
+        sql = "ALTER TABLE #{quote_table_name(table)} ADD "
+        sql << PostgreSQLExcludeConstraint.new(self, table, excludes, options).to_s
+        execute("#{sql};")
+      end
+
       # Drops a constraint from the table. Use this to drop CHECK,
-      # UNIQUE and FOREIGN KEY constraints from a table.
+      # UNIQUE, EXCLUDE and FOREIGN KEY constraints from a table.
       #
       # Options:
       #
@@ -564,6 +572,116 @@ module ActiveRecord
             raise ActiveRecord::InvalidForeignKeyAction.new(type)
           end
         end
+    end
+
+    # Creates EXCLUDE constraints for PostgreSQL tables and columns.
+    #
+    # This class is meant to be used by PostgreSQL column and table
+    # definition and manipulation methods. There are two ways to create
+    # a EXCLUDE constraint:
+    #
+    # * on a table definition
+    # * when altering a table
+    #
+    # In both cases, a Hash or an Array of Hashes should be used to set the
+    # EXCLUDE constraint checks. The Hash(es) should be in the format
+    # <tt>{ :element => ..., :with => ... }</tt>, where <tt>:element</tt> is
+    # a column name or expression and <tt>:with</tt> is the operator to
+    # compare against. The key <tt>:operator</tt> is an alias for <tt>:where</tt>.
+    #
+    # === Table Definition
+    #
+    # EXCLUDE constraints can also be applied to the table directly
+    # rather than on a column definition.
+    #
+    # ==== Example:
+    #
+    # The following example produces the same result as above:
+    #
+    #   create_table('foo') do |t|
+    #     t.integer :blort
+    #     t.exclude({
+    #       :element => 'length(blort)',
+    #       :with => '='
+    #     }, {
+    #       :name => 'exclude_blort_length'
+    #     })
+    #   end
+    #
+    #   # Produces:
+    #   #
+    #   # CREATE TABLE "foo" (
+    #   #   "id" serial primary key,
+    #   #   "blort" text,
+    #   #   CONSTRAINT "exclude_blort_length" EXCLUDE (length(blort) WITH =)
+    #   # );
+    #
+    # === Table Manipulation
+    #
+    # You can also create new EXCLUDE constraints outside of a table
+    # definition using PostgreSQLAdapter#add_exclude_constraint.
+    #
+    # ==== Examples
+    #
+    #   add_exclude_constraint(:foo, { :element => :bar_id, :with => '=' })
+    #   # => ALTER TABLE "foo" ADD EXCLUDE ("bar_id" WITH =);
+    #
+    # === Options for EXCLUDE Constraints
+    #
+    # * <tt>:using</tt> - sets the index type to be used. Usually this will
+    #   <tt>:gist</tt>, but the default is left blank to allow for the PostgreSQL
+    #   default which is <tt>:btree</tt>. See the PostgreSQL docs for details.
+    # * <tt>:storage_parameters</tt> - PostgreSQL allows you to add a
+    #   couple of additional parameters to indexes to govern disk usage and
+    #   such. This option is a simple String that lets you insert these
+    #   options as necessary. See the PostgreSQL documentation on index
+    #   storage parameters for details. <tt>:index_parameters</tt> can also
+    #   be used.
+    # * <tt>:tablespace</tt> - allows you to specify a tablespace for the
+    #   index being created. See the PostgreSQL documentation on
+    #   tablespaces for details.
+    # * <tt>:conditions</tt> - sets the WHERE conditions for the EXCLUDE
+    #   constraint. You can also use the <tt>:where</tt> option.
+    #
+    # === Dropping EXCLUDE Constraints
+    #
+    # Like all PostgreSQL constraints, you can use
+    # PostgreSQLAdapter#drop_constraint to remove a constraint from a
+    # table.
+    class PostgreSQLExcludeConstraint < PostgreSQLConstraint
+      attr_accessor :excludes
+
+      def initialize(base, table, excludes, options = {}) #:nodoc:
+        @excludes = case excludes
+          when Hash
+            [ excludes ]
+          when Array
+            if excludes.detect { |e| !e.is_a?(Hash) }
+              raise ArgumentError.new("Expected an Array of Hashes for excludes")
+            else
+              excludes
+            end
+          else
+            raise ArgumentError.new("Expected either a Hash or an Array of Hashes")
+        end
+
+        super(base, options)
+      end
+
+      def to_sql #:nodoc:
+        sql = String.new
+        sql << "#{constraint_name}EXCLUDE "
+        sql << "USING #{base.quote_column_name(options[:using])} " if options[:using]
+        sql << "(" << excludes.collect { |e|
+          "#{e[:element]} WITH #{e[:with] || e[:operator]}"
+        }.join(', ')
+        sql << ")"
+        sql << " WITH (#{options[:index_parameters] || options[:storage_parameters]})" if options[:index_parameters] || options[:storage_parameters]
+        sql << " USING INDEX TABLESPACE #{base.quote_tablespace(options[:tablespace])}" if options[:tablespace]
+        sql << " WHERE (#{options[:conditions] || options[:where]})" if options[:conditions] || options[:where]
+        sql
+      end
+      alias :to_s :to_sql
     end
   end
 end

@@ -257,6 +257,12 @@ module ActiveRecord
         @table_constraints << PostgreSQLForeignKeyConstraint.new(@base, columns, ref_table, *args)
       end
 
+      # Add an EXCLUDE constraint to the table. See PostgreSQLExcludeConstraint
+      # for more details.
+      def exclude(excludes, options = {})
+        @table_constraints << PostgreSQLExcludeConstraint.new(@base, table_name, excludes, options)
+      end
+
       def column_with_constraints(name, type, *args) #:nodoc:
         options = args.extract_options!
         check = options.delete(:check)

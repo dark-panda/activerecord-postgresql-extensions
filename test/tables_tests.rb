@@ -130,4 +130,20 @@ class TablesTests < Test::Unit::TestCase
       %{CREATE TABLE "foo" OF "bar" (\n  "id" serial primary key\n);}
     ], statements)
   end
+
+  def test_exclude_constraint
+    Mig.create_table('foo') do |t|
+      t.text :blort
+      t.exclude({
+        :element => 'length(blort)',
+        :with => '='
+      }, {
+        :name => 'exclude_blort_length'
+      })
+    end
+
+    assert_equal([
+      %{CREATE TABLE "foo" (\n  "id" serial primary key,\n  "blort" text,\n  CONSTRAINT "exclude_blort_length" EXCLUDE (length(blort) WITH =)\n);}
+    ], statements)
+  end
 end
