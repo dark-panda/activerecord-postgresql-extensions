@@ -335,7 +335,8 @@ module ActiveRecord
     #   couple of additional parameters to indexes to govern disk usage and
     #   such. This option is a simple String that lets you insert these
     #   options as necessary. See the PostgreSQL documentation on index
-    #   storage parameters for details.
+    #   storage parameters for details. <tt>:index_parameters</tt> can also
+    #   be used.
     # * <tt>:tablespace</tt> - allows you to specify a tablespace for the
     #   unique index being created. See the PostgreSQL documentation on
     #   tablespaces for details.
@@ -363,7 +364,7 @@ module ActiveRecord
         sql = "#{constraint_name}UNIQUE ("
         sql << Array(columns).collect { |c| base.quote_column_name(c) }.join(', ')
         sql << ")"
-        sql << " WITH (#{options[:storage_parameters]})" if options[:storage_parameters]
+        sql << " WITH (#{options[:storage_parameters] || options[:index_parameters]})" if options[:storage_parameters] || options[:index_parameters]
         sql << " USING INDEX TABLESPACE #{base.quote_tablespace(options[:tablespace])}" if options[:tablespace]
         sql
       end
