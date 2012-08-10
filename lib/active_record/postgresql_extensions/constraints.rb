@@ -304,7 +304,7 @@ module ActiveRecord
     # PostgreSQLAdapter#create_index method similarly. The create_index
     # method adds a couple of PostgreSQL-specific options if you need them.
     #
-    # ==== Examples:
+    # ==== Examples
     #
     #   # using the constraint method:
     #   add_unique_constraint(:foo, [ :fancy_id, :another_fancy_id ])
@@ -471,13 +471,13 @@ module ActiveRecord
     # You can also create new FOREIGN KEY constraints outside of a table
     # definition using PostgreSQLAdapter#add_foreign_key.
     #
-    # ==== Examples:
+    # ==== Examples
     #
     #   add_foreign_key(:foo, :bar_id, :bar)
-    #   # => ALTER TABLE "funk" ADD FOREIGN KEY ("bar_id") REFERENCES "bar";
+    #   # => ALTER TABLE "foo" ADD FOREIGN KEY ("bar_id") REFERENCES "bar";
     #
     #   add_foreign_key(:foo, :bar_id, :bar, :id)
-    #   # => ALTER TABLE "funk" ADD FOREIGN KEY ("bar_id") REFERENCES "bar"("id");
+    #   # => ALTER TABLE "foo" ADD FOREIGN KEY ("bar_id") REFERENCES "bar"("id");
     #
     #   add_foreign_key(:foo, [ :bar_id, :blort_id ], :bar, [ :id, :blort_id ],
     #     :name => 'my_fk', :match => :simple
@@ -506,7 +506,7 @@ module ActiveRecord
     # the <tt>:deferrable</tt>, <tt>:match</tt>, <tt>:on_delete</tt>
     # and <tt>:on_update</tt> options.
     #
-    # === Dropping CHECK Constraints
+    # === Dropping FOREIGN KEY Constraints
     #
     # Like all PostgreSQL constraints, you can use
     # PostgreSQLAdapter#drop_constraint to remove a constraint from a
