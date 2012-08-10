@@ -179,7 +179,7 @@ module ActiveRecord
         sql << ')'
         sql << " WITH (FILLFACTOR = #{options[:fill_factor].to_i})" if options[:fill_factor]
         sql << " TABLESPACE #{base.quote_tablespace(options[:tablespace])}" if options[:tablespace]
-        sql << " WHERE #{options[:conditions] || options[:where]}" if options[:conditions] || options[:where]
+        sql << " WHERE (#{options[:conditions] || options[:where]})" if options[:conditions] || options[:where]
         "#{sql};"
       end
       alias :to_s :to_sql

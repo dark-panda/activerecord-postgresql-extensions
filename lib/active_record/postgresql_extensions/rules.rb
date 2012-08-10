@@ -33,7 +33,7 @@ module ActiveRecord
       # * <tt>:force</tt> - add an <tt>OR REPLACE</tt> clause to the
       #   command.
       # * <tt>:conditions</tt> - a <tt>WHERE</tt> clause to limit the
-      #   rule.
+      #   rule. Alternatively, you can also use the <tt>:where</tt> option.
       #
       # ==== Examples
       #
@@ -79,7 +79,7 @@ module ActiveRecord
         sql = 'CREATE '
         sql << ' OR REPLACE ' if options[:force]
         sql << "RULE #{base.quote_rule(name)} AS ON #{event.to_s.upcase} TO #{base.quote_table_name(table)} "
-        sql << "WHERE #{options[:conditions]} " if options[:conditions]
+        sql << "WHERE #{options[:conditions] || options[:where]} " if options[:conditions] || options[:where]
         sql << "DO #{action.to_s.upcase} "
         sql << if commands.to_s.upcase == 'NOTHING'
           'NOTHING'
