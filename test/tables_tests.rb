@@ -35,16 +35,25 @@ class TablesTests < Test::Unit::TestCase
 
   def test_default_with_expression
     Mig.create_table('foo') do |t|
-      t.integer :foo_id, :default => { :expression => '1 + 1' }
-      t.integer :bar_id, :default => '1 + 1'
+      t.integer :foo_id, :default => { :expression => '10 + 20' }
+      t.integer :bar_id, :default => '20 + 10'
     end
 
-    assert_equal([
+    if ActiveRecord::VERSION::STRING >= "3.2"
+      assert_equal([
       %{CREATE TABLE "foo" (
   "id" serial primary key,
-  "foo_id" integer DEFAULT 1 + 1,
-  "bar_id" integer DEFAULT '1 + 1'
+  "foo_id" integer DEFAULT 10 + 20,
+  "bar_id" integer DEFAULT 20
 );} ], statements)
+    else
+      assert_equal([
+      %{CREATE TABLE "foo" (
+  "id" serial primary key,
+  "foo_id" integer DEFAULT 10 + 20,
+  "bar_id" integer DEFAULT '20 + 10'
+);} ], statements)
+    end
   end
 
   def test_like
