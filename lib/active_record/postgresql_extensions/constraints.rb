@@ -110,6 +110,23 @@ module ActiveRecord
             "CONSTRAINT #{base.quote_generic(options[:name])} "
           end
         end
+
+        def storage_parameters
+          if options[:index_parameters] || options[:storage_parameters]
+            " WITH (#{options[:index_parameters] || options[:storage_parameters]})"
+          else
+            ''
+          end
+        end
+        alias :index_parameters :storage_parameters
+
+        def using_tablespace
+          if options[:tablespace]
+            " USING INDEX TABLESPACE #{base.quote_tablespace(options[:tablespace])}"
+          else
+            ''
+          end
+        end
     end
 
     # Creates CHECK constraints for PostgreSQL tables.
@@ -375,8 +392,8 @@ module ActiveRecord
         sql = "#{constraint_name}UNIQUE ("
         sql << Array(columns).collect { |c| base.quote_column_name(c) }.join(', ')
         sql << ")"
-        sql << " WITH (#{options[:storage_parameters] || options[:index_parameters]})" if options[:storage_parameters] || options[:index_parameters]
-        sql << " USING INDEX TABLESPACE #{base.quote_tablespace(options[:tablespace])}" if options[:tablespace]
+        sql << storage_parameters
+        sql << using_tablespace
         sql
       end
       alias :to_s :to_sql
@@ -668,8 +685,8 @@ module ActiveRecord
           "#{e[:element]} WITH #{e[:with] || e[:operator]}"
         }.join(', ')
         sql << ")"
-        sql << " WITH (#{options[:index_parameters] || options[:storage_parameters]})" if options[:index_parameters] || options[:storage_parameters]
-        sql << " USING INDEX TABLESPACE #{base.quote_tablespace(options[:tablespace])}" if options[:tablespace]
+        sql << storage_parameters
+        sql << using_tablespace
         sql << " WHERE (#{options[:conditions] || options[:where]})" if options[:conditions] || options[:where]
         sql
       end
