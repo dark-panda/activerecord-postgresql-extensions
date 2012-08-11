@@ -99,8 +99,22 @@ class TablesTests < Test::Unit::TestCase
     Mig.create_table('foo', :of_type => 'bar')
 
     assert_equal([
-      %{CREATE TABLE "foo" OF "bar" (\n  "id" serial primary key\n);}
+      %{CREATE TABLE "foo" OF "bar";}
     ], statements)
+
+    assert_raise(ArgumentError) do
+      Mig.create_table('foo', :of_type => 'bar') do |t|
+        t.integer :what
+      end
+    end
+
+    assert_raise(ArgumentError) do
+      Mig.create_table('foo', :of_type => 'bar', :like => :something)
+    end
+
+    assert_raise(ArgumentError) do
+      Mig.create_table('foo', :of_type => 'bar', :inherits => :something)
+    end
   end
 
   def test_exclude_constraint

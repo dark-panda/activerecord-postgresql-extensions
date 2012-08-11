@@ -178,27 +178,48 @@ module ActiveRecord
         @table_constraints = Array.new
         @table_name, @options = table_name, options
         super(base)
-
-        self.primary_key(
-          options[:primary_key] || Base.get_primary_key(table_name)
-        ) unless options[:id] == false
       end
 
       def to_sql #:nodoc:
+        if self.options[:of_type]
+          if !@columns.empty?
+            raise ArgumentError.new("Cannot specify columns while using the :of_type option")
+          elsif options[:like]
+            raise ArgumentError.new("Cannot specify both the :like and :of_type options")
+          elsif options[:inherits]
+            raise ArgumentError.new("Cannot specify both the :inherits and :of_type options")
+          else
+            options[:id] = false
+          end
+        end
+
+        unless options[:id] == false
+          self.primary_key(options[:primary_key] || Base.get_primary_key(table_name))
+
+          # ensures that the primary key column is first.
+          @columns.unshift(@columns.pop)
+        end
+
         sql = 'CREATE '
         sql << 'TEMPORARY ' if options[:temporary]
         sql << 'UNLOGGED ' if options[:unlogged]
         sql << 'TABLE '
         sql << 'IF NOT EXISTS ' if options[:if_not_exists]
-        sql << "#{base.quote_table_name(table_name)} "
-        sql << "OF #{base.quote_table_name(options[:of_type])} " if options[:of_type]
-        sql << "(\n  "
+        sql << "#{base.quote_table_name(table_name)}"
+        sql << " OF #{base.quote_table_name(options[:of_type])}" if options[:of_type]
 
-        ary = @columns.collect(&:to_sql)
-        ary << @like if defined?(@like) && @like
+        ary = []
+        if !options[:of_type]
+          ary << @columns.collect(&:to_sql)
+          ary << @like if defined?(@like) && @like
+        end
         ary << @table_constraints unless @table_constraints.empty?
-        sql << ary * ",\n  "
-        sql << "\n)"
+
+        unless ary.empty?
+          sql << " (\n  "
+          sql << ary * ",\n  "
+          sql << "\n)"
+        end
 
         sql << "\nINHERITS (" << Array(options[:inherits]).collect { |i| base.quote_table_name(i) }.join(', ') << ')' if options[:inherits]
         sql << "\nON COMMIT #{options[:on_commit].to_s.upcase.gsub(/_/, ' ')}" if options[:on_commit]
