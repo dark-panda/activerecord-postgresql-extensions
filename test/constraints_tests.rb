@@ -60,6 +60,52 @@ EOF
     ], statements)
   end
 
+  def test_foreign_key_in_column_definition
+    Mig.create_table('foo') do |t|
+      t.integer :foo_id, :references => {
+        :table => :foo,
+        :on_delete => :set_null,
+        :on_update => :cascade
+      }
+
+      t.integer :bar_id, :references => :bar
+
+      t.integer :baz_id, :references => [ :baz ]
+    end
+
+    assert_equal([
+      %{CREATE TABLE "foo" (
+  "id" serial primary key,
+  "foo_id" integer,
+  "bar_id" integer,
+  "baz_id" integer,
+  FOREIGN KEY ("foo_id") REFERENCES "foo" ON DELETE SET NULL ON UPDATE CASCADE,
+  FOREIGN KEY ("bar_id") REFERENCES "bar",
+  FOREIGN KEY ("baz_id") REFERENCES "baz"
+);} ], statements)
+  end
+
+  def test_foreign_key_in_table_definition
+    Mig.create_table('foo') do |t|
+      t.integer :schabba_id
+      t.integer :doo_id
+
+      t.foreign_key :schabba_id, :bar
+      t.foreign_key :doo_id, :baz
+      t.foreign_key [ :schabba_id, :doo_id ], :bar, [ :schabba_id, :doo_id ]
+    end
+
+    assert_equal([
+      %{CREATE TABLE "foo" (
+  "id" serial primary key,
+  "schabba_id" integer,
+  "doo_id" integer,
+  FOREIGN KEY ("schabba_id") REFERENCES "bar",
+  FOREIGN KEY ("doo_id") REFERENCES "baz",
+  FOREIGN KEY ("schabba_id", "doo_id") REFERENCES "bar" ("schabba_id", "doo_id")
+);} ], statements)
+  end
+
   def test_add_foreign_key
     Mig.add_foreign_key(:foo, :bar_id, :bar)
     Mig.add_foreign_key(:foo, :bar_id, :bar, :ogc_fid, :name => 'bar_fk')
