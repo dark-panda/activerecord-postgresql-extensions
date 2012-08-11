@@ -132,6 +132,56 @@ EOF
     ], statements)
   end
 
+  def test_check_constraint_in_column_definition
+    Mig.create_table('foo') do |t|
+      t.integer :foo_id, :check => "foo_id != 1"
+      t.integer :bar_id, :check => { :expression => "bar_id != 1", :name => "bar_id_not_1" }
+      t.integer :baz_id, :check => [ "baz_id != 1", {
+        :expression => "baz_id > 10",
+        :name => "baz_id_gt_10"
+      } ]
+    end
+
+    assert_equal([
+      %{CREATE TABLE "foo" (
+  "id" serial primary key,
+  "foo_id" integer,
+  "bar_id" integer,
+  "baz_id" integer,
+  CHECK (foo_id != 1),
+  CONSTRAINT "bar_id_not_1" CHECK (bar_id != 1),
+  CHECK (baz_id != 1),
+  CONSTRAINT "baz_id_gt_10" CHECK (baz_id > 10)
+);} ], statements)
+  end
+
+  def test_check_constraint_in_table_definition
+    Mig.create_table('foo') do |t|
+      t.integer :foo_id
+      t.integer :bar_id
+      t.integer :baz_id
+
+      t.check_constraint "foo_id != 1"
+      t.check_constraint "bar_id != 1", :name => "bar_id_not_1"
+      t.check_constraint "baz_id != 1"
+      t.check_constraint "baz_id > 10", {
+        :name => "baz_id_gt_10"
+      }
+    end
+
+    assert_equal([
+      %{CREATE TABLE "foo" (
+  "id" serial primary key,
+  "foo_id" integer,
+  "bar_id" integer,
+  "baz_id" integer,
+  CHECK (foo_id != 1),
+  CONSTRAINT "bar_id_not_1" CHECK (bar_id != 1),
+  CHECK (baz_id != 1),
+  CONSTRAINT "baz_id_gt_10" CHECK (baz_id > 10)
+);} ], statements)
+  end
+
   def test_add_check_constraint
     Mig.add_check_constraint(:foo, 'length(name) < 100')
     Mig.add_check_constraint(:foo, 'length(name) < 100', :name => 'name_length_check')
