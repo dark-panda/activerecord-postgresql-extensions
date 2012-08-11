@@ -47,11 +47,12 @@ module ActiveRecord
 
       # Adds a FOREIGN KEY constraint to the table. See
       # PostgreSQLForeignKeyConstraint for details.
-      def add_foreign_key(table, columns, ref_table, *args)
+      def add_foreign_key_constraint(table, columns, ref_table, *args)
         sql = "ALTER TABLE #{quote_table_name(table)} ADD "
         sql << PostgreSQLForeignKeyConstraint.new(self, columns, ref_table, *args).to_s
         execute("#{sql};")
       end
+      alias :add_foreign_key :add_foreign_key_constraint
 
       # Adds an EXCLUDE constraint to the table. See
       # PostgreSQLExcludeConstraint for details.
