@@ -271,7 +271,13 @@ module ActiveRecord
         column_without_constraints(name, type, options)
 
         if check
-          @table_constraints << Array(check).collect do |c|
+          check = if !check.is_a?(Array)
+            [ check ]
+          else
+            check
+          end
+
+          @table_constraints << check.collect do |c|
             if c.is_a?(Hash)
               PostgreSQLCheckConstraint.new(@base, c.delete(:expression), c)
             else
