@@ -9,17 +9,29 @@ require 'test/unit'
 require File.join(File.dirname(__FILE__), *%w{ .. lib activerecord-postgresql-extensions })
 
 ActiveRecord::Base.configurations = {
-  'arunit' => {
-    :adapter => 'postgresql',
-    :database => 'postgresql_extensions_unit_tests',
-    :min_messages => 'warning'
-  }
+  'arunit' => {}
 }
 
-ActiveRecord::Base.establish_connection 'arunit'
-#ActiveRecord::Base.connection.drop_database('postgresql_extensions_unit_tests')
-#ActiveRecord::Base.connection.create_database('postgresql_extensions_unit_tests')
+%w{
+  database.yml
+  local_database.yml
+}.each do |file|
+  file = File.join('test', file)
 
+  next unless File.exists?(file)
+
+  configuration = YAML.load(File.read(file))
+
+  if configuration['arunit']
+    ActiveRecord::Base.configurations['arunit'].merge!(configuration['arunit'])
+  end
+
+  if defined?(JRUBY_VERSION) && configuration['jdbc']
+    ActiveRecord::Base.configurations['arunit'].merge!(configuration['jdbc'])
+  end
+end
+
+ActiveRecord::Base.establish_connection 'arunit'
 ARBC = ActiveRecord::Base.connection
 
 puts "Testing against ActiveRecord #{Gem.loaded_specs['activerecord'].version.to_s}"

@@ -1,0 +1,17 @@
+---
+# To modify the test database parameters, create a new file called
+# local_database.yml and go nuts with settings. The "jdbc" settings
+# are merged into the "arunit" settings as JDBC works over a TCP
+# socket and those sorts of connections generally require some user
+# credentials.
+
+arunit:
+  adapter: "postgresql"
+  database: "postgresql_extensions_unit_tests"
+  min_messages: "warning"
+  schema_search_path: "public"
+
+jdbc:
+  host: "localhost"
+  adapter: "jdbcpostgresql"
+
