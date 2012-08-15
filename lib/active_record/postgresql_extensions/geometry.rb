@@ -1,5 +1,6 @@
 
 require 'active_record/connection_adapters/postgresql_adapter'
+require 'active_record/postgresql_extensions/postgis'
 
 module ActiveRecord
   class InvalidGeometryType < ActiveRecordError #:nodoc:
@@ -8,46 +9,71 @@ module ActiveRecord
     end
   end
 
+  class InvalidSpatialColumnType < ActiveRecordError #:nodoc:
+    def initialize(type)
+      super("Invalid PostGIS spatial column type - #{type}")
+    end
+  end
+
   class InvalidGeometryDimensions < ActiveRecordError #:nodoc:
   end
 
   module ConnectionAdapters
     class PostgreSQLAdapter < AbstractAdapter
-      def native_database_types_with_geometry #:nodoc:
-        native_database_types_without_geometry.merge({
-          :geometry => { :name => 'geometry' }
+      def native_database_types_with_spatial_types #:nodoc:
+        native_database_types_without_spatial_types.merge({
+          :geometry => { :name => 'geometry' },
+          :geography => { :name => 'geography' }
         })
       end
-      alias_method_chain :native_database_types, :geometry
+      alias_method_chain :native_database_types, :spatial_types
+    end
+
+    class PostgreSQLGeometryColumnDefinition
     end
 
     class PostgreSQLTableDefinition < TableDefinition
-      attr_reader :geometry_columns
-
-      # This is a special geometry type for the PostGIS extension's
-      # geometry data type. It is used in a table definition to define
-      # a geometry column.
+      # This is a special spatial type for the PostGIS extension's
+      # data types. It is used in a table definition to define
+      # a spatial column.
       #
-      # Essentially this method works like a wrapper around the PostGIS
-      # AddGeometryColumn function. It can create the geometry column,
-      # add CHECK constraints and create a GiST index on the column
-      # all in one go.
+      # Depending on the version of PostGIS being used, we'll try to create
+      # geometry columns in a post-2.0-ish, typmod-based way or a pre-2.0-ish
+      # AddGeometryColumn-based way. We can also add CHECK constraints and
+      # create a GiST index on the column all in one go.
+      #
+      # In versions of PostGIS prior to 2.0, geometry columns are created using
+      # the AddGeometryColumn and will created with CHECK constraints where
+      # appropriate and entries to the <tt>geometry_columns</tt> will be
+      # updated accordingly.
+      #
+      # In versions of PostGIS after 2.0, geometry columns are creating using
+      # typmod specifiers. CHECK constraints can still be created, but their
+      # creation must be forced using the <tt>:force_constraints</tt> option.
+      #
+      # The <tt>geometry</tt> and <tt>geography</tt> methods are shortcuts to
+      # calling the <tt>spatial</tt> method with the <tt>:spatial_column_type</tt>
+      # option set accordingly.
       #
       # ==== Options
       #
+      # * <tt>:spatial_column_type</tt> - the column type. This value can
+      #   be one of <tt>:geometry</tt> or <tt>:geography</tt>. This value
+      #   doesn't refer to the spatial type used by the column, but rather
+      #   by the actual column type itself.
       # * <tt>:geometry_type</tt> - set the geometry type. The actual
-      #   data type is always "geometry"; this option is used in the
-      #   <tt>geometry_columns</tt> table and on the CHECK constraints
-      #   to enforce the geometry type allowed in the field. The default
-      #   is "GEOMETRY". See the PostGIS documentation for valid types,
-      #   or check out the GEOMETRY_TYPES constant in this extension.
+      #   data type is either "geometry" or "geography"; this option refers to
+      #   the spatial type being used.
       # * <tt>:add_constraints</tt> - automatically creates the CHECK
       #   constraints used to enforce ndims, srid and geometry type.
       #   The default is true.
+      # * <tt>:force_constraints</tt> - forces the creation of CHECK
+      #   constraints in versions of PostGIS post-2.0.
       # * <tt>:add_geometry_columns_entry</tt> - automatically adds
       #   an entry to the <tt>geometry_columns</tt> table. We will
       #   try to delete any existing match in <tt>geometry_columns</tt>
-      #   before inserting. The default is true.
+      #   before inserting. The default is true. This value is ignored in
+      #   versions of PostGIS post-2.0.
       # * <tt>:create_gist_index</tt> - automatically creates a GiST
       #   index for the new geometry column. This option accepts either
       #   a true/false expression or a String. If the value is a String,
@@ -58,15 +84,20 @@ module ActiveRecord
       #   <tt>:geometry_type</tt> ends in an "m" (for "measured
       #   geometries" the default is 3); for everything else, it is 2.
       # * <tt>:srid</tt> - the SRID, a.k.a. the Spatial Reference
-      #   Identifier. The default is -1, which is a special SRID
-      #   PostGIS in lieu of a real SRID.
-      def geometry(column_name, opts = {})
+      #   Identifier. The default depends on the version of PostGIS being used
+      #   and the spatial column type being used. Refer to the PostGIS docs
+      #   for the specifics, but generally this means either a value of -1
+      #   for versions of PostGIS prior to 2.0 for geometry columns and a value
+      #   of 0 for versions post-2.0 and for all geography columns.
+      def spatial(column_name, opts = {})
         opts = {
+          :spatial_column_type => :geometry,
           :geometry_type => :geometry,
           :add_constraints => true,
+          :force_constraints => false,
           :add_geometry_columns_entry => true,
           :create_gist_index => true,
-          :srid => -1
+          :srid => ActiveRecord::PostgreSQLExtensions::PostGIS.UNKNOWN_SRID
         }.merge(opts)
 
         if opts[:ndims].blank?
@@ -77,25 +108,41 @@ module ActiveRecord
           end
         end
 
+        assert_valid_spatial_column_type(opts[:spatial_column_type])
         assert_valid_geometry_type(opts[:geometry_type])
         assert_valid_ndims(opts[:ndims], opts[:geometry_type])
 
-        column = self[column_name] || ColumnDefinition.new(base, column_name, :geometry)
+        column_type = if ActiveRecord::PostgreSQLExtensions::PostGIS.VERSION[:lib] < '2.0'
+          opts[:spatial_column_type]
+        else
+          column_args = [ opts[:geometry_type].to_s.upcase ]
+
+          if ![ 0, -1 ].include?(opts[:srid])
+            column_args << opts[:srid]
+          end
+
+          "#{opts[:spatial_column_type]}(#{column_args.join(', ')})"
+        end
+
+        column = self[column_name] || ColumnDefinition.new(base, column_name, column_type)
         column.default = opts[:default]
         column.null = opts[:null]
 
         unless @columns.include?(column)
           @columns << column
-          if opts[:add_constraints]
+          if opts[:add_constraints] && (
+            ActiveRecord::PostgreSQLExtensions::PostGIS.VERSION[:lib] < '2.0' ||
+            opts[:force_constraints]
+          )
             @table_constraints << PostgreSQLCheckConstraint.new(
               base,
-              "srid(#{base.quote_column_name(column_name)}) = (#{opts[:srid].to_i})",
+              "ST_srid(#{base.quote_column_name(column_name)}) = (#{opts[:srid].to_i})",
               :name => "enforce_srid_#{column_name}"
             )
 
             @table_constraints << PostgreSQLCheckConstraint.new(
               base,
-              "ndims(#{base.quote_column_name(column_name)}) = #{opts[:ndims].to_i}",
+              "ST_ndims(#{base.quote_column_name(column_name)}) = #{opts[:ndims].to_i}",
               :name => "enforce_dims_#{column_name}"
             )
 
@@ -122,7 +169,10 @@ module ActiveRecord
 
         @post_processing ||= Array.new
 
-        if opts[:add_geometry_columns_entry]
+        if opts[:add_geometry_columns_entry] &&
+          opts[:spatial_column_type].to_s != 'geography' &&
+          ActiveRecord::PostgreSQLExtensions::PostGIS.VERSION[:lib] < '2.0'
+
           @post_processing << sprintf(
             "DELETE FROM \"geometry_columns\" WHERE f_table_catalog = '' AND " +
             "f_table_schema = %s AND " +
@@ -154,13 +204,27 @@ module ActiveRecord
           @post_processing << PostgreSQLIndexDefinition.new(
             base,
             index_name,
-            current_table_name,
+            { current_schema => current_table_name },
             column_name,
             :using => :gist
           ).to_s
         end
 
         self
+      end
+
+      def geometry(column_name, opts = {})
+        self.spatial(column_name, opts)
+      end
+
+      def geography(column_name, opts = {})
+        opts = {
+          :srid => ActiveRecord::PostgreSQLExtensions::PostGIS.UNKNOWN_SRIDS[:geography]
+        }.merge(opts)
+
+        self.spatial(column_name, opts.merge(
+          :spatial_column_type => :geography
+        ))
       end
 
       private
@@ -173,6 +237,7 @@ module ActiveRecord
           'MULTIPOLYGON',
           'LINESTRING',
           'MULTILINESTRING',
+          'GEOMETRYM',
           'GEOMETRYCOLLECTIONM',
           'POINTM',
           'MULTIPOINTM',
@@ -192,9 +257,20 @@ module ActiveRecord
           'MULTISURFACEM'
         ].freeze
 
+        SPATIAL_COLUMN_TYPES = [
+          'geometry',
+          'geography'
+        ].freeze
+
         def assert_valid_geometry_type(type)
           if !GEOMETRY_TYPES.include?(type.to_s.upcase)
             raise ActiveRecord::InvalidGeometryType.new(type)
+          end unless type.nil?
+        end
+
+        def assert_valid_spatial_column_type(type)
+          if !SPATIAL_COLUMN_TYPES.include?(type.to_s)
+            raise ActiveRecord::InvalidSpatialColumnType.new(type)
           end unless type.nil?
         end
 

@@ -27,6 +27,12 @@ if postgresql_version = ARBC.query('SELECT version()').flatten.to_s
   puts "PostgreSQL info from version(): #{postgresql_version}"
 end
 
+if postgis_version = ActiveRecord::PostgreSQLExtensions::PostGIS.VERSION[:lib]
+  puts "PostGIS info from postgis_full_version(): #{postgis_version}"
+else
+  puts "PostGIS not installed"
+end
+
 class ActiveRecord::ConnectionAdapters::PostgreSQLAdapter
   def statements
     @statements ||= []

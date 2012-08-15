@@ -687,6 +687,8 @@ module ActiveRecord
         case field_type
           when 'geometry'
             :geometry
+          when 'geography'
+            :geography
           when 'tsvector'
             :tsvector
           else
