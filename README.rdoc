@@ -24,6 +24,11 @@ PostgreSQL adapter including:
   as necessary and are sane enough that they won't try to overwrite existing
   associations.
 
+* support for some PostGIS functionality including some support for using
+  PostGIS columns in migrations. For manipulating PostGIS data, see our
+  geos-extensions gem at https://github.com/zoocasa/geos-extensions or
+  the RGeo project at https://github.com/dazuma/rgeo .
+
 == First Public Release Notice!
 
 This is the first public release of this gem, so while it has been kind to us
