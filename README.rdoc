@@ -12,7 +12,7 @@ PostgreSQL adapter including:
   functions, sequences, views, schemas and triggers.
 
 * better support for creating indexes with expressions so you can use functions
-  and GIST and GIN indexes.
+  and GiST and GIN indexes.
 
 * support for manipulating role privileges.
 
@@ -20,7 +20,7 @@ PostgreSQL adapter including:
   creating tables.
 
 * support for automatically detecting foreign key relationships and building
-  ActiveRecord associations accordingly. This associations can be overriden
+  ActiveRecord associations accordingly. This associations can be overridden
   as necessary and are sane enough that they won't try to overwrite existing
   associations.
 
