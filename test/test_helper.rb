@@ -6,8 +6,10 @@ gem 'activerecord', ACTIVERECORD_GEM_VERSION
 
 require 'active_record'
 require 'test/unit'
+require 'logger'
 require File.join(File.dirname(__FILE__), *%w{ .. lib activerecord-postgresql-extensions })
 
+ActiveRecord::Base.logger = Logger.new("debug.log") if ENV['ENABLE_LOGGER']
 ActiveRecord::Base.configurations = {
   'arunit' => {}
 }
@@ -51,12 +53,14 @@ class ActiveRecord::ConnectionAdapters::PostgreSQLAdapter
   end
 
   def execute_with_statement_capture(sql, name = nil)
+    ActiveRecord::Base.logger.debug(sql) if ENV['ENABLE_LOGGER']
     statements << sql
     #execute_without_statement_capture(sql, name)
   end
   alias_method_chain :execute, :statement_capture
 
   def query_with_statement_capture(sql, name = nil)
+    ActiveRecord::Base.logger.debug(sql) if ENV['ENABLE_LOGGER']
     statements << sql
     #query_without_statement_capture(sql, name)
   end
