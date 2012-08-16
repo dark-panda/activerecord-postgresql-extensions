@@ -1,7 +1,7 @@
 
 module ActiveRecord
   module PostgreSQLExtensions
-    VERSION = "0.0.13.dev"
+    VERSION = "0.1.0"
   end
 end
 
