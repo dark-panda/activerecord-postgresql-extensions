@@ -33,4 +33,3 @@ dirname = File.join(File.dirname(__FILE__), *%w{ active_record postgresql_extens
 end
 
 ActiveRecord::Base.send(:include, ActiveRecord::PostgreSQLExtensions::ForeignKeyAssociations)
-

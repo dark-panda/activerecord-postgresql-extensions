@@ -1,4 +1,6 @@
 
+require 'active_record/postgresql_extensions/utils'
+
 module ActiveRecord
   class InvalidForeignKeyAction < ActiveRecordError #:nodoc:
     def initialize(action)
@@ -652,18 +654,7 @@ module ActiveRecord
       attr_accessor :excludes
 
       def initialize(base, table, excludes, options = {}) #:nodoc:
-        @excludes = case excludes
-          when Hash
-            [ excludes ]
-          when Array
-            if excludes.detect { |e| !e.is_a?(Hash) }
-              raise ArgumentError.new("Expected an Array of Hashes for excludes")
-            else
-              excludes
-            end
-          else
-            raise ArgumentError.new("Expected either a Hash or an Array of Hashes")
-        end
+        @excludes = ActiveRecord::PostgreSQLExtensions::Utils.hash_or_array_of_hashes(excludes)
 
         super(base, options)
       end
