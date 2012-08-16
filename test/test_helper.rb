@@ -53,31 +53,47 @@ class ActiveRecord::ConnectionAdapters::PostgreSQLAdapter
   end
 
   def execute_with_statement_capture(sql, name = nil)
-    ActiveRecord::Base.logger.debug(sql) if ENV['ENABLE_LOGGER']
-    statements << sql
+    PostgreSQLExtensionsTestHelper.add_statement(sql)
     #execute_without_statement_capture(sql, name)
   end
   alias_method_chain :execute, :statement_capture
 
   def query_with_statement_capture(sql, name = nil)
-    ActiveRecord::Base.logger.debug(sql) if ENV['ENABLE_LOGGER']
-    statements << sql
+    PostgreSQLExtensionsTestHelper.add_statement(sql)
     #query_without_statement_capture(sql, name)
   end
   alias_method_chain :query, :statement_capture
-
-  def clear_statements!
-    @statements = []
-  end
 end
 
 module PostgreSQLExtensionsTestHelper
+  class << self
+    def statements
+      @statements ||= []
+    end
+
+    def clear_statements!
+      @statements = []
+    end
+
+    def add_statement(sql)
+      case sql
+        when /SHOW search_path;/
+          # ignore
+        else
+          ActiveRecord::Base.logger.debug(sql) if ENV['ENABLE_LOGGER']
+          self.statements << sql
+      end
+
+      sql
+    end
+  end
+
   def clear_statements!
-    ActiveRecord::Base.connection.clear_statements!
+    PostgreSQLExtensionsTestHelper.clear_statements!
   end
 
   def statements
-    ActiveRecord::Base.connection.statements
+    PostgreSQLExtensionsTestHelper.statements
   end
 
   def setup

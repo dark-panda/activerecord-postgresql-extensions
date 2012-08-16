@@ -60,7 +60,7 @@ class AdapterExtensionTests < Test::Unit::TestCase
       %{SET ROLE "foo";},
       %{SET LOCAL ROLE "foo";},
       %{SET SESSION ROLE "foo";}
-    ], ARBC.statements)
+    ], statements)
 
     assert_raise(ArgumentError) do
       ARBC.set_role('foo', :duration => :nonsense)
@@ -69,7 +69,7 @@ class AdapterExtensionTests < Test::Unit::TestCase
 
   def test_reset_role
     ARBC.reset_role
-    assert_equal([ 'RESET ROLE;' ], ARBC.statements)
+    assert_equal([ 'RESET ROLE;' ], statements)
   end
 
   def test_current_role
@@ -79,7 +79,7 @@ class AdapterExtensionTests < Test::Unit::TestCase
     assert_equal([
       'SELECT current_role;',
       'SELECT current_role;'
-    ], ARBC.statements)
+    ], statements)
   end
 
   def test_enable_triggers
@@ -92,7 +92,7 @@ class AdapterExtensionTests < Test::Unit::TestCase
       %{ALTER TABLE "foo" ENABLE TRIGGER "bar";},
       %{ALTER TABLE "foo" ENABLE TRIGGER "bar";},
       %{ALTER TABLE "foo" ENABLE TRIGGER "baz";}
-    ], ARBC.statements)
+    ], statements)
   end
 
   def test_disable_triggers
@@ -105,7 +105,7 @@ class AdapterExtensionTests < Test::Unit::TestCase
       %{ALTER TABLE "foo" DISABLE TRIGGER "bar";},
       %{ALTER TABLE "foo" DISABLE TRIGGER "bar";},
       %{ALTER TABLE "foo" DISABLE TRIGGER "baz";}
-    ], ARBC.statements)
+    ], statements)
   end
 
   def test_without_triggers
@@ -139,6 +139,6 @@ class AdapterExtensionTests < Test::Unit::TestCase
       %{ALTER TABLE "foo" DISABLE TRIGGER "baz";},
       %{ALTER TABLE "foo" ENABLE TRIGGER "bar";},
       %{ALTER TABLE "foo" ENABLE TRIGGER "baz";}
-    ], ARBC.statements)
+    ], statements)
   end
 end

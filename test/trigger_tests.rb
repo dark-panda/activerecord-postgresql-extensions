@@ -15,7 +15,7 @@ class TriggerTests < Test::Unit::TestCase
       %{ALTER TABLE "foos" ENABLE TRIGGER "bar";},
       %{ALTER TABLE "foos" ENABLE TRIGGER "bar";},
       %{ALTER TABLE "foos" ENABLE TRIGGER "baz";}
-    ], ARBC.statements)
+    ], statements)
   end
 
   def test_disable_triggers
@@ -28,7 +28,7 @@ class TriggerTests < Test::Unit::TestCase
       %{ALTER TABLE "foos" DISABLE TRIGGER "bar";},
       %{ALTER TABLE "foos" DISABLE TRIGGER "bar";},
       %{ALTER TABLE "foos" DISABLE TRIGGER "baz";}
-    ], ARBC.statements)
+    ], statements)
   end
 
   def test_without_triggers
@@ -62,7 +62,7 @@ class TriggerTests < Test::Unit::TestCase
       %{ALTER TABLE "foos" DISABLE TRIGGER "baz";},
       %{ALTER TABLE "foos" ENABLE TRIGGER "bar";},
       %{ALTER TABLE "foos" ENABLE TRIGGER "baz";}
-    ], ARBC.statements)
+    ], statements)
   end
 
   def test_create_trigger # (name, called, events, table, function, options = {})
@@ -70,7 +70,7 @@ class TriggerTests < Test::Unit::TestCase
 
     assert_equal([
       %{CREATE TRIGGER "foo" BEFORE UPDATE ON "bar" FOR EACH ROW EXECUTE PROCEDURE "do_it"();}
-    ], ARBC.statements)
+    ], statements)
   end
 
   def test_drop_trigger # (name, table, options = {})
@@ -80,6 +80,6 @@ class TriggerTests < Test::Unit::TestCase
     assert_equal([
       %{DROP TRIGGER "bar" ON "foo";},
       %{DROP TRIGGER IF EXISTS "bar" ON "foo" CASCADE;}
-    ], ARBC.statements)
+    ], statements)
   end
 end
