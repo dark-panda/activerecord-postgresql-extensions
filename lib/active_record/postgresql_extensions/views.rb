@@ -59,7 +59,7 @@ module ActiveRecord
 
       # Renames a view.
       def rename_view(name, new_name, options = {})
-        execute "ALTER TABLE #{quote_view_name(name)} RENAME TO #{quote_generic_ignore_schema(new_name)};"
+        execute "ALTER TABLE #{quote_view_name(name)} RENAME TO #{quote_generic_ignore_scoped_schema(new_name)};"
       end
 
       # Change the ownership of a view.

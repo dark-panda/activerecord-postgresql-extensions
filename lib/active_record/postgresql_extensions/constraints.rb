@@ -534,7 +534,7 @@ module ActiveRecord
         assert_valid_action(options[:on_update]) if options[:on_update]
         assert_valid_deferrable_option(options[:deferrable])
         @columns, @ref_table, @ref_columns = columns, ref_table, ref_columns
-        @schema = base.current_schema
+        @schema = base.current_scoped_schema
         super(base, options)
       end
 

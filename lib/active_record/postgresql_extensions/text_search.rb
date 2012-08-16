@@ -16,7 +16,7 @@ module ActiveRecord
 
         sql = "CREATE TEXT SEARCH CONFIGURATION #{quote_generic_with_schema(name)} ("
 
-        ignore_schema do
+        ignore_scoped_schema do
           sql << if options[:parser_name]
             "PARSER = #{quote_generic_with_schema(options[:parser_name])}"
           else

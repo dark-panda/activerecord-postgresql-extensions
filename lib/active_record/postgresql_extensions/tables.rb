@@ -144,7 +144,7 @@ module ActiveRecord
       # capabilities. You can still access the original method via
       # original_rename_table.
       def rename_table(name, new_name, options = {})
-        execute "ALTER TABLE #{quote_table_name(name)} RENAME TO #{quote_generic_ignore_schema(new_name)};"
+        execute "ALTER TABLE #{quote_table_name(name)} RENAME TO #{quote_generic_ignore_scoped_schema(new_name)};"
       end
 
       private

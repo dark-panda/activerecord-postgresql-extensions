@@ -158,10 +158,10 @@ module ActiveRecord
 
         # We want to split up the schema and the table name for the
         # upcoming geometry_columns rows and GiST index.
-        current_schema, current_table_name = if self.table_name.is_a?(Hash)
+        current_scoped_schema, current_table_name = if self.table_name.is_a?(Hash)
           [ self.table_name.keys.first, self.table_name.values.first ]
-        elsif base.current_schema
-          [ base.current_schema, self.table_name ]
+        elsif base.current_scoped_schema
+          [ base.current_scoped_schema, self.table_name ]
         else
           schema, table_name = base.extract_schema_and_table_names(self.table_name)
           [ schema || 'public', table_name ]
@@ -178,14 +178,14 @@ module ActiveRecord
             "f_table_schema = %s AND " +
             "f_table_name = %s AND " +
             "f_geometry_column = %s;",
-            base.quote(current_schema.to_s),
+            base.quote(current_scoped_schema.to_s),
             base.quote(current_table_name.to_s),
             base.quote(column_name.to_s)
           )
 
           @post_processing << sprintf(
             "INSERT INTO \"geometry_columns\" VALUES ('', %s, %s, %s, %d, %d, %s);",
-            base.quote(current_schema.to_s),
+            base.quote(current_scoped_schema.to_s),
             base.quote(current_table_name.to_s),
             base.quote(column_name.to_s),
             opts[:ndims].to_i,
@@ -204,7 +204,7 @@ module ActiveRecord
           @post_processing << PostgreSQLIndexDefinition.new(
             base,
             index_name,
-            { current_schema => current_table_name },
+            { current_scoped_schema => current_table_name },
             column_name,
             :using => :gist
           ).to_s

@@ -13,15 +13,15 @@ class AdapterExtensionTests < Test::Unit::TestCase
     assert_equal(%{"foo"."bar"}, ARBC.quote_table_name(:foo => :bar))
   end
 
-  def test_quote_table_name_with_current_schema
+  def test_quote_table_name_with_current_scoped_schema
     assert_equal(%{"foo"."bar"}, ARBC.with_schema(:foo) {
       ARBC.quote_table_name(:bar)
     })
   end
 
-  def test_quote_table_name_with_current_schema_ignored
+  def test_quote_table_name_with_current_scoped_schema_ignored
     assert_equal(%{"bar"}, ARBC.with_schema(:foo) {
-      ARBC.ignore_schema {
+      ARBC.ignore_scoped_schema {
         ARBC.quote_table_name(:bar)
       }
     })

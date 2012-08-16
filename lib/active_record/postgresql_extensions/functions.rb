@@ -315,7 +315,7 @@ module ActiveRecord
           sql = "ALTER FUNCTION #{base.quote_function(new_name)}(#{args}) "
           sql << case k
             when :rename_to
-              "RENAME TO #{base.quote_generic_ignore_schema(v)}".tap { @new_name = v }
+              "RENAME TO #{base.quote_generic_ignore_scoped_schema(v)}".tap { @new_name = v }
             when :owner_to
               "OWNER TO #{base.quote_role(v)}"
             when :set_schema

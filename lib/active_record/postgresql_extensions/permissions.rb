@@ -224,7 +224,7 @@ module ActiveRecord
         sql << Array(objects).collect do |t|
           if my_query_options[:quote_objects]
             if my_query_options[:ignore_schema]
-              base.quote_generic_ignore_schema(t)
+              base.quote_generic_ignore_scoped_schema(t)
             else
               base.quote_table_name(t)
             end
@@ -293,7 +293,7 @@ module ActiveRecord
         sql << Array(objects).collect do |t|
           if my_query_options[:quote_objects]
             if my_query_options[:ignore_schema]
-              base.quote_generic_ignore_schema(t)
+              base.quote_generic_ignore_scoped_schema(t)
             else
               base.quote_table_name(t)
             end

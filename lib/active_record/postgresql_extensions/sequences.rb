@@ -73,7 +73,7 @@ module ActiveRecord
 
       # Renames the sequence.
       def rename_sequence(name, rename, options = {})
-        execute("ALTER SEQUENCE #{quote_sequence(name)} RENAME TO #{quote_generic_ignore_schema(rename)};")
+        execute("ALTER SEQUENCE #{quote_sequence(name)} RENAME TO #{quote_generic_ignore_scoped_schema(rename)};")
       end
 
       # Alters the sequence's schema.

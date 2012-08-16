@@ -66,7 +66,7 @@ module ActiveRecord
       #
       #   with_schema :geospatial do
       #     create_table(:test) do |t|
-      #       ignore_schema do
+      #       ignore_scoped_schema do
       #         t.integer(
       #           :ref_id,
       #           :references => {
@@ -90,11 +90,11 @@ module ActiveRecord
       # Here we see that we used the geospatial schema when naming the
       # test table and dropped back to not specifying a schema when
       # setting up the foreign key to the refs table. If we had not
-      # used ignore_schema, the foreign key would have been defined
+      # used ignore_scoped_schema, the foreign key would have been defined
       # thusly:
       #
       #   FOREIGN KEY ("ref_id") REFERENCES "geospatial"."refs" ("id")
-      def ignore_schema
+      def ignore_scoped_schema
         with_schema nil do
           yield
         end
@@ -108,7 +108,7 @@ module ActiveRecord
       end
 
       # Get the current scoped schema.
-      def current_schema
+      def current_scoped_schema
         scoped_schemas.last
       end
 
@@ -125,7 +125,7 @@ module ActiveRecord
 
       # A generic quoting method for PostgreSQL that specifically ignores
       # any and all schemas.
-      def quote_generic_ignore_schema(g)
+      def quote_generic_ignore_scoped_schema(g)
         if g.is_a?(Hash)
           quote_generic g.values.first
         else
@@ -139,8 +139,8 @@ module ActiveRecord
         if g.is_a?(Hash)
           "#{quote_schema(g.keys.first)}.#{quote_generic(g.values.first)}"
         else
-          if current_schema
-            quote_schema(current_schema) << '.'
+          if current_scoped_schema
+            quote_schema(current_scoped_schema) << '.'
           end.to_s << quote_generic(g)
         end
       end
@@ -205,13 +205,13 @@ module ActiveRecord
       #   # => "geospatial"."epois"
       #
       #   with_schema(:geospatial) do
-      #     ignore_schema do
+      #     ignore_scoped_schema do
       #       quote_table_name(:epois)
       #     end
       #   end
       #   # => "epois"
       def quote_table_name_with_schemas(name)
-        if current_schema || name.is_a?(Hash)
+        if current_scoped_schema || name.is_a?(Hash)
           quote_generic_with_schema(name)
         else
           quote_table_name_without_schemas(name)
@@ -705,8 +705,8 @@ module ActiveRecord
         }
       end
 
-      def ignore_schema
-        self.connection.ignore_schema { |*block_args|
+      def ignore_scoped_schema
+        self.connection.ignore_scoped_schema { |*block_args|
           yield(*block_args)
         }
       end
@@ -715,8 +715,8 @@ module ActiveRecord
         self.connection.scope_schemas
       end
 
-      def current_schema
-        self.connection.current_schema
+      def current_scoped_schema
+        self.connection.current_scoped_schema
       end
 
       def sequence_exists?
