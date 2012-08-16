@@ -1,4 +1,6 @@
 
+require 'active_record/connection_adapters/postgresql_adapter'
+
 module ActiveRecord
   class InvalidIndexColumnDefinition < ActiveRecordError #:nodoc:
     def initialize(msg, column)
@@ -13,7 +15,7 @@ module ActiveRecord
   end
 
   module ConnectionAdapters
-    class PostgreSQLAdapter < AbstractAdapter
+    class PostgreSQLAdapter
       # Creates an index. This method is an alternative to the standard
       # ActiveRecord add_index method and includes PostgreSQL-specific
       # options.

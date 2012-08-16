@@ -12,7 +12,7 @@ module ActiveRecord
   end
 
   module ConnectionAdapters
-    class PostgreSQLAdapter < AbstractAdapter
+    class PostgreSQLAdapter
       # Creates a sequence.
       #
       # Note that you can grant privileges on sequences using the

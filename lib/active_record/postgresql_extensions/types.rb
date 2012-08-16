@@ -3,7 +3,7 @@ require 'active_record/connection_adapters/postgresql_adapter'
 
 module ActiveRecord
   module ConnectionAdapters
-    class PostgreSQLAdapter < AbstractAdapter
+    class PostgreSQLAdapter
       # Returns an Array of available languages.
       def types(name = nil)
         query(%{SELECT typname FROM pg_type;}, name).map { |row| row[0] }

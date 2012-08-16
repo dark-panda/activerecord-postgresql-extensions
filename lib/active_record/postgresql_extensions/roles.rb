@@ -9,7 +9,7 @@ module ActiveRecord
   end
 
   module ConnectionAdapters
-    class PostgreSQLAdapter < AbstractAdapter
+    class PostgreSQLAdapter
       def create_role(name, options = {})
         execute PostgreSQLRole.new(self, :create, name, options).to_sql
       end

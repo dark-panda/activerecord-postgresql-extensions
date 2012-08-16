@@ -39,7 +39,7 @@ module ActiveRecord
   end
 
   module ConnectionAdapters
-    class PostgreSQLAdapter < AbstractAdapter
+    class PostgreSQLAdapter
       # Creates a PostgreSQL trigger.
       #
       # The +called+ argument specifies when the trigger is called and

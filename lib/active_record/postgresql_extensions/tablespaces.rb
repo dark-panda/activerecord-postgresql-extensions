@@ -9,7 +9,7 @@ module ActiveRecord
   end
 
   module ConnectionAdapters
-    class PostgreSQLAdapter < AbstractAdapter
+    class PostgreSQLAdapter
       # Creates a new PostgreSQL tablespace.
       def create_tablespace(name, location, options = {})
         sql = "CREATE TABLESPACE #{quote_tablespace(name)} "

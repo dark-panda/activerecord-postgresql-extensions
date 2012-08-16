@@ -15,7 +15,7 @@ module ActiveRecord
   end
 
   module ConnectionAdapters
-    class PostgreSQLAdapter < AbstractAdapter
+    class PostgreSQLAdapter
       # Creates a PostgreSQL rule.
       #
       # +event+ can be one of <tt>:select</tt>, <tt>:insert</tt>,

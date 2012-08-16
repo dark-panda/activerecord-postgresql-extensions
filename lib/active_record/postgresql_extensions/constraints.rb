@@ -1,4 +1,5 @@
 
+require 'active_record/connection_adapters/postgresql_adapter'
 require 'active_record/postgresql_extensions/utils'
 
 module ActiveRecord
@@ -27,7 +28,7 @@ module ActiveRecord
   end
 
   module ConnectionAdapters
-    class PostgreSQLAdapter < AbstractAdapter
+    class PostgreSQLAdapter
       # Adds a CHECK constraint to the table. See
       # PostgreSQLCheckConstraint for usage.
       def add_check_constraint(table, expression, options = {})

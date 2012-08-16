@@ -9,7 +9,7 @@ module ActiveRecord
   end
 
   module ConnectionAdapters
-    class PostgreSQLAdapter < AbstractAdapter
+    class PostgreSQLAdapter
       # Grants privileges on tables. You can specify multiple tables,
       # roles and privileges all at once using Arrays for each of the
       # desired parameters. See PostgreSQLGrantPrivilege for

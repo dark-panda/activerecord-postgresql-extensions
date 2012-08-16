@@ -3,7 +3,7 @@ require 'active_record/connection_adapters/postgresql_adapter'
 
 module ActiveRecord
   module ConnectionAdapters
-    class PostgreSQLAdapter < AbstractAdapter
+    class PostgreSQLAdapter
       # Creates a new PostgreSQL view.
       #
       # +name+ is the name of the view. View quoting works the same as

@@ -27,7 +27,7 @@ module ActiveRecord
   end
 
   module ConnectionAdapters
-    class PostgreSQLAdapter < AbstractAdapter
+    class PostgreSQLAdapter
       # Creates a PostgreSQL function/stored procedure.
       #
       # +args+ is a simple String that you can use to represent the

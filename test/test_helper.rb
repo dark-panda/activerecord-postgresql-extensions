@@ -37,7 +37,7 @@ ActiveRecord::Base.establish_connection 'arunit'
 ARBC = ActiveRecord::Base.connection
 
 puts "Testing against ActiveRecord #{Gem.loaded_specs['activerecord'].version.to_s}"
-if postgresql_version = ARBC.query('SELECT version()').flatten.to_s
+if postgresql_version = ARBC.select_rows('SELECT version()').first.first
   puts "PostgreSQL info from version(): #{postgresql_version}"
 end
 
@@ -52,17 +52,26 @@ class ActiveRecord::ConnectionAdapters::PostgreSQLAdapter
     @statements ||= []
   end
 
-  def execute_with_statement_capture(sql, name = nil)
-    PostgreSQLExtensionsTestHelper.add_statement(sql)
-    #execute_without_statement_capture(sql, name)
+  def execute_with_statement_capture(*args)
+    PostgreSQLExtensionsTestHelper.add_statement(args.first)
+
+    if RUBY_PLATFORM == 'java'
+      if args.first =~ /pg_tables/
+        return execute_without_statement_capture(*args)
+      end
+    end
+
+    args.first
   end
   alias_method_chain :execute, :statement_capture
 
-  def query_with_statement_capture(sql, name = nil)
-    PostgreSQLExtensionsTestHelper.add_statement(sql)
-    #query_without_statement_capture(sql, name)
+  unless RUBY_PLATFORM == 'java'
+    def query_with_statement_capture(*args)
+      PostgreSQLExtensionsTestHelper.add_statement(args.first)
+      #query_without_statement_capture(*args)
+    end
+    alias_method_chain :query, :statement_capture
   end
-  alias_method_chain :query, :statement_capture
 end
 
 module PostgreSQLExtensionsTestHelper
@@ -77,7 +86,7 @@ module PostgreSQLExtensionsTestHelper
 
     def add_statement(sql)
       case sql
-        when /SHOW search_path;/
+        when /SHOW search_path;/, /pg_tables/
           # ignore
         else
           ActiveRecord::Base.logger.debug(sql) if ENV['ENABLE_LOGGER']

@@ -3,7 +3,7 @@ require 'active_record/connection_adapters/postgresql_adapter'
 
 module ActiveRecord
   module ConnectionAdapters
-    class PostgreSQLAdapter < AbstractAdapter
+    class PostgreSQLAdapter
       # Creates a new PostgreSQL text search configuration. You must provide
       # either a :parser_name or a :source_config option as per the PostgreSQL
       # text search docs.

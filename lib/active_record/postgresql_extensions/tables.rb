@@ -1,4 +1,6 @@
 
+require 'active_record/connection_adapters/postgresql_adapter'
+
 module ActiveRecord
   class InvalidLikeTypes < ActiveRecordError #:nodoc:
     def initialize(likes)
@@ -10,7 +12,7 @@ module ActiveRecord
   end
 
   module ConnectionAdapters
-    class PostgreSQLAdapter < AbstractAdapter
+    class PostgreSQLAdapter
       # Set the schema of a table.
       def alter_table_schema(table_name, schema, options = {})
         execute "ALTER TABLE #{quote_schema(table_name)} SET SCHEMA #{quote_schema(schema)};"

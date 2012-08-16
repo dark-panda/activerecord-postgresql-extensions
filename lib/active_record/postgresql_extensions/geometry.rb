@@ -19,7 +19,7 @@ module ActiveRecord
   end
 
   module ConnectionAdapters
-    class PostgreSQLAdapter < AbstractAdapter
+    class PostgreSQLAdapter
       def native_database_types_with_spatial_types #:nodoc:
         native_database_types_without_spatial_types.merge({
           :geometry => { :name => 'geometry' },

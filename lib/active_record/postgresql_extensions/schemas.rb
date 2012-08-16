@@ -3,7 +3,7 @@ require 'active_record/connection_adapters/postgresql_adapter'
 
 module ActiveRecord
   module ConnectionAdapters
-    class PostgreSQLAdapter < AbstractAdapter
+    class PostgreSQLAdapter
       # Creates a new PostgreSQL schema.
       #
       # Note that you can grant privileges on schemas using the

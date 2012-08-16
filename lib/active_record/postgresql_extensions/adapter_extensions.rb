@@ -1,12 +1,13 @@
 
 module ActiveRecord
   module ConnectionAdapters
-    class PostgreSQLAdapter < AbstractAdapter
+    class PostgreSQLAdapter
       if defined?(Rails)
         LOGGER_REGEXP = /^#{Rails.root}(?!\/vendor\/rails)/
 
-        def query_with_extra_logging(sql, name = nil) #:nodoc:
+        def query_with_extra_logging(*args) #:nodoc:
           if ActiveRecord::Base.enable_extended_logging && Rails.logger && Rails.logger.level == Logger::DEBUG
+            sql = args.first
             unless (sql =~ /(pg_get_constraintdef|pg_attribute|pg_class)/)
               Rails.logger.debug
               Rails.logger.debug(caller.select { |x|
@@ -14,12 +15,13 @@ module ActiveRecord
               }.join("\n"))
             end
           end
-          query_without_extra_logging(sql, name)
+          query_without_extra_logging(*args)
         end
         alias_method_chain :query, :extra_logging
 
-        def execute_with_extra_logging(sql, name = nil) #:nodoc:
+        def execute_with_extra_logging(*args) #:nodoc:
           if ActiveRecord::Base.enable_extended_logging && Rails.logger && Rails.logger.level == Logger::DEBUG
+            sql = args.first
             unless (sql =~ /(pg_get_constraintdef|pg_attribute|pg_class)/)
               Rails.logger.debug
               Rails.logger.debug(caller.select { |x|
@@ -111,8 +113,14 @@ module ActiveRecord
       end
 
       # A generic quoting method for PostgreSQL.
-      def quote_generic(g)
-        PGconn.quote_ident(g.to_s)
+      if RUBY_PLATFORM == 'java'
+        def quote_generic(g)
+          quote_column_name(g)
+        end
+      else
+        def quote_generic(g)
+          PGconn.quote_ident(g.to_s)
+        end
       end
 
       # A generic quoting method for PostgreSQL that specifically ignores
@@ -670,7 +678,7 @@ module ActiveRecord
       alias_method_chain :change_column_default, :expression
     end
 
-    class PostgreSQLColumn < Column
+    class PostgreSQLColumn
       def simplified_type_with_additional_types(field_type)
         case field_type
           when 'geometry'
