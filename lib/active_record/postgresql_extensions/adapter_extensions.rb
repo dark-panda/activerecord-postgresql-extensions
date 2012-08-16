@@ -27,28 +27,10 @@ module ActiveRecord
               }.join("\n"))
             end
           end
-          execute_without_extra_logging(sql, name)
+          execute_without_extra_logging(*args)
         end
         alias_method_chain :execute, :extra_logging
       end
-
-      # There seems to be a bug in ActiveRecord where it isn't setting
-      # the schema search path properly because it's using ',' as a
-      # separator rather than /,\s+/.
-      def schema_search_path_with_fix_csv=(schema_csv)
-        if schema_csv
-          csv = schema_csv.gsub(/,\s+/, ',')
-          execute "SET search_path TO #{csv}"
-          @schema_search_path = csv
-        end
-      end
-      alias_method_chain :schema_search_path=, :fix_csv
-
-      # Fix ActiveRecord bug when grabbing the current search_path.
-      def schema_search_path_with_fix_csv
-        @schema_search_path ||= query('SHOW search_path')[0][0].gsub(/,\s+/, ',')
-      end
-      alias_method_chain :schema_search_path, :fix_csv
 
       # with_schema is kind of like with_scope. It wraps various
       # object names in SQL statements into a PostgreSQL schema. You
@@ -472,15 +454,21 @@ module ActiveRecord
       end
       alias_method_chain :tables, :views
 
-      def schema_search_path_with_csv_fix=(schema_csv) #:nodoc:
-        self.schema_search_path_without_csv_fix = schema_csv.gsub(/, /, ',') if schema_csv
-      end
-      alias_method_chain :schema_search_path=, :csv_fix
+      unless RUBY_PLATFORM == "java"
+        # There seems to be a bug in ActiveRecord where it isn't setting
+        # the schema search path properly because it's using ',' as a
+        # separator rather than /,\s+/.
+        def schema_search_path_with_csv_fix=(schema_csv) #:nodoc:
+          self.schema_search_path_without_csv_fix = schema_csv.gsub(/,\s+/, ',') if schema_csv
+        end
+        alias_method_chain :schema_search_path=, :csv_fix
 
-      def schema_search_path_with_csv_fix #:nodoc:
-        @schema_search_path ||= query('SHOW search_path;')[0][0].gsub(/, /, ',')
+        # Fix ActiveRecord bug when grabbing the current search_path.
+        def schema_search_path_with_csv_fix
+          @schema_search_path ||= query('SHOW search_path;')[0][0].gsub(/,\s+/, ',')
+        end
+        alias_method_chain :schema_search_path, :csv_fix
       end
-      alias_method_chain :schema_search_path, :csv_fix
 
       def disable_referential_integrity_with_views #:nodoc:
         if supports_disable_referential_integrity? then
