@@ -57,12 +57,22 @@ class IndexTests < Test::Unit::TestCase
     Mig.drop_index(:foo_names_idx)
     Mig.drop_index(:foo_names_idx, :if_exists => true)
     Mig.drop_index(:foo_names_idx, :cascade => true)
+    Mig.drop_index(:foo_names_idx, :concurrently => true)
 
     assert_equal([
       "DROP INDEX \"foo_names_idx\";",
       "DROP INDEX IF EXISTS \"foo_names_idx\";",
-      "DROP INDEX \"foo_names_idx\" CASCADE;"
+      "DROP INDEX \"foo_names_idx\" CASCADE;",
+      "DROP INDEX CONCURRENTLY \"foo_names_idx\";"
     ], statements)
+
+    assert_raise(ArgumentError) do
+      ARBC.drop_index([ :foo_idx, :bar_idx ], :concurrently => true)
+    end
+
+    assert_raise(ArgumentError) do
+      Mig.drop_index(:foo_idx, :concurrently => true, :cascade => true)
+    end
   end
 
   def test_rename_index

@@ -121,8 +121,19 @@ module ActiveRecord
       #
       # * <tt>:if_exists</tt> - adds IF EXISTS.
       # * <tt>:cascade</tt> - adds CASCADE.
+      # * <tt>:concurrently</tt> - adds the CONCURRENTLY option when dropping
+      #   the INDEX. When using the :concurrently option, only one INDEX can
+      #   specified and the :cascade option cannot be used. See the PostgreSQL
+      #   documentation for details.
       def drop_index(name, options = {})
+        if options[:concurrently] && options[:cascade]
+          raise ArgumentError.new("The :concurrently and :cascade options cannot be used together.")
+        elsif options[:concurrently] && name.is_a?(Array) && name.length > 1
+          raise ArgumentError.new("The :concurrently option can only be used on a single INDEX.")
+        end
+
         sql = 'DROP INDEX '
+        sql << 'CONCURRENTLY ' if options[:concurrently]
         sql << 'IF EXISTS ' if options[:if_exists]
         sql << Array(name).collect { |i| quote_generic(i) }.join(', ')
         sql << ' CASCADE' if options[:cascade]
