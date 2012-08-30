@@ -28,3 +28,21 @@ PostgreSQL adapter including:
   PostGIS columns in migrations. For manipulating PostGIS data, see our
   geos-extensions gem at https://github.com/zoocasa/geos-extensions or
   the RGeo project at https://github.com/dazuma/rgeo .
+
+== Building db/schema.rb
+
+While this extension has support for creating a bunch of PostgreSQL-specific
+DDL statements, it can't actually reverse the process yet to create the Ruby
+equivalent code in your schema.rb file. To create a suitable schema file
+that you can use for creating test databases or just to view the schema
+itself, you can try switching the ActiveRecord configuration option for
+schema_format from :ruby to :sql like so:
+
+  config.active_record.schema_format = :sql
+
+This will tell ActiveRecord to use the pg_dump utility to create a file
+containing the database schema in db/development_structure.sql.
+
+Details on this configuration option can be found here:
+
+http://guides.rubyonrails.org/configuring.html
