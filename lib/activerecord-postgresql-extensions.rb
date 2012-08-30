@@ -38,6 +38,7 @@ dirname = File.join(File.dirname(__FILE__), *%w{ active_record postgresql_extens
   text_search
   extensions
   foreign_key_associations
+  vacuum
 }.each do |file|
   require File.join(dirname, file)
 end
