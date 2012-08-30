@@ -11,13 +11,15 @@ class PermissionsTests < Test::Unit::TestCase
     Mig.grant_table_privileges(:foo, :select, :nobody, :with_grant_option => true)
     Mig.grant_table_privileges(:foo, :select, :nobody, :cascade => true)
     Mig.grant_table_privileges(:foo, :select, :public, :cascade => true)
+    Mig.grant_table_privileges(:foo, :select, :nobody, :all => true)
 
     assert_equal([
       "GRANT SELECT ON TABLE \"foo\" TO \"nobody\";",
       "GRANT SELECT, UPDATE, DELETE, INSERT ON TABLE \"foo\" TO \"nobody\", \"somebody\";",
       "GRANT SELECT ON TABLE \"foo\" TO \"nobody\" WITH GRANT OPTION;",
       "GRANT SELECT ON TABLE \"foo\" TO \"nobody\";",
-      "GRANT SELECT ON TABLE \"foo\" TO PUBLIC;"
+      "GRANT SELECT ON TABLE \"foo\" TO PUBLIC;",
+      "GRANT SELECT ON ALL TABLES IN SCHEMA \"foo\" TO \"nobody\";"
     ], statements)
   end
 
@@ -27,53 +29,63 @@ class PermissionsTests < Test::Unit::TestCase
     Mig.revoke_table_privileges(:foo, :select, :nobody, :with_grant_option => true)
     Mig.revoke_table_privileges(:foo, :select, :nobody, :cascade => true)
     Mig.revoke_table_privileges(:foo, :select, :public, :cascade => true)
+    Mig.revoke_table_privileges(:foo, :select, :nobody, :all => true)
 
     assert_equal([
       "REVOKE SELECT ON TABLE \"foo\" FROM \"nobody\";",
       "REVOKE SELECT, UPDATE, DELETE, INSERT ON TABLE \"foo\" FROM \"nobody\", \"somebody\";",
       "REVOKE SELECT ON TABLE \"foo\" FROM \"nobody\";",
       "REVOKE SELECT ON TABLE \"foo\" FROM \"nobody\" CASCADE;",
-      "REVOKE SELECT ON TABLE \"foo\" FROM PUBLIC CASCADE;"
+      "REVOKE SELECT ON TABLE \"foo\" FROM PUBLIC CASCADE;",
+      "REVOKE SELECT ON ALL TABLES IN SCHEMA \"foo\" FROM \"nobody\";"
     ], statements)
   end
 
   def test_grant_sequence_privileges
     Mig.grant_sequence_privileges(:foo, :select, :nobody)
     Mig.grant_sequence_privileges(:foo, [ :select, :update ], [ :nobody, :somebody ])
+    Mig.grant_sequence_privileges(:foo, :select, :nobody, :all => true)
 
     assert_equal([
       "GRANT SELECT ON SEQUENCE \"foo\" TO \"nobody\";",
-      "GRANT SELECT, UPDATE ON SEQUENCE \"foo\" TO \"nobody\", \"somebody\";"
+      "GRANT SELECT, UPDATE ON SEQUENCE \"foo\" TO \"nobody\", \"somebody\";",
+      "GRANT SELECT ON ALL SEQUENCES IN SCHEMA \"foo\" TO \"nobody\";"
     ], statements)
   end
 
   def test_revoke_sequence_privileges
     Mig.revoke_sequence_privileges(:foo, :select, :nobody)
     Mig.revoke_sequence_privileges(:foo, [ :select, :update ], [ :nobody, :somebody ])
+    Mig.revoke_sequence_privileges(:foo, :select, :nobody, :all => true)
 
     assert_equal([
       "REVOKE SELECT ON SEQUENCE \"foo\" FROM \"nobody\";",
-      "REVOKE SELECT, UPDATE ON SEQUENCE \"foo\" FROM \"nobody\", \"somebody\";"
+      "REVOKE SELECT, UPDATE ON SEQUENCE \"foo\" FROM \"nobody\", \"somebody\";",
+      "REVOKE SELECT ON ALL SEQUENCES IN SCHEMA \"foo\" FROM \"nobody\";"
     ], statements)
   end
 
   def test_grant_function_privileges
     Mig.grant_function_privileges('test(text, integer)', :execute, :nobody)
     Mig.grant_function_privileges('test(text, integer)', :all, [ :nobody, :somebody ])
+    Mig.grant_function_privileges(:foo, :execute, :nobody, :all => true)
 
     assert_equal([
       "GRANT EXECUTE ON FUNCTION test(text, integer) TO \"nobody\";",
-      "GRANT ALL ON FUNCTION test(text, integer) TO \"nobody\", \"somebody\";"
+      "GRANT ALL ON FUNCTION test(text, integer) TO \"nobody\", \"somebody\";",
+      "GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA \"foo\" TO \"nobody\";",
     ], statements)
   end
 
   def test_revoke_function_privileges
     Mig.revoke_function_privileges('test(text, integer)', :execute, :nobody)
     Mig.revoke_function_privileges('test(text, integer)', :all, [ :nobody, :somebody ])
+    Mig.revoke_function_privileges(:foo, :execute, :nobody, :all => true)
 
     assert_equal([
       "REVOKE EXECUTE ON FUNCTION test(text, integer) FROM \"nobody\";",
-      "REVOKE ALL ON FUNCTION test(text, integer) FROM \"nobody\", \"somebody\";"
+      "REVOKE ALL ON FUNCTION test(text, integer) FROM \"nobody\", \"somebody\";",
+      "REVOKE EXECUTE ON ALL FUNCTIONS IN SCHEMA \"foo\" FROM \"nobody\";",
     ], statements)
   end
 

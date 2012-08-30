@@ -200,7 +200,9 @@ module ActiveRecord
     #
     # When using the grant_*_privileges methods, you can specify multiple
     # permissions, objects and roles by using Arrays for the appropriate
-    # argument.
+    # argument. You can also apply the privileges to all objects within a
+    # schema by using the :all option in the options Hash and supply the schema
+    # name as the first argument.
     #
     # ==== Examples
     #
@@ -209,6 +211,9 @@ module ActiveRecord
     #
     #   grant_sequence_privileges(:my_seq, [ :select, :update ], :public)
     #   # => GRANT SELECT, UPDATE ON SEQUENCE "my_seq" TO PUBLIC
+    #
+    #   grant_sequence_privileges(:public, [ :select, :update ], :joe, :all => true)
+    #   # => GRANT SELECT, UPDATE ON ALL SEQUENCES IN SCHEMA PUBLIC TO "joe"
     #
     # You can specify the <tt>:with_grant_option</tt> in any of the
     # grant_*_privilege methods to add a WITH GRANT OPTION clause to
@@ -219,19 +224,24 @@ module ActiveRecord
           :quote_objects => true
         }.merge query_options
 
-        sql = "GRANT #{Array(privileges).collect(&:to_s).collect(&:upcase).join(', ')} ON #{type.to_s.upcase} "
+        sql = "GRANT #{Array(privileges).collect(&:to_s).collect(&:upcase).join(', ')} ON "
 
-        sql << Array(objects).collect do |t|
-          if my_query_options[:quote_objects]
-            if my_query_options[:ignore_schema]
-              base.quote_generic_ignore_scoped_schema(t)
+        if options[:all]
+          sql << "ALL #{type.to_s.upcase}S IN SCHEMA #{base.quote_schema(objects)}"
+        else
+          sql << "#{type.to_s.upcase} "
+          sql << Array(objects).collect do |t|
+            if my_query_options[:quote_objects]
+              if my_query_options[:ignore_schema]
+                base.quote_generic_ignore_scoped_schema(t)
+              else
+                base.quote_table_name(t)
+              end
             else
-              base.quote_table_name(t)
+              t
             end
-          else
-            t
-          end
-        end.join(', ')
+          end.join(', ')
+        end
 
         sql << ' TO ' << Array(roles).collect do |r|
           r = r.to_s
@@ -259,7 +269,9 @@ module ActiveRecord
     #
     # When using the revoke_*_privileges methods, you can specify multiple
     # permissions, objects and roles by using Arrays for the appropriate
-    # argument.
+    # argument. You can also apply the privileges to all objects within a
+    # schema by using the :all option in the options Hash and supply the schema
+    # name as the first argument.
     #
     # ==== Examples
     #
@@ -288,19 +300,24 @@ module ActiveRecord
 
         sql = 'REVOKE '
         sql << 'GRANT OPTION FOR ' if options[:grant_option_for]
-        sql << "#{Array(privileges).collect(&:to_s).collect(&:upcase).join(', ')} ON #{type.to_s.upcase} "
+        sql << "#{Array(privileges).collect(&:to_s).collect(&:upcase).join(', ')} ON "
 
-        sql << Array(objects).collect do |t|
-          if my_query_options[:quote_objects]
-            if my_query_options[:ignore_schema]
-              base.quote_generic_ignore_scoped_schema(t)
+        if options[:all]
+          sql << "ALL #{type.to_s.upcase}S IN SCHEMA #{base.quote_schema(objects)}"
+        else
+          sql << "#{type.to_s.upcase} "
+          sql << Array(objects).collect do |t|
+            if my_query_options[:quote_objects]
+              if my_query_options[:ignore_schema]
+                base.quote_generic_ignore_scoped_schema(t)
+              else
+                base.quote_table_name(t)
+              end
             else
-              base.quote_table_name(t)
+              t
             end
-          else
-            t
-          end
-        end.join(', ')
+          end.join(', ')
+        end
 
         sql << ' FROM ' << Array(roles).collect do |r|
           r = r.to_s
