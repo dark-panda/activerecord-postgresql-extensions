@@ -62,6 +62,15 @@ module ActiveRecord
         execute("#{sql};")
       end
 
+      # Adds a PRIMARY KEY constraint to the table. See
+      # PostgreSQLPrimaryKeyConstraint for details.
+      def add_primary_key_constraint(table, columns, options = {})
+        sql = "ALTER TABLE #{quote_table_name(table)} ADD "
+        sql << PostgreSQLPrimaryKeyConstraint.new(self, columns, options).to_s
+        execute("#{sql};")
+      end
+      alias :add_primary_key :add_primary_key_constraint
+
       # Drops a constraint from the table. Use this to drop CHECK,
       # UNIQUE, EXCLUDE and FOREIGN KEY constraints from a table.
       #
@@ -689,6 +698,141 @@ module ActiveRecord
         sql << storage_parameters
         sql << using_tablespace
         sql << " WHERE (#{options[:conditions] || options[:where]})" if options[:conditions] || options[:where]
+        sql
+      end
+      alias :to_s :to_sql
+    end
+
+    # Creates PRIMARY KEY constraints for PostgreSQL tables and columns.
+    #
+    # This class is meant to be used by PostgreSQL column and table
+    # definition and manipulation methods. There are several ways to create
+    # a PRIMARY KEY constraint:
+    #
+    # * on a table definition
+    # * on a column definition
+    # * when altering a table
+    #
+    # ActiveRecord itself already provides some methods of creating PRIMARY
+    # KEYS, but we've added some PostgreSQL-specific extensions here. To
+    # override ActiveRecord's built-in PRIMARY KEY generation, add an
+    # option for <tt>:id => false</tt> when creating the table via
+    # <tt>create_table</tt>.
+    #
+    # When creating PRIMARY KEYs, you can use an options Hash to add various
+    # PostgreSQL-specific options as necessary or simply use a true statement
+    # to create a PRIMARY KEY on the column. Composite PRIMARY KEYs can also
+    # be created across multiple columns using a table definition or the
+    # PostgreSQLAdapter#add_primary_key method.
+    #
+    # === Column Definition
+    #
+    # When creating a new table via PostgreSQLAdapter#create_table, you
+    # can specify PRIMARY KEY constraints on individual columns during
+    # definition.
+    #
+    # ==== Examples
+    #
+    #   create_table(:foo, :id => false) do |t|
+    #     t.integer :foo_id, :primary_key => true
+    #   end
+    #
+    #   # Produces:
+    #   # CREATE TABLE "foo" (
+    #   #   "foo_id" integer,
+    #   #   PRIMARY KEY ("foo_id")
+    #   # );
+    #
+    #   create_table('foo', :id => false) do |t|
+    #     t.integer :foo_id, :primary_key => {
+    #       :tablespace => 'fubar',
+    #       :index_parameters => 'FILLFACTOR=10'
+    #     }
+    #   end
+    #
+    #   # Produces:
+    #   # CREATE TABLE "foo" (
+    #   #   "foo_id" integer,
+    #   #   PRIMARY KEY ("foo_id") WITH (FILLFACTOR=10) USING INDEX TABLESPACE "fubar"
+    #   # );
+    #
+    # === Table Definition
+    #
+    # PRIMARY KEY constraints can also be applied to the table directly
+    # rather than on a column definition.
+    #
+    # ==== Examples
+    #
+    # The following examples produces the same results as above:
+    #
+    #   create_table('foo', :id => false) do |t|
+    #     t.integer :foo_id
+    #     t.primary_key_constraint :foo_id
+    #   end
+    #
+    #   create_table('foo', :id => false) do |t|
+    #     t.integer :foo_id
+    #     t.primary_key_constraint :foo_id, {
+    #       :tablespace => 'fubar',
+    #       :index_parameters => 'FILLFACTOR=10'
+    #     }
+    #   end
+    #
+    # === Table Manipulation
+    #
+    # You can also create new PRIMARY KEY constraints outside of a table
+    # definition using PostgreSQLAdapter#add_primary_key or
+    # PostgreSQLAdapter#add_primary_key_constraint.
+    #
+    # ==== Examples
+    #
+    #   add_primary_key(:foo, :bar_id)
+    #   add_primary_key(:foo, [ :bar_id, :baz_id ])
+    #   add_primary_key(:foo, :bar_id, :name => 'foo_pk')
+    #   add_primary_key(:foo, :bar_id, :tablespace => 'fubar', :index_parameters => 'FILLFACTOR=10')
+    #
+    #   # Produces:
+    #   # ALTER TABLE "foo" ADD PRIMARY KEY ("bar_id");
+    #   # ALTER TABLE "foo" ADD PRIMARY KEY ("bar_id", "baz_id");
+    #   # ALTER TABLE "foo" ADD CONSTRAINT "foo_pk" PRIMARY KEY ("bar_id");
+    #   # ALTER TABLE "foo" ADD PRIMARY KEY ("bar_id") WITH (FILLFACTOR=10) USING INDEX TABLESPACE "fubar";
+    #
+    # === Options for PRIMARY KEY Constraints
+    #
+    # * <tt>:name</tt> - specifies a name for the constraint.
+    # * <tt>:storage_parameters</tt> - PostgreSQL allows you to add a
+    #   couple of additional parameters to indexes to govern disk usage and
+    #   such. This option is a simple String that lets you insert these
+    #   options as necessary. See the PostgreSQL documentation on index
+    #   storage parameters for details. <tt>:index_parameters</tt> can also
+    #   be used.
+    # * <tt>:tablespace</tt> - allows you to specify a tablespace for the
+    #   index being created. See the PostgreSQL documentation on
+    #   tablespaces for details.
+    #
+    # === Dropping PRIMARY KEY Constraints
+    #
+    # Like all PostgreSQL constraints, you can use
+    # PostgreSQLAdapter#drop_constraint to remove a constraint from a
+    # table.
+    class PostgreSQLPrimaryKeyConstraint < PostgreSQLConstraint
+      attr_accessor :columns
+
+      def initialize(base, columns, options = {}) #:nodoc:
+        @columns = columns
+
+        super(base, options)
+      end
+
+      def to_sql #:nodoc:
+        sql = String.new
+        sql << "#{constraint_name}PRIMARY KEY "
+        sql << "(" << Array(columns).collect { |column|
+          base.quote_column_name(column)
+        }.join(', ')
+        sql << ")"
+        sql << storage_parameters
+        sql << using_tablespace
         sql
       end
       alias :to_s :to_sql

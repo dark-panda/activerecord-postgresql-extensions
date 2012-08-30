@@ -286,11 +286,16 @@ module ActiveRecord
         @table_constraints << PostgreSQLExcludeConstraint.new(@base, table_name, excludes, options)
       end
 
+      def primary_key_constraint(columns, options = {})
+        @table_constraints << PostgreSQLPrimaryKeyConstraint.new(@base, columns, options)
+      end
+
       def column_with_constraints(name, type, *args) #:nodoc:
         options = args.extract_options!
         check = options.delete(:check)
         references = options.delete(:references)
         unique = options.delete(:unique)
+        primary_key = options.delete(:primary_key)
         column_without_constraints(name, type, options)
 
         if check
@@ -330,6 +335,14 @@ module ActiveRecord
           end
           @table_constraints << PostgreSQLUniqueConstraint.new(@base, name, unique)
         end
+
+        if primary_key
+          unless primary_key.is_a?(Hash)
+            primary_key = {}
+          end
+          @table_constraints << PostgreSQLPrimaryKeyConstraint.new(@base, name, primary_key)
+        end
+
         self
       end
       alias_method_chain :column, :constraints

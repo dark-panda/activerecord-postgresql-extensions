@@ -250,4 +250,84 @@ EOF
       %{ALTER TABLE "foo" ADD EXCLUDE (length(name) WITH =) WITH (FILLFACTOR=10) USING INDEX TABLESPACE "fubar";}
     ], statements)
   end
+
+  def test_primary_key_in_column_definition
+    Mig.create_table('foo', :id => false) do |t|
+      t.integer :foo_id, :primary_key => true
+    end
+
+    Mig.create_table('foo', :id => false) do |t|
+      t.integer :foo_id, :primary_key => {
+        :tablespace => 'fubar',
+        :index_parameters => 'FILLFACTOR=10'
+      }
+    end
+
+    assert_equal([
+      %{CREATE TABLE "foo" (
+  "foo_id" integer,
+  PRIMARY KEY ("foo_id")
+);},
+
+      %{CREATE TABLE "foo" (
+  "foo_id" integer,
+  PRIMARY KEY ("foo_id") WITH (FILLFACTOR=10) USING INDEX TABLESPACE "fubar"
+);}], statements)
+  end
+
+
+  def test_primary_key_in_table_definition
+    Mig.create_table('foo', :id => false) do |t|
+      t.integer :foo_id
+      t.primary_key_constraint :foo_id
+    end
+
+    Mig.create_table('foo', :id => false) do |t|
+      t.integer :foo_id
+      t.primary_key_constraint :foo_id, {
+        :tablespace => 'fubar',
+        :index_parameters => 'FILLFACTOR=10'
+      }
+    end
+
+    Mig.create_table('foo', :id => false) do |t|
+      t.integer :foo_id
+      t.integer :bar_id
+      t.primary_key_constraint [ :foo_id, :bar_id ], {
+        :tablespace => 'fubar',
+        :index_parameters => 'FILLFACTOR=10'
+      }
+    end
+
+    assert_equal([
+      %{CREATE TABLE "foo" (
+  "foo_id" integer,
+  PRIMARY KEY ("foo_id")
+);},
+
+      %{CREATE TABLE "foo" (
+  "foo_id" integer,
+  PRIMARY KEY ("foo_id") WITH (FILLFACTOR=10) USING INDEX TABLESPACE "fubar"
+);},
+
+      %{CREATE TABLE "foo" (
+  "foo_id" integer,
+  "bar_id" integer,
+  PRIMARY KEY ("foo_id", "bar_id") WITH (FILLFACTOR=10) USING INDEX TABLESPACE "fubar"
+);}], statements)
+  end
+
+  def test_add_primary_key
+    Mig.add_primary_key(:foo, :bar_id)
+    Mig.add_primary_key(:foo, [ :bar_id, :baz_id ])
+    Mig.add_primary_key(:foo, :bar_id, :name => 'foo_pk')
+    Mig.add_primary_key(:foo, :bar_id, :tablespace => 'fubar', :index_parameters => 'FILLFACTOR=10')
+
+    assert_equal([
+      %{ALTER TABLE "foo" ADD PRIMARY KEY ("bar_id");},
+      %{ALTER TABLE "foo" ADD PRIMARY KEY ("bar_id", "baz_id");},
+      %{ALTER TABLE "foo" ADD CONSTRAINT "foo_pk" PRIMARY KEY ("bar_id");},
+      %{ALTER TABLE "foo" ADD PRIMARY KEY ("bar_id") WITH (FILLFACTOR=10) USING INDEX TABLESPACE "fubar";}
+    ], statements)
+  end
 end
