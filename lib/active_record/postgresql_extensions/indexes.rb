@@ -117,6 +117,11 @@ module ActiveRecord
       # name with drop_index. See create_index for the particulars on
       # why.
       #
+      # You can specify multiple INDEXes with an Array when using drop_index,
+      # but you may need to use the method directly through the ActiveRecord
+      # connection rather than the Migration method, as the Migration method
+      # likes to escape the Array to a String.
+      #
       # ==== Options
       #
       # * <tt>:if_exists</tt> - adds IF EXISTS.
