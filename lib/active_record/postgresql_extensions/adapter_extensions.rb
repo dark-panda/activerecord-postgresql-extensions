@@ -39,7 +39,7 @@ module ActiveRecord
       # can have multiple with_schemas wrapped around each other, and
       # hopefully they won't collide with one another.
       #
-      # Examples:
+      # ==== Examples
       #
       #   # should produce '"geospatial"."my_tables"'
       #   with_schema :geospatial do
@@ -62,7 +62,7 @@ module ActiveRecord
       # When using with_schema, you can temporarily ignore the scoped
       # schemas with ignore_block.
       #
-      # Example:
+      # ==== Example
       #
       #   with_schema :geospatial do
       #     create_table(:test) do |t|

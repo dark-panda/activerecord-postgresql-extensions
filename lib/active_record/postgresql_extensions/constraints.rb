@@ -286,7 +286,7 @@ module ActiveRecord
     # can specify UNIQUE constraints on individual columns during
     # definition.
     #
-    # ==== Example:
+    # ==== Example
     #
     #   create_table(:foo) do |t|
     #     t.integer :fancy_id, :unique => true
@@ -310,7 +310,7 @@ module ActiveRecord
     # than on a column definition. This is useful when you want to add
     # multiple columns to the constraint.
     #
-    # ==== Example:
+    # ==== Example
     #
     #   create_table(:foo) do |t|
     #     t.integer :fancy_id
@@ -367,8 +367,7 @@ module ActiveRecord
     # or when using add_unique_constraint, there are a hanful of
     # PostgreSQL-specific options that you may find useful.
     #
-    # * <tt>:name</tt> - specify a name for the index created by the
-    #   UNIQUE constraint.
+    # * <tt>:name</tt> - specifies a name for the constraint.
     # * <tt>:storage_parameters</tt> - PostgreSQL allows you to add a
     #   couple of additional parameters to indexes to govern disk usage and
     #   such. This option is a simple String that lets you insert these
@@ -425,7 +424,7 @@ module ActiveRecord
     # can specify FOREIGN KEY constraints on individual columns during
     # definition.
     #
-    # ==== Example:
+    # ==== Example
     #
     #   create_table(:foo) do |t|
     #     t.integer :bar_id, :references => { :table => :bar, :column => :id }
@@ -453,7 +452,7 @@ module ActiveRecord
     # FOREIGN KEY constraints can also be applied to the table directly
     # rather than on a column definition.
     #
-    # ==== Example:
+    # ==== Example
     #
     # The following example produces the same result as above:
     #
@@ -624,7 +623,7 @@ module ActiveRecord
     # EXCLUDE constraints can also be applied to the table directly
     # rather than on a column definition.
     #
-    # ==== Example:
+    # ==== Example
     #
     # The following example produces the same result as above:
     #
@@ -658,6 +657,7 @@ module ActiveRecord
     #
     # === Options for EXCLUDE Constraints
     #
+    # * <tt>:name</tt> - specifies a name for the constraint.
     # * <tt>:using</tt> - sets the index type to be used. Usually this will
     #   <tt>:gist</tt>, but the default is left blank to allow for the PostgreSQL
     #   default which is <tt>:btree</tt>. See the PostgreSQL docs for details.
