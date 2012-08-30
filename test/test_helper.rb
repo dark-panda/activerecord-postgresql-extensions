@@ -37,8 +37,8 @@ ActiveRecord::Base.establish_connection 'arunit'
 ARBC = ActiveRecord::Base.connection
 
 puts "Testing against ActiveRecord #{Gem.loaded_specs['activerecord'].version.to_s}"
-if postgresql_version = ARBC.select_rows('SELECT version()').first.first
-  puts "PostgreSQL info from version(): #{postgresql_version}"
+if postgresql_version = ActiveRecord::PostgreSQLExtensions.SERVER_VERSION
+  puts "PostgreSQL info from pg_catalog.version(): #{postgresql_version}"
 end
 
 if postgis_version = ActiveRecord::PostgreSQLExtensions::PostGIS.VERSION[:lib]

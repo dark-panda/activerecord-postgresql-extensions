@@ -3,6 +3,16 @@ require 'active_record/connection_adapters/postgresql_adapter'
 
 module ActiveRecord
   module PostgreSQLExtensions
+    class << self
+      def SERVER_VERSION
+        return @SERVER_VERSION if defined?(@SERVER_VERSION)
+
+        @SERVER_VERSION = if (version_string = ::ActiveRecord::Base.connection.select_rows("SELECT pg_catalog.version()").flatten.first).present?
+          version_string =~ /^\s*PostgreSQL\s+([^\s]+)/
+          $1
+        end
+      end
+    end
   end
 end
 
