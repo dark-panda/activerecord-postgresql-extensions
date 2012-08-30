@@ -28,10 +28,3 @@ PostgreSQL adapter including:
   PostGIS columns in migrations. For manipulating PostGIS data, see our
   geos-extensions gem at https://github.com/zoocasa/geos-extensions or
   the RGeo project at https://github.com/dazuma/rgeo .
-
-== First Public Release Notice!
-
-This is the first public release of this gem, so while it has been kind to us
-and our software, we can't guarantee that for everyone. That said, we do hope
-that someone out there finds it useful and enjoys the new-found powers of
-PostgreSQL!
