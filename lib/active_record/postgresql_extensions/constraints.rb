@@ -83,6 +83,12 @@ module ActiveRecord
         sql << ' CASCADE' if options[:cascade]
         execute("#{sql};")
       end
+
+      # Validates a constraint and removes the NOT VALID clause from its
+      # definition.
+      def validate_constraint(table, name)
+        execute("ALTER TABLE #{quote_table_name(table)} VALIDATE CONSTRAINT #{quote_generic(name)};")
+      end
     end
 
     # This is a base class for other PostgreSQL constraint classes. It

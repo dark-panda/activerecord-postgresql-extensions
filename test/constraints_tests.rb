@@ -340,4 +340,12 @@ EOF
       "ALTER TABLE \"foo\" ADD FOREIGN KEY (\"bar_id\") REFERENCES \"bar\" NOT VALID;"
     ], statements)
   end
+
+  def test_validate_constraint
+    Mig.validate_constraint(:foo, :foo_constraint)
+
+    assert_equal([
+      "ALTER TABLE \"foo\" VALIDATE CONSTRAINT \"foo_constraint\";"
+    ], statements)
+  end
 end
