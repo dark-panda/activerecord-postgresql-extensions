@@ -137,6 +137,14 @@ module ActiveRecord
             ''
           end
         end
+
+        def not_valid
+          if options[:not_valid]
+            " NOT VALID"
+          else
+            ''
+          end
+        end
     end
 
     # Creates CHECK constraints for PostgreSQL tables.
@@ -243,6 +251,8 @@ module ActiveRecord
     # * <tt>:expression</tt> - when creating a column definition, you can
     #   supply either a String containing the expression or a Hash to
     #   supply both <tt>:name</tt> and <tt>:expression</tt> values.
+    # * <tt>:not_valid</tt> - adds the NOT VALID clause. Only useful when
+    #   altering an existing table.
     #
     # === Dropping CHECK Constraints
     #
@@ -258,7 +268,7 @@ module ActiveRecord
       end
 
       def to_sql #:nodoc:
-        "#{constraint_name}CHECK (#{expression})"
+        "#{constraint_name}CHECK (#{expression})#{not_valid}"
       end
       alias :to_s :to_sql
     end
@@ -538,6 +548,8 @@ module ActiveRecord
     #   values are <tt>:no_action</tt>, <tt>:restrict</tt>,
     #   <tt>:cascade</tt>, <tt>:set_null</tt> and <tt>:set_default</tt>.
     #   PostgreSQL's default is <tt>:no_action</tt>.
+    # * <tt>:not_valid</tt> - adds the NOT VALID clause. Only useful when
+    #   altering an existing table.
     #
     # See the PostgreSQL documentation on foreign keys for details about
     # the <tt>:deferrable</tt>, <tt>:match</tt>, <tt>:on_delete</tt>
@@ -580,6 +592,7 @@ module ActiveRecord
           sql << " MATCH #{options[:match].to_s.upcase}" if options[:match]
           sql << " ON DELETE #{options[:on_delete].to_s.gsub(/_/, ' ').upcase}" if options[:on_delete]
           sql << " ON UPDATE #{options[:on_update].to_s.gsub(/_/, ' ').upcase}" if options[:on_update]
+          sql << not_valid
           sql << deferrable
         end
         sql

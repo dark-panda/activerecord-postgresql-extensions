@@ -330,4 +330,14 @@ EOF
       %{ALTER TABLE "foo" ADD PRIMARY KEY ("bar_id") WITH (FILLFACTOR=10) USING INDEX TABLESPACE "fubar";}
     ], statements)
   end
+
+  def test_not_valid
+    Mig.add_check_constraint(:foo, 'length(name) < 100', :not_valid => true)
+    Mig.add_foreign_key(:foo, :bar_id, :bar, :not_valid => true)
+
+    assert_equal([
+      "ALTER TABLE \"foo\" ADD CHECK (length(name) < 100) NOT VALID;",
+      "ALTER TABLE \"foo\" ADD FOREIGN KEY (\"bar_id\") REFERENCES \"bar\" NOT VALID;"
+    ], statements)
+  end
 end
