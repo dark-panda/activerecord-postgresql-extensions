@@ -348,4 +348,12 @@ EOF
       "ALTER TABLE \"foo\" VALIDATE CONSTRAINT \"foo_constraint\";"
     ], statements)
   end
+
+  def test_no_inherit
+    Mig.add_check_constraint(:foo, 'length(name) < 100', :no_inherit => true)
+
+    assert_equal([
+      "ALTER TABLE \"foo\" ADD CHECK (length(name) < 100) NO INHERIT;",
+    ], statements)
+  end
 end

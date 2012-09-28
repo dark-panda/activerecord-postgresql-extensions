@@ -151,6 +151,14 @@ module ActiveRecord
             ''
           end
         end
+
+        def no_inherit
+          if options[:no_inherit]
+            " NO INHERIT"
+          else
+            ''
+          end
+        end
     end
 
     # Creates CHECK constraints for PostgreSQL tables.
@@ -259,6 +267,7 @@ module ActiveRecord
     #   supply both <tt>:name</tt> and <tt>:expression</tt> values.
     # * <tt>:not_valid</tt> - adds the NOT VALID clause. Only useful when
     #   altering an existing table.
+    # * <tt>:no_inherit</tt> - adds the NO INHERIT clause.
     #
     # === Dropping CHECK Constraints
     #
@@ -274,7 +283,7 @@ module ActiveRecord
       end
 
       def to_sql #:nodoc:
-        "#{constraint_name}CHECK (#{expression})#{not_valid}"
+        "#{constraint_name}CHECK (#{expression})#{not_valid}#{no_inherit}"
       end
       alias :to_s :to_sql
     end
