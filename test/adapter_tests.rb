@@ -141,4 +141,56 @@ class AdapterExtensionTests < Test::Unit::TestCase
       %{ALTER TABLE "foo" ENABLE TRIGGER "baz";}
     ], statements)
   end
+
+  def test_add_column_with_expression
+    Mig.add_column(:foo, :bar, :integer, :default => 100)
+    Mig.add_column(:foo, :bar, :integer, :default => {
+      :expression => '1 + 1'
+    })
+
+    Mig.add_column(:foo, :bar, :integer, :null => false, :default => {
+      :expression => '1 + 1'
+    })
+
+    if RUBY_PLATFORM == 'java' || ActiveRecord::VERSION::MAJOR <= 2
+      assert_equal([
+        %{ALTER TABLE "foo" ADD COLUMN "bar" integer},
+        %{ALTER TABLE "foo" ALTER COLUMN "bar" SET DEFAULT 100},
+        %{ALTER TABLE "foo" ADD COLUMN "bar" integer},
+        %{ALTER TABLE "foo" ALTER COLUMN "bar" SET DEFAULT 1 + 1;},
+        %{ALTER TABLE "foo" ADD COLUMN "bar" integer},
+        %{ALTER TABLE "foo" ALTER COLUMN "bar" SET DEFAULT 1 + 1;},
+        %{UPDATE "foo" SET "bar" = 1 + 1 WHERE "bar" IS NULL},
+        %{ALTER TABLE "foo" ALTER "bar" SET NOT NULL},
+      ], statements)
+    else
+      assert_equal([
+        %{ALTER TABLE "foo" ADD COLUMN "bar" integer DEFAULT 100},
+        %{ALTER TABLE "foo" ADD COLUMN "bar" integer DEFAULT 1 + 1},
+        %{ALTER TABLE "foo" ADD COLUMN "bar" integer DEFAULT 1 + 1 NOT NULL}
+      ], statements)
+    end
+  end
+
+  def test_change_column_with_expression
+    Mig.change_column(:foo, :bar, :integer, :default => 100)
+    Mig.change_column(:foo, :bar, :integer, :default => {
+      :expression => '1 + 1'
+    })
+
+    Mig.change_column(:foo, :bar, :integer, :null => false, :default => {
+      :expression => '1 + 1'
+    })
+
+    assert_equal([
+      %{ALTER TABLE "foo" ALTER COLUMN "bar" TYPE integer},
+      %{ALTER TABLE "foo" ALTER COLUMN "bar" SET DEFAULT 100},
+      %{ALTER TABLE "foo" ALTER COLUMN "bar" TYPE integer},
+      %{ALTER TABLE "foo" ALTER COLUMN "bar" SET DEFAULT 1 + 1;},
+      %{ALTER TABLE "foo" ALTER COLUMN "bar" TYPE integer},
+      %{ALTER TABLE "foo" ALTER COLUMN "bar" SET DEFAULT 1 + 1;},
+      %{UPDATE "foo" SET "bar" = 1 + 1 WHERE "bar" IS NULL},
+      %{ALTER TABLE "foo" ALTER "bar" SET NOT NULL},
+    ], statements)
+  end
 end

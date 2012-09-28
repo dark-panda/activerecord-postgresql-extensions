@@ -676,6 +676,18 @@ module ActiveRecord
         end
       end
       alias_method_chain :change_column_default, :expression
+
+      def change_column_null_with_expression(table_name, column_name, null, default = nil) #:nodoc:
+        if default.is_a?(Hash) && default.has_key?(:expression)
+          unless null
+            execute("UPDATE #{quote_table_name(table_name)} SET #{quote_column_name(column_name)} = #{default[:expression]} WHERE #{quote_column_name(column_name)} IS NULL")
+          end
+          execute("ALTER TABLE #{quote_table_name(table_name)} ALTER #{quote_column_name(column_name)} #{null ? 'DROP' : 'SET'} NOT NULL")
+        else
+          change_column_null_without(table_name, column_name, null, default = nil)
+        end
+      end
+      alias_method_chain :change_column_null, :expression
     end
 
     class PostgreSQLColumn
