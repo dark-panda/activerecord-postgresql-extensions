@@ -68,10 +68,10 @@ module ActiveRecord
       end
 
       def to_sql
-        vacuum_options = options.collect { |(k, v)|
-          k = k.to_s.upcase
-          k if VACUUM_OPTIONS.include?(k)
-        }.compact
+        vacuum_options = VACUUM_OPTIONS.select { |o|
+          o = o.downcase.to_sym
+          self.options[o.to_sym]
+        }
 
         sql = 'VACUUM'
 
