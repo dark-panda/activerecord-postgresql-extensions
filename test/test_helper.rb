@@ -6,7 +6,7 @@ gem 'activerecord', ACTIVERECORD_GEM_VERSION
 
 require 'active_record'
 require 'minitest/autorun'
-require 'turn'
+require 'turn/autorun'
 require 'logger'
 require File.join(File.dirname(__FILE__), *%w{ .. lib activerecord-postgresql-extensions })
 
