@@ -110,6 +110,12 @@ module PostgreSQLExtensionsTestHelper
   end
 end
 
+class ActiveRecord::Migration
+  def say(*args)
+    # no-op -- we just want it to be quiet.
+  end
+end
+
 class Mig < ActiveRecord::Migration
 end
 
