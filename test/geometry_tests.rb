@@ -4,7 +4,7 @@ require 'test_helper'
 
 if ActiveRecord::PostgreSQLExtensions::PostGIS.VERSION
   if ActiveRecord::PostgreSQLExtensions::PostGIS.VERSION[:lib] >= '2.0'
-    class GeometryTests < Test::Unit::TestCase
+    class GeometryTests < MiniTest::Unit::TestCase
       include PostgreSQLExtensionsTestHelper
 
       def test_create_geometry

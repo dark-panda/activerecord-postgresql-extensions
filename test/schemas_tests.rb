@@ -2,7 +2,7 @@
 $: << File.dirname(__FILE__)
 require 'test_helper'
 
-class SchemasTests < Test::Unit::TestCase
+class SchemasTests < MiniTest::Unit::TestCase
   include PostgreSQLExtensionsTestHelper
 
   def test_create_schema

@@ -2,7 +2,7 @@
 $: << File.dirname(__FILE__)
 require 'test_helper'
 
-class TablespaceTests < Test::Unit::TestCase
+class TablespaceTests < MiniTest::Unit::TestCase
   include PostgreSQLExtensionsTestHelper
 
   def test_create_tablespace

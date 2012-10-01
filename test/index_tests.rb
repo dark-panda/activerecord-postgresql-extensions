@@ -2,7 +2,7 @@
 $: << File.dirname(__FILE__)
 require 'test_helper'
 
-class IndexTests < Test::Unit::TestCase
+class IndexTests < MiniTest::Unit::TestCase
   include PostgreSQLExtensionsTestHelper
 
   def test_create_index
@@ -66,11 +66,11 @@ class IndexTests < Test::Unit::TestCase
       "DROP INDEX CONCURRENTLY \"foo_names_idx\";"
     ], statements)
 
-    assert_raise(ArgumentError) do
+    assert_raises(ArgumentError) do
       ARBC.drop_index([ :foo_idx, :bar_idx ], :concurrently => true)
     end
 
-    assert_raise(ArgumentError) do
+    assert_raises(ArgumentError) do
       Mig.drop_index(:foo_idx, :concurrently => true, :cascade => true)
     end
   end

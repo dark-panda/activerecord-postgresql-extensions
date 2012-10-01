@@ -2,7 +2,7 @@
 $: << File.dirname(__FILE__)
 require 'test_helper'
 
-class ConstraintTests < Test::Unit::TestCase
+class ConstraintTests < MiniTest::Unit::TestCase
   include PostgreSQLExtensionsTestHelper
 
   def setup

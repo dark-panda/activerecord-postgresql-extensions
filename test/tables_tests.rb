@@ -2,7 +2,7 @@
 $: << File.dirname(__FILE__)
 require 'test_helper'
 
-class TablesTests < Test::Unit::TestCase
+class TablesTests < MiniTest::Unit::TestCase
   include PostgreSQLExtensionsTestHelper
 
   def test_default_with_expression
@@ -102,17 +102,17 @@ class TablesTests < Test::Unit::TestCase
       %{CREATE TABLE "foo" OF "bar";}
     ], statements)
 
-    assert_raise(ArgumentError) do
+    assert_raises(ArgumentError) do
       Mig.create_table('foo', :of_type => 'bar') do |t|
         t.integer :what
       end
     end
 
-    assert_raise(ArgumentError) do
+    assert_raises(ArgumentError) do
       Mig.create_table('foo', :of_type => 'bar', :like => :something)
     end
 
-    assert_raise(ArgumentError) do
+    assert_raises(ArgumentError) do
       Mig.create_table('foo', :of_type => 'bar', :inherits => :something)
     end
   end

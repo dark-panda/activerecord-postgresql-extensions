@@ -28,5 +28,6 @@ Gem::Specification.new do |s|
   end
   s.add_dependency("rdoc")
   s.add_dependency("rake", ["~> 0.9"])
+  s.add_dependency("minitest")
 end
 

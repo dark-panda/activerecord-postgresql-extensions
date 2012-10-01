@@ -2,7 +2,7 @@
 $: << File.dirname(__FILE__)
 require 'test_helper'
 
-class AdapterExtensionTests < Test::Unit::TestCase
+class AdapterExtensionTests < MiniTest::Unit::TestCase
   include PostgreSQLExtensionsTestHelper
 
   def test_quote_table_name_with_schema_string
@@ -62,7 +62,7 @@ class AdapterExtensionTests < Test::Unit::TestCase
       %{SET SESSION ROLE "foo";}
     ], statements)
 
-    assert_raise(ArgumentError) do
+    assert_raises(ArgumentError) do
       ARBC.set_role('foo', :duration => :nonsense)
     end
   end

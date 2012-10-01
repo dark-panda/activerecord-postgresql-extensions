@@ -2,7 +2,7 @@
 $: << File.dirname(__FILE__)
 require 'test_helper'
 
-class VacuumTests < Test::Unit::TestCase
+class VacuumTests < MiniTest::Unit::TestCase
   include PostgreSQLExtensionsTestHelper
 
   def test_vacuum
@@ -32,7 +32,7 @@ class VacuumTests < Test::Unit::TestCase
   end
 
   def test_vacuum_with_columns_but_no_table
-    assert_raise(ArgumentError) do
+    assert_raises(ArgumentError) do
       ARBC.vacuum(:columns => :bar)
     end
   end

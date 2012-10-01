@@ -2,7 +2,7 @@
 $: << File.dirname(__FILE__)
 require 'test_helper'
 
-class TextSearchTests < Test::Unit::TestCase
+class TextSearchTests < MiniTest::Unit::TestCase
   include PostgreSQLExtensionsTestHelper
 
   def test_create_text_search_configuration
@@ -16,11 +16,11 @@ class TextSearchTests < Test::Unit::TestCase
       "CREATE TEXT SEARCH CONFIGURATION \"foo\" (COPY = \"pg_catalog\".\"english\");"
     ], statements)
 
-    assert_raise(ArgumentError) do
+    assert_raises(ArgumentError) do
       ARBC.create_text_search_configuration(:foo)
     end
 
-    assert_raise(ArgumentError) do
+    assert_raises(ArgumentError) do
       ARBC.create_text_search_configuration(:foo, :parser_name => 'bar', :source_config => 'lolwut')
     end
   end
@@ -74,11 +74,11 @@ class TextSearchTests < Test::Unit::TestCase
       "ALTER TEXT SEARCH CONFIGURATION \"foo\" DROP MAPPING IF EXISTS FOR \"bar\";"
     ], statements)
 
-    assert_raise(ArgumentError) do
+    assert_raises(ArgumentError) do
       ARBC.drop_text_search_configuration_mapping(:foo)
     end
 
-    assert_raise(ArgumentError) do
+    assert_raises(ArgumentError) do
       ARBC.drop_text_search_configuration_mapping(:foo, :if_exists => true)
     end
   end
@@ -174,7 +174,7 @@ class TextSearchTests < Test::Unit::TestCase
       "CREATE TEXT SEARCH TEMPLATE \"foo\" (INIT = \"lol\", LEXIZE = \"bar\");"
     ], statements)
 
-    assert_raise(ArgumentError) do
+    assert_raises(ArgumentError) do
       ARBC.create_text_search_template(:foo)
     end
   end
@@ -228,7 +228,7 @@ class TextSearchTests < Test::Unit::TestCase
       "CREATE TEXT SEARCH PARSER \"foo\" (START = \"start\", GETTOKEN = \"gettoken\", END = \"end\", LEXTYPES = \"lextypes\", HEADLINE = \"headline\");"
     ], statements)
 
-    assert_raise(ArgumentError) do
+    assert_raises(ArgumentError) do
       ARBC.create_text_search_parser(:foo)
     end
   end

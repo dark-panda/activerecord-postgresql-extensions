@@ -2,7 +2,7 @@
 $: << File.dirname(__FILE__)
 require 'test_helper'
 
-class TriggerTests < Test::Unit::TestCase
+class TriggerTests < MiniTest::Unit::TestCase
   include PostgreSQLExtensionsTestHelper
 
   def test_enable_triggers

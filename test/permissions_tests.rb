@@ -2,7 +2,7 @@
 $: << File.dirname(__FILE__)
 require 'test_helper'
 
-class PermissionsTests < Test::Unit::TestCase
+class PermissionsTests < MiniTest::Unit::TestCase
   include PostgreSQLExtensionsTestHelper
 
   def test_grant_table_privileges
