@@ -19,6 +19,7 @@ end
 dirname = File.join(File.dirname(__FILE__), *%w{ active_record postgresql_extensions })
 
 %w{
+  features
   adapter_extensions
   constraints
   tables

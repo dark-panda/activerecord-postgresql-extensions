@@ -6,6 +6,8 @@ class ExtensionsTests < MiniTest::Unit::TestCase
   include PostgreSQLExtensionsTestHelper
 
   def test_create_extension
+    skip if !ActiveRecord::PostgreSQLExtensions::Features.extensions?
+
     ARBC.create_extension(:foo)
     ARBC.create_extension(:foo, :if_not_exists => true)
     ARBC.create_extension(:foo, :schema => :bar)
@@ -22,6 +24,8 @@ class ExtensionsTests < MiniTest::Unit::TestCase
   end
 
   def test_drop_extension
+    skip if !ActiveRecord::PostgreSQLExtensions::Features.extensions?
+
     ARBC.drop_extension(:foo)
     ARBC.drop_extension(:foo, :if_exists => true)
     ARBC.drop_extension(:foo, :cascade => true)
@@ -36,6 +40,8 @@ class ExtensionsTests < MiniTest::Unit::TestCase
   end
 
   def test_update_extension
+    skip if !ActiveRecord::PostgreSQLExtensions::Features.extensions?
+
     ARBC.update_extension(:foo)
     ARBC.update_extension(:foo, '2.0.0')
 
@@ -46,6 +52,8 @@ class ExtensionsTests < MiniTest::Unit::TestCase
   end
 
   def test_update_schema
+    skip if !ActiveRecord::PostgreSQLExtensions::Features.extensions?
+
     ARBC.alter_extension_schema(:foo, :bar)
 
     assert_equal([
@@ -54,12 +62,16 @@ class ExtensionsTests < MiniTest::Unit::TestCase
   end
 
   def test_alter_extension_empty
+    skip if !ActiveRecord::PostgreSQLExtensions::Features.extensions?
+
     ARBC.alter_extension(:foo)
 
     assert_equal([], statements)
   end
 
   def test_alter_extension_regular_options_with_hashes
+    skip if !ActiveRecord::PostgreSQLExtensions::Features.extensions?
+
     ARBC.alter_extension(:foo, {
       :collation => :bar,
       :conversion => :bar,
@@ -174,6 +186,8 @@ class ExtensionsTests < MiniTest::Unit::TestCase
   end
 
   def test_alter_extension_regular_options_with_block
+    skip if !ActiveRecord::PostgreSQLExtensions::Features.extensions?
+
     ARBC.alter_extension(:foo) do |e|
       e.drop_collation :bar
       e.add_conversion :bar
@@ -188,6 +202,8 @@ ALTER EXTENSION "foo" ADD DOMAIN "bar";}
   end
 
   def test_alter_extension_cast_option
+    skip if !ActiveRecord::PostgreSQLExtensions::Features.extensions?
+
     ARBC.alter_extension(:foo) do |e|
       e.cast :hello => :world
       e.cast [ :hello, :world ]
@@ -202,6 +218,8 @@ ALTER EXTENSION "foo" ADD CAST ("hello" AS "world");}
   end
 
   def test_alter_extension_aggregate_option
+    skip if !ActiveRecord::PostgreSQLExtensions::Features.extensions?
+
     ARBC.alter_extension(:foo) do |e|
       e.aggregate :name => :bar, :types => %w{ type_a type_b type_c }
       e.aggregate :bar, :type_a, :type_b, :type_c
@@ -214,6 +232,8 @@ ALTER EXTENSION "foo" ADD AGGREGATE "bar" ("type_a", "type_b", "type_c");}
   end
 
   def test_alter_extension_operator_option
+    skip if !ActiveRecord::PostgreSQLExtensions::Features.extensions?
+
     ARBC.alter_extension(:foo) do |e|
       e.operator :bar, :hello, :world
       e.operator [ :bar, :hello, :world ]
@@ -228,6 +248,8 @@ ALTER EXTENSION "foo" ADD OPERATOR "bar" ("hello", "world");}
   end
 
   def test_alter_extension_operator_class_option
+    skip if !ActiveRecord::PostgreSQLExtensions::Features.extensions?
+
     ARBC.alter_extension(:foo) do |e|
       e.operator_class :hello => :world
       e.operator_class :hello, :world
@@ -244,6 +266,8 @@ ALTER EXTENSION "foo" ADD OPERATOR CLASS "hello" USING "world");}
   end
 
   def test_alter_extension_operator_family_option
+    skip if !ActiveRecord::PostgreSQLExtensions::Features.extensions?
+
     ARBC.alter_extension(:foo) do |e|
       e.operator_family :hello => :world
       e.operator_family :hello, :world
@@ -260,6 +284,8 @@ ALTER EXTENSION "foo" ADD OPERATOR FAMILY "hello" USING "world");}
   end
 
   def test_alter_extension_function_option
+    skip if !ActiveRecord::PostgreSQLExtensions::Features.extensions?
+
     ARBC.alter_extension(:foo) do |e|
       e.function :bar, "VARIADIC hello world"
       e.function [ :bar, "VARIADIC hello world" ]
