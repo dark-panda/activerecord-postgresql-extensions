@@ -49,10 +49,6 @@ else
 end
 
 class ActiveRecord::ConnectionAdapters::PostgreSQLAdapter
-  def statements
-    @statements ||= []
-  end
-
   def execute_with_statement_capture(*args)
     PostgreSQLExtensionsTestHelper.add_statement(args.first)
 
