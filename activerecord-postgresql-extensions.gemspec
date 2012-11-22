@@ -21,14 +21,5 @@ Gem::Specification.new do |s|
   s.require_paths = ["lib"]
 
   s.add_dependency("activerecord", [">= 2.3"])
-  if RUBY_PLATFORM == "java"
-    s.add_dependency("activerecord-jdbcpostgresql-adapter")
-  else
-    s.add_dependency("pg")
-  end
-  s.add_development_dependency("rdoc")
-  s.add_development_dependency("rake", ["~> 0.9"])
-  s.add_development_dependency("minitest")
-  s.add_development_dependency("turn")
 end
 
