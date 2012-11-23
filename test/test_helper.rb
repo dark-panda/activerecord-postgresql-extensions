@@ -5,9 +5,13 @@ require 'rubygems'
 gem 'activerecord', ACTIVERECORD_GEM_VERSION
 
 require 'active_record'
-require 'minitest/autorun'
-require 'minitest/reporters'
 require 'logger'
+require 'minitest/autorun'
+
+if RUBY_VERSION >= '1.9'
+  require 'minitest/reporters'
+end
+
 require File.join(File.dirname(__FILE__), *%w{ .. lib activerecord-postgresql-extensions })
 
 ActiveRecord::Base.logger = Logger.new("debug.log") if ENV['ENABLE_LOGGER']
@@ -119,5 +123,7 @@ end
 class Foo < ActiveRecord::Base
 end
 
-MiniTest::Reporters.use!(MiniTest::Reporters::SpecReporter.new)
+if RUBY_VERSION >= '1.9'
+  MiniTest::Reporters.use!(MiniTest::Reporters::SpecReporter.new)
+end
 
