@@ -193,4 +193,18 @@ class AdapterExtensionTests < MiniTest::Unit::TestCase
       %{ALTER TABLE "foo" ALTER "bar" SET NOT NULL},
     ], statements)
   end
+
+  def test_change_column_without_expression
+    Mig.change_column(:foo, :bar, :integer, :null => false, :default => 100)
+    Mig.change_column(:foo, :bar, :integer, :null => true, :default => 100)
+
+    assert_equal([
+      %{ALTER TABLE "foo" ALTER COLUMN "bar" TYPE integer},
+      %{ALTER TABLE "foo" ALTER COLUMN "bar" SET DEFAULT 100},
+      %{ALTER TABLE "foo" ALTER "bar" SET NOT NULL},
+      %{ALTER TABLE "foo" ALTER COLUMN "bar" TYPE integer},
+      %{ALTER TABLE "foo" ALTER COLUMN "bar" SET DEFAULT 100},
+      %{ALTER TABLE "foo" ALTER "bar" DROP NOT NULL},
+    ], statements)
+  end
 end
