@@ -1,6 +1,15 @@
 
 ACTIVERECORD_GEM_VERSION = ENV['ACTIVERECORD_GEM_VERSION'] || '~> 3.2.0'
 
+if RUBY_VERSION >= '1.9'
+  require 'simplecov'
+
+  SimpleCov.command_name('Unit Tests')
+  SimpleCov.start do
+    add_filter '/test/'
+  end
+end
+
 require 'rubygems'
 gem 'activerecord', ACTIVERECORD_GEM_VERSION
 
