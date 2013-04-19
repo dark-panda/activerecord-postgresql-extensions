@@ -2,38 +2,6 @@
 module ActiveRecord
   module ConnectionAdapters
     class PostgreSQLAdapter
-      if defined?(Rails)
-        LOGGER_REGEXP = /^#{Rails.root}(?!\/vendor\/rails)/
-
-        def query_with_extra_logging(*args) #:nodoc:
-          if ActiveRecord::Base.enable_extended_logging && Rails.logger && Rails.logger.level == Logger::DEBUG
-            sql = args.first
-            unless (sql =~ /(pg_get_constraintdef|pg_attribute|pg_class)/)
-              Rails.logger.debug
-              Rails.logger.debug(caller.select { |x|
-                ActiveRecord::Base.enable_really_extended_logging || x.match(LOGGER_REGEXP)
-              }.join("\n"))
-            end
-          end
-          query_without_extra_logging(*args)
-        end
-        alias_method_chain :query, :extra_logging
-
-        def execute_with_extra_logging(*args) #:nodoc:
-          if ActiveRecord::Base.enable_extended_logging && Rails.logger && Rails.logger.level == Logger::DEBUG
-            sql = args.first
-            unless (sql =~ /(pg_get_constraintdef|pg_attribute|pg_class)/)
-              Rails.logger.debug
-              Rails.logger.debug(caller.select { |x|
-                ActiveRecord::Base.enable_really_extended_logging || x.match(LOGGER_REGEXP)
-              }.join("\n"))
-            end
-          end
-          execute_without_extra_logging(*args)
-        end
-        alias_method_chain :execute, :extra_logging
-      end
-
       # with_schema is kind of like with_scope. It wraps various
       # object names in SQL statements into a PostgreSQL schema. You
       # can have multiple with_schemas wrapped around each other, and
@@ -742,10 +710,3 @@ module ActiveRecord
   end
 end
 
-ActiveRecord::Base.class_eval do
-  # Enable extended query logging
-  cattr_accessor :enable_extended_logging
-
-  # Enable REALLY extended query logging
-  cattr_accessor :enable_really_extended_logging
-end
