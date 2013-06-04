@@ -312,13 +312,7 @@ module ActiveRecord
             check
           end
 
-          table_constraints << check.collect do |c|
-            if c.is_a?(Hash)
-              PostgreSQLCheckConstraint.new(@base, c.delete(:expression), c)
-            else
-              PostgreSQLCheckConstraint.new(@base, c)
-            end
-          end
+          table_constraints << PostgreSQLCheckConstraintCollection.new(@base, check)
         end
 
         if references
@@ -366,10 +360,9 @@ module ActiveRecord
         @post_processing ||= []
       end
 
-      private
-        def table_constraints
-          @table_constraints ||= []
-        end
+      def table_constraints
+        @table_constraints ||= []
+      end
     end
   end
 end
