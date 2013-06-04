@@ -756,8 +756,6 @@ module ActiveRecord
             :geometry
           when 'geography'
             :geography
-          when 'tsvector'
-            :tsvector
           else
             simplified_type_without_additional_types(field_type)
         end

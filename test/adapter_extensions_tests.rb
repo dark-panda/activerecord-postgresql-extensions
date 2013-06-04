@@ -44,7 +44,6 @@ class AdapterExtensionTests < PostgreSQLExtensionsTestCase
   def test_simplified_type
     col = ActiveRecord::ConnectionAdapters::PostgreSQLColumn.new('vector', nil, nil)
     assert_equal(:geometry, col.send(:simplified_type, 'geometry'))
-    assert_equal(:tsvector, col.send(:simplified_type, 'tsvector'))
     assert_equal(:integer, col.send(:simplified_type, 'integer'))
     assert_equal(nil, col.send(:simplified_type, 'complete_nonsense'))
   end
