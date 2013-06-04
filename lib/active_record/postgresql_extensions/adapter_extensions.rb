@@ -749,16 +749,25 @@ module ActiveRecord
         end
     end
 
+    POSTGRESQL_EXTENSION_ADDITIONAL_TYPES = {}
+    col = if ActiveRecord::VERSION::STRING >= "4.0"
+      ActiveRecord::ConnectionAdapters::PostgreSQLColumn.new('test_for_types', nil, nil)
+    else
+      ActiveRecord::ConnectionAdapters::PostgreSQLColumn.new('test_for_types', nil)
+    end
+
+    unless col.send(:simplified_type, 'geometry')
+      POSTGRESQL_EXTENSION_ADDITIONAL_TYPES['geometry'] = :geometry
+    end
+
+    unless col.send(:simplified_type, 'geography')
+      POSTGRESQL_EXTENSION_ADDITIONAL_TYPES['geography'] = :geography
+    end
+
     class PostgreSQLColumn
       def simplified_type_with_additional_types(field_type)
-        case field_type
-          when 'geometry'
-            :geometry
-          when 'geography'
-            :geography
-          else
-            simplified_type_without_additional_types(field_type)
-        end
+        POSTGRESQL_EXTENSION_ADDITIONAL_TYPES[field_type] or
+          simplified_type_without_additional_types(field_type)
       end
       alias_method_chain :simplified_type, :additional_types
     end
