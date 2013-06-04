@@ -336,4 +336,22 @@ class AdapterExtensionTests < PostgreSQLExtensionsTestCase
     assert_equal([ "foo", "bar" ], ARBC.extract_schema_and_table_names(%{"foo"."bar"}))
     assert_equal([ nil, "bar" ], ARBC.extract_schema_and_table_names(%{"bar"}))
   end
+
+  def test_internal_name_column_type
+    ARBC.exec_query('DROP TABLE IF EXISTS ex')
+    ARBC.exec_query('CREATE TABLE ex(data name)')
+    column = ARBC.columns('ex').find { |col| col.name == 'data' }
+    assert_equal :string, column.type
+  ensure
+    ARBC.exec_query('DROP TABLE IF EXISTS ex')
+  end
+
+  def test_internal_char_column_type
+    ARBC.exec_query('DROP TABLE IF EXISTS ex')
+    ARBC.exec_query('CREATE TABLE ex(data "char")')
+    column = ARBC.columns('ex').find { |col| col.name == 'data' }
+    assert_equal :string, column.type
+  ensure
+    ARBC.exec_query('DROP TABLE IF EXISTS ex')
+  end
 end

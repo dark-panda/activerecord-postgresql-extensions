@@ -764,7 +764,34 @@ module ActiveRecord
       POSTGRESQL_EXTENSION_ADDITIONAL_TYPES['geography'] = :geography
     end
 
+    # There is a pull request to pull in these additional types at
+    # https://github.com/rails/rails/pull/10802 .
+    #
+    # We can't detect for the '"char"' type directly since 'char' itself is
+    # already detected elsewhere in AbstractAdapter#simplified_type, so
+    # we'll assume if we can't detect for 'name' we  should bundle '"char"'
+    # with it.
+    unless col.send(:simplified_type, 'name')
+      POSTGRESQL_EXTENSION_ADDITIONAL_TYPES['name'] = :string
+      POSTGRESQL_EXTENSION_ADDITIONAL_TYPES['"char"'] = :string
+    end
+
     class PostgreSQLColumn
+      class << self
+        if !POSTGRESQL_EXTENSION_ADDITIONAL_TYPES['name']
+          def extract_value_from_default_with_additional_types(default)
+            case default
+              # Character types
+              when /\A\(?'(.*)'::.*\b(?:name|"char")\z/m
+                $1
+              else
+                extract_value_from_default_without_additional_types(default)
+            end
+          end
+          alias_method_chain :extract_value_from_default, :additional_types
+        end
+      end
+
       def simplified_type_with_additional_types(field_type)
         POSTGRESQL_EXTENSION_ADDITIONAL_TYPES[field_type] or
           simplified_type_without_additional_types(field_type)
