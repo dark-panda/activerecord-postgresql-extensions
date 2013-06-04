@@ -343,7 +343,7 @@ module ActiveRecord
           table_constraints << PostgreSQLUniqueConstraint.new(@base, name, unique)
         end
 
-        if primary_key
+        if primary_key && type != :primary_key
           unless primary_key.is_a?(Hash)
             primary_key = {}
           end
