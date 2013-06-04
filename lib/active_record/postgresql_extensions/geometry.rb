@@ -20,13 +20,10 @@ module ActiveRecord
 
   module ConnectionAdapters
     class PostgreSQLAdapter
-      def native_database_types_with_spatial_types #:nodoc:
-        native_database_types_without_spatial_types.merge({
-          :geometry => { :name => 'geometry' },
-          :geography => { :name => 'geography' }
-        })
-      end
-      alias_method_chain :native_database_types, :spatial_types
+      NATIVE_DATABASE_TYPES.reverse_merge!({
+        :geometry => { :name => 'geometry' },
+        :geography => { :name => 'geography' }
+      })
 
       # Updates the definition of a geometry field to a new SRID value.
       def update_geometry_srid(table_name, column_name, srid)
