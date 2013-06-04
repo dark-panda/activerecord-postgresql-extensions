@@ -253,18 +253,12 @@ class ConstraintTests < PostgreSQLExtensionsTestCase
       }
     })
 
-    escaped_array = if ActiveRecord::VERSION::STRING >= "3.0"
-      "(1, 2, 3, 4)"
-    else
-      "(1,2,3,4)"
-    end
-
     assert_equal([
       %{ALTER TABLE "foo" ADD EXCLUDE (length(name) WITH =);},
       %{ALTER TABLE "foo" ADD CONSTRAINT "exclude_name_length" EXCLUDE (length(name) WITH =);},
       %{ALTER TABLE "foo" ADD CONSTRAINT "exclude_name_length" EXCLUDE USING "gist" (length(name) WITH =);},
       %{ALTER TABLE "foo" ADD EXCLUDE (length(name) WITH =, length(title) WITH =);},
-      %{ALTER TABLE "foo" ADD EXCLUDE (length(name) WITH =) WHERE ("foos"."id" IN #{escaped_array});},
+      %{ALTER TABLE "foo" ADD EXCLUDE (length(name) WITH =) WHERE ("foos"."id" IN (1, 2, 3, 4));},
       %{ALTER TABLE "foo" ADD EXCLUDE (length(name) WITH =) WITH (FILLFACTOR=10) USING INDEX TABLESPACE "fubar";},
       %{ALTER TABLE "foo" ADD EXCLUDE (length(name) WITH =) WITH ("fillfactor" = 10) USING INDEX TABLESPACE "fubar";}
     ], statements)

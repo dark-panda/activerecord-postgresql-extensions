@@ -9,23 +9,13 @@ class TablesTests < PostgreSQLExtensionsTestCase
       t.integer :bar_id, :default => '20 + 10'
     end
 
-    if ActiveRecord::VERSION::STRING >= "3.2"
-      assert_equal([ strip_heredoc(<<-SQL) ], statements)
-        CREATE TABLE "foo" (
-          "id" serial primary key,
-          "foo_id" integer DEFAULT 10 + 20,
-          "bar_id" integer DEFAULT 20
-        );
-      SQL
-    else
-      assert_equal([ strip_heredoc(<<-SQL) ], statements)
-        CREATE TABLE "foo" (
-          "id" serial primary key,
-          "foo_id" integer DEFAULT 10 + 20,
-          "bar_id" integer DEFAULT '20 + 10'
-        );
-      SQL
-    end
+    assert_equal([ strip_heredoc(<<-SQL) ], statements)
+      CREATE TABLE "foo" (
+        "id" serial primary key,
+        "foo_id" integer DEFAULT 10 + 20,
+        "bar_id" integer DEFAULT 20
+      );
+    SQL
   end
 
   def test_like
