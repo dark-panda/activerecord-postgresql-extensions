@@ -157,6 +157,29 @@ module ActiveRecord
         end
     end
 
+    # Creates a collection of CHECK constraints. This class isn't meant to be
+    # used directly.
+    class PostgreSQLCheckConstraintCollection < Array
+      attr_accessor :base
+
+      def initialize(base, checks) #:nodoc:
+        @base = base
+
+        self.replace Array.wrap(checks).collect { |c|
+          if c.is_a?(Hash)
+            PostgreSQLCheckConstraint.new(@base, c.delete(:expression), c)
+          else
+            PostgreSQLCheckConstraint.new(@base, c)
+          end
+        }
+      end
+
+      def to_sql #:nodoc:
+        self.collect(&:to_sql)
+      end
+      alias :to_s :to_sql
+    end
+
     # Creates CHECK constraints for PostgreSQL tables.
     #
     # This class is meant to be used by PostgreSQL column and table
