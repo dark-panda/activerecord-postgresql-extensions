@@ -46,3 +46,9 @@ containing the database schema in db/development_structure.sql.
 Details on this configuration option can be found here:
 
 http://guides.rubyonrails.org/configuring.html
+
+== License
+
+This gem is licensed under an MIT-style license. See the +MIT-LICENSE+ file for
+details.
+
