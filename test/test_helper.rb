@@ -63,23 +63,37 @@ else
 end
 
 class ActiveRecord::ConnectionAdapters::PostgreSQLAdapter
+  def real_execute
+    @real_execute = true
+    yield
+  ensure
+    @real_execute = false
+  end
+
   def execute_with_statement_capture(*args)
     PostgreSQLExtensionsTestHelper.add_statement(args.first)
 
-    if RUBY_PLATFORM == 'java'
-      if args.first =~ /pg_tables/
-        return execute_without_statement_capture(*args)
+    if @real_execute
+      execute_without_statement_capture(*args)
+    else
+      if RUBY_PLATFORM == 'java'
+        if args.first =~ /pg_tables/
+          return execute_without_statement_capture(*args)
+        end
       end
-    end
 
-    args.first
+      args.first
+    end
   end
   alias_method_chain :execute, :statement_capture
 
   unless RUBY_PLATFORM == 'java'
     def query_with_statement_capture(*args)
-      PostgreSQLExtensionsTestHelper.add_statement(args.first)
-      #query_without_statement_capture(*args)
+      if @real_execute
+        query_without_statement_capture(*args)
+      else
+        PostgreSQLExtensionsTestHelper.add_statement(args.first)
+      end
     end
     alias_method_chain :query, :statement_capture
   end
