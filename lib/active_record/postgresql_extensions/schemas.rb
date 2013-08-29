@@ -27,10 +27,13 @@ module ActiveRecord
       #
       # * <tt>:if_exists</tt> - adds IF EXISTS.
       # * <tt>:cascade</tt> - adds CASCADE.
-      def drop_schema(schemas, options = {})
+      def drop_schema(*args)
+        options = args.extract_options!
+        args.flatten!
+
         sql = 'DROP SCHEMA '
         sql << 'IF EXISTS ' if options[:if_exists]
-        sql << Array(schemas).collect { |s| quote_schema(s) }.join(', ')
+        sql << Array(args).collect { |s| quote_schema(s) }.join(', ')
         sql << ' CASCADE' if options[:cascade]
         execute("#{sql};")
       end

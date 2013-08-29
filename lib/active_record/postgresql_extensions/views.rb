@@ -49,10 +49,13 @@ module ActiveRecord
       #
       # * <tt>:if_exists</tt> - adds IF EXISTS.
       # * <tt>:cascade</tt> - adds CASCADE.
-      def drop_view(name, options = {})
+      def drop_view(*args)
+        options = args.extract_options!
+        args.flatten!
+
         sql = 'DROP VIEW '
         sql << 'IF EXISTS ' if options[:if_exists]
-        sql << Array(name).collect { |v| quote_view_name(v) }.join(', ')
+        sql << Array(args).collect { |v| quote_view_name(v) }.join(', ')
         sql << ' CASCADE' if options[:cascade]
         execute("#{sql};")
       end

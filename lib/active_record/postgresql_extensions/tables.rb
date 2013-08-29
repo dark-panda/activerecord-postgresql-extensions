@@ -130,10 +130,13 @@ module ActiveRecord
       #   dropped as well. See the PostgreSQL documentation for details.
       #
       # You can still access the original method via original_drop_table.
-      def drop_table(tables, options = {})
+      def drop_table(*args)
+        options = args.extract_options!
+        args.flatten!
+
         sql = 'DROP TABLE '
         sql << 'IF EXISTS ' if options[:if_exists]
-        sql << Array(tables).collect { |t| quote_table_name(t) }.join(', ')
+        sql << Array(args).collect { |t| quote_table_name(t) }.join(', ')
         sql << ' CASCADE' if options[:cascade]
         execute("#{sql};")
       end

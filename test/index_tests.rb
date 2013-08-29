@@ -58,12 +58,14 @@ class IndexTests < MiniTest::Unit::TestCase
     Mig.drop_index(:foo_names_idx, :if_exists => true)
     Mig.drop_index(:foo_names_idx, :cascade => true)
     Mig.drop_index(:foo_names_idx, :concurrently => true)
+    Mig.drop_index(:foo_names_idx, :bar_names_idx)
 
     assert_equal([
       %{DROP INDEX "foo_names_idx";},
       %{DROP INDEX IF EXISTS "foo_names_idx";},
       %{DROP INDEX "foo_names_idx" CASCADE;},
-      %{DROP INDEX CONCURRENTLY "foo_names_idx";}
+      %{DROP INDEX CONCURRENTLY "foo_names_idx";},
+      %{DROP INDEX "foo_names_idx", "bar_names_idx";}
     ], statements)
 
     assert_raises(ArgumentError) do

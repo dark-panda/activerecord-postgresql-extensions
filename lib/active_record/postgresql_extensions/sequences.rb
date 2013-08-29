@@ -63,10 +63,13 @@ module ActiveRecord
       # * <tt>:if_exists</tt> - adds IF EXISTS.
       # * <tt>:cascade</tt> - cascades the operation down to objects
       #   referring to the sequence.
-      def drop_sequence(name, options = {})
+      def drop_sequence(*args)
+        options = args.extract_options!
+        args.flatten!
+
         sql = 'DROP SEQUENCE '
         sql << 'IF EXISTS ' if options[:if_exists]
-        sql << Array(name).collect { |s| quote_sequence(s) }.join(', ')
+        sql << Array(args).collect { |s| quote_sequence(s) }.join(', ')
         sql << ' CASCADE' if options[:cascade]
         execute("#{sql};")
       end

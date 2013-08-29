@@ -20,10 +20,13 @@ module ActiveRecord
       end
       alias :alter_user :alter_role
 
-      def drop_role(name, options = {})
+      def drop_role(*args)
+        options = args.extract_options!
+        args.flatten!
+
         sql = 'DROP ROLE '
         sql << 'IF EXISTS ' if options[:if_exists]
-        sql << Array(name).collect { |r| quote_role(r) }.join(', ')
+        sql << Array(args).collect { |r| quote_role(r) }.join(', ')
         execute("#{sql};")
       end
       alias :drop_user :drop_role
