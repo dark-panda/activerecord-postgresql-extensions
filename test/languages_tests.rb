@@ -15,8 +15,8 @@ class LanguagesTests < MiniTest::Unit::TestCase
     )
 
     assert_equal([
-      "CREATE PROCEDURAL LANGUAGE \"foo\";",
-      "CREATE TRUSTED PROCEDURAL LANGUAGE \"foo\" HANDLER \"plpgsql\" VALIDATOR test();"
+      %{CREATE PROCEDURAL LANGUAGE "foo";},
+      %{CREATE TRUSTED PROCEDURAL LANGUAGE "foo" HANDLER "plpgsql" VALIDATOR test();}
     ], statements)
   end
 
@@ -25,8 +25,8 @@ class LanguagesTests < MiniTest::Unit::TestCase
     ARBC.drop_language(:foo, :if_exists => true, :cascade => true)
 
     assert_equal([
-      "DROP PROCEDURAL LANGUAGE \"foo\";",
-      "DROP PROCEDURAL LANGUAGE IF EXISTS \"foo\" CASCADE;"
+      %{DROP PROCEDURAL LANGUAGE "foo";},
+      %{DROP PROCEDURAL LANGUAGE IF EXISTS "foo" CASCADE;}
     ], statements)
   end
 
@@ -34,7 +34,7 @@ class LanguagesTests < MiniTest::Unit::TestCase
     ARBC.alter_language_name(:foo, :bar)
 
     assert_equal([
-      "ALTER PROCEDURAL LANGUAGE \"foo\" RENAME TO \"bar\";"
+      %{ALTER PROCEDURAL LANGUAGE "foo" RENAME TO "bar";}
     ], statements)
   end
 
@@ -42,7 +42,7 @@ class LanguagesTests < MiniTest::Unit::TestCase
     ARBC.alter_language_owner(:foo, :bar)
 
     assert_equal([
-      "ALTER PROCEDURAL LANGUAGE \"foo\" OWNER TO \"bar\";"
+      %{ALTER PROCEDURAL LANGUAGE "foo" OWNER TO "bar";}
     ], statements)
   end
 end

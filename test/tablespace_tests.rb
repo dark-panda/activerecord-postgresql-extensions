@@ -44,20 +44,22 @@ class TablespaceTests < MiniTest::Unit::TestCase
   def test_alter_tablespace_paramters
     Mig.alter_tablespace_parameters('foo', :seq_page_cost => 2.0, :random_page_cost => 5.0)
 
-    assert_equal([
-      %{ALTER TABLESPACE "foo" SET (
-  "seq_page_cost" = 2.0,
-  "random_page_cost" = 5.0
-);} ], statements)
+    assert_equal([ strip_heredoc(<<-SQL) ], statements)
+      ALTER TABLESPACE "foo" SET (
+        "seq_page_cost" = 2.0,
+        "random_page_cost" = 5.0
+      );
+    SQL
   end
 
   def test_reset_tablespace_paramters
     Mig.reset_tablespace_parameters('foo', :seq_page_cost, :random_page_cost)
 
-    assert_equal([
-      %{ALTER TABLESPACE "foo" RESET (
-  "seq_page_cost",
-  "random_page_cost"
-);} ], statements)
+    assert_equal([ strip_heredoc(<<-SQL) ], statements)
+      ALTER TABLESPACE "foo" RESET (
+        "seq_page_cost",
+        "random_page_cost"
+      );
+    SQL
   end
 end

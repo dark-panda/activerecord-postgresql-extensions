@@ -12,19 +12,21 @@ class TablesTests < MiniTest::Unit::TestCase
     end
 
     if ActiveRecord::VERSION::STRING >= "3.2"
-      assert_equal([
-      %{CREATE TABLE "foo" (
-  "id" serial primary key,
-  "foo_id" integer DEFAULT 10 + 20,
-  "bar_id" integer DEFAULT 20
-);} ], statements)
+      assert_equal([ strip_heredoc(<<-SQL) ], statements)
+        CREATE TABLE "foo" (
+          "id" serial primary key,
+          "foo_id" integer DEFAULT 10 + 20,
+          "bar_id" integer DEFAULT 20
+        );
+      SQL
     else
-      assert_equal([
-      %{CREATE TABLE "foo" (
-  "id" serial primary key,
-  "foo_id" integer DEFAULT 10 + 20,
-  "bar_id" integer DEFAULT '20 + 10'
-);} ], statements)
+      assert_equal([ strip_heredoc(<<-SQL) ], statements)
+        CREATE TABLE "foo" (
+          "id" serial primary key,
+          "foo_id" integer DEFAULT 10 + 20,
+          "bar_id" integer DEFAULT '20 + 10'
+        );
+      SQL
     end
   end
 
@@ -35,36 +37,42 @@ class TablesTests < MiniTest::Unit::TestCase
         :excluding => %w{ storage comments }
     end
 
-    assert_equal([
-       %{CREATE TABLE "foo" (
-  "id" serial primary key,
-  LIKE "bar" INCLUDING CONSTRAINTS INCLUDING INDEXES EXCLUDING STORAGE EXCLUDING COMMENTS
-);}
-    ], statements)
+    assert_equal([ strip_heredoc(<<-SQL) ], statements)
+       CREATE TABLE "foo" (
+        "id" serial primary key,
+        LIKE "bar" INCLUDING CONSTRAINTS INCLUDING INDEXES EXCLUDING STORAGE EXCLUDING COMMENTS
+      );
+    SQL
   end
 
   def test_option_unlogged
     Mig.create_table('foo', :unlogged => true)
 
-    assert_equal([
-      %{CREATE UNLOGGED TABLE "foo" (\n  "id" serial primary key\n);}
-    ], statements)
+    assert_equal([ strip_heredoc(<<-SQL) ], statements)
+      CREATE UNLOGGED TABLE "foo" (
+        "id" serial primary key
+      );
+    SQL
   end
 
   def test_option_temporary
     Mig.create_table('foo', :temporary => true)
 
-    assert_equal([
-      %{CREATE TEMPORARY TABLE "foo" (\n  "id" serial primary key\n);}
-    ], statements)
+    assert_equal([ strip_heredoc(<<-SQL) ], statements)
+      CREATE TEMPORARY TABLE "foo" (
+        "id" serial primary key
+      );
+    SQL
   end
 
   def test_option_if_not_exists
     Mig.create_table('foo', :if_not_exists => true)
 
-    assert_equal([
-      %{CREATE TABLE IF NOT EXISTS "foo" (\n  "id" serial primary key\n);}
-    ], statements)
+    assert_equal([ strip_heredoc(<<-SQL) ], statements)
+      CREATE TABLE IF NOT EXISTS "foo" (
+        "id" serial primary key
+      );
+    SQL
   end
 
   def test_option_on_commit
@@ -72,27 +80,52 @@ class TablesTests < MiniTest::Unit::TestCase
     Mig.create_table('foo', :on_commit => :delete_rows)
     Mig.create_table('foo', :on_commit => :drop)
 
-    assert_equal([
-      %{CREATE TABLE "foo" (\n  "id" serial primary key\n)\nON COMMIT PRESERVE ROWS;},
-      %{CREATE TABLE "foo" (\n  "id" serial primary key\n)\nON COMMIT DELETE ROWS;},
-      %{CREATE TABLE "foo" (\n  "id" serial primary key\n)\nON COMMIT DROP;}
-    ], statements)
+    expected = []
+
+    expected << strip_heredoc(<<-SQL)
+      CREATE TABLE "foo" (
+        "id" serial primary key
+      )
+      ON COMMIT PRESERVE ROWS;
+    SQL
+
+    expected << strip_heredoc(<<-SQL)
+      CREATE TABLE "foo" (
+        "id" serial primary key
+      )
+      ON COMMIT DELETE ROWS;
+    SQL
+
+    expected << strip_heredoc(<<-SQL)
+      CREATE TABLE "foo" (
+        "id" serial primary key
+      )
+      ON COMMIT DROP;
+    SQL
+
+    assert_equal(expected, statements)
   end
 
   def test_option_inherits
     Mig.create_table('foo', :inherits => 'bar')
 
-    assert_equal([
-      %{CREATE TABLE "foo" (\n  "id" serial primary key\n)\nINHERITS ("bar");}
-    ], statements)
+    assert_equal([ strip_heredoc(<<-SQL) ], statements)
+      CREATE TABLE "foo" (
+        "id" serial primary key
+      )
+      INHERITS ("bar");
+    SQL
   end
 
   def test_option_tablespace
     Mig.create_table('foo', :tablespace => 'bar')
 
-    assert_equal([
-      %{CREATE TABLE "foo" (\n  "id" serial primary key\n)\nTABLESPACE "bar";}
-    ], statements)
+    assert_equal([ strip_heredoc(<<-SQL) ], statements)
+      CREATE TABLE "foo" (
+        "id" serial primary key
+      )
+      TABLESPACE "bar";
+    SQL
   end
 
   def test_option_of_type
@@ -128,8 +161,12 @@ class TablesTests < MiniTest::Unit::TestCase
       })
     end
 
-    assert_equal([
-      %{CREATE TABLE "foo" (\n  "id" serial primary key,\n  "blort" text,\n  CONSTRAINT "exclude_blort_length" EXCLUDE (length(blort) WITH =)\n);}
-    ], statements)
+    assert_equal([ strip_heredoc(<<-SQL) ], statements)
+      CREATE TABLE "foo" (
+        "id" serial primary key,
+        "blort" text,
+        CONSTRAINT "exclude_blort_length" EXCLUDE (length(blort) WITH =)
+      );
+    SQL
   end
 end

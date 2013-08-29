@@ -350,7 +350,7 @@ module ActiveRecord
 
       # Returns an Array of database views.
       def views(name = nil)
-        query(<<-SQL, name).map { |row| row[0] }
+        query(PostgreSQLExtensions::Utils.strip_heredoc(<<-SQL), name).map { |row| row[0] }
           SELECT viewname
           FROM pg_views
           WHERE schemaname = ANY (current_schemas(false))
@@ -371,7 +371,7 @@ module ActiveRecord
           schema = nil
         end
 
-        query(<<-SQL).first[0].to_i > 0
+        query(PostgreSQLExtensions::Utils.strip_heredoc(<<-SQL)).first[0].to_i > 0
           SELECT COUNT(*)
           FROM pg_views
           WHERE viewname = '#{view.gsub(/(^"|"$)/,'')}'
@@ -380,7 +380,7 @@ module ActiveRecord
       end
 
       def roles(name = nil)
-        query(<<-SQL, name).map { |row| row[0] }
+        query(PostgreSQLExtensions::Utils.strip_heredoc(<<-SQL), name).map { |row| row[0] }
           SELECT rolname
           FROM pg_roles
         SQL
@@ -418,7 +418,7 @@ module ActiveRecord
 
       # Returns an Array of tables to ignore.
       def ignored_tables(name = nil)
-        query(<<-SQL, name).map { |row| row[0] }
+        query(PostgreSQLExtensions::Utils.strip_heredoc(<<-SQL), name).map { |row| row[0] }
           SELECT tablename
           FROM pg_tables
           WHERE schemaname IN ('pg_catalog');
@@ -510,7 +510,7 @@ module ActiveRecord
       # contains the table being referenced, the foreign key and the
       # name of the column in the referenced table.
       def foreign_keys(table_name, name = nil)
-        sql = <<-SQL
+        sql = PostgreSQLExtensions::Utils.strip_heredoc(<<-SQL)
           SELECT
             confrelid::regclass AS referenced_table_name,
             a.attname AS foreign_key,
@@ -568,7 +568,7 @@ module ActiveRecord
       # particular Array contains the referencing table, the foreign key
       # and the name of the column in the referenced table.
       def referenced_foreign_keys(table_name, name = nil)
-        sql = <<-SQL
+        sql = PostgreSQLExtensions::Utils.strip_heredoc(<<-SQL)
           SELECT
             c2.relname AS table_name,
             a.attname AS foreign_key,

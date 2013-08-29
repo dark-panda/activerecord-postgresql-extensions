@@ -24,22 +24,28 @@ class FunctionsTests < MiniTest::Unit::TestCase
       "return 10;"
     end
 
-    assert_equal([
-%{CREATE FUNCTION "test"(integer) RETURNS integer AS $$
-select 10;
-$$
-LANGUAGE "sql";},
+    expected = []
 
-%{CREATE OR REPLACE FUNCTION "test"(integer) RETURNS integer AS $__$
-return 10;
-$__$
-LANGUAGE "sql"
-    IMMUTABLE
-    STRICT
-    COST 1
-    ROWS 10
-    SET TIME ZONE "America/Halifax";}
-    ], statements)
+    expected << strip_heredoc(<<-SQL)
+      CREATE FUNCTION "test"(integer) RETURNS integer AS $$
+      select 10;
+      $$
+      LANGUAGE "sql";
+    SQL
+
+    expected << strip_heredoc(<<-SQL)
+      CREATE OR REPLACE FUNCTION "test"(integer) RETURNS integer AS $__$
+      return 10;
+      $__$
+      LANGUAGE "sql"
+          IMMUTABLE
+          STRICT
+          COST 1
+          ROWS 10
+          SET TIME ZONE "America/Halifax";
+    SQL
+
+    assert_equal(expected, statements)
   end
 
   def test_drop_function
@@ -47,8 +53,8 @@ LANGUAGE "sql"
     ARBC.drop_function(:test, :integer, :if_exists => true, :cascade => true)
 
     assert_equal([
-      "DROP FUNCTION \"test\"(integer);",
-      "DROP FUNCTION IF EXISTS \"test\"(integer) CASCADE;"
+      %{DROP FUNCTION "test"(integer);},
+      %{DROP FUNCTION IF EXISTS "test"(integer) CASCADE;}
     ], statements)
   end
 
@@ -56,7 +62,7 @@ LANGUAGE "sql"
     ARBC.rename_function(:test, 'integer, text', :foo)
 
     assert_equal([
-      "ALTER FUNCTION \"test\"(integer, text) RENAME TO \"foo\";"
+      %{ALTER FUNCTION "test"(integer, text) RENAME TO "foo";}
     ], statements)
   end
 
@@ -64,7 +70,7 @@ LANGUAGE "sql"
     ARBC.alter_function_owner(:test, 'integer, text', :admin)
 
     assert_equal([
-      "ALTER FUNCTION \"test\"(integer, text) OWNER TO \"admin\";"
+      %{ALTER FUNCTION "test"(integer, text) OWNER TO "admin";}
     ], statements)
   end
 
@@ -72,7 +78,7 @@ LANGUAGE "sql"
     ARBC.alter_function_schema(:test, 'integer, text', :geospatial)
 
     assert_equal([
-      "ALTER FUNCTION \"test\"(integer, text) SET SCHEMA \"geospatial\";"
+      %{ALTER FUNCTION "test"(integer, text) SET SCHEMA "geospatial";}
     ], statements)
   end
 
@@ -94,19 +100,24 @@ LANGUAGE "sql"
       f.reset %w{ debug_assertions trace_notify }
     end
 
-    assert_equal([
-%{ALTER FUNCTION "my_function"(integer) RENAME TO "another_function";},
-%{ALTER FUNCTION "another_function"(integer) OWNER TO "jdoe";},
-%{ALTER FUNCTION "my_function"(integer) RENAME TO "another_function";
-ALTER FUNCTION "another_function"(integer) OWNER TO "jdoe";
-ALTER FUNCTION "another_function"(integer) SET SCHEMA "foo";
-ALTER FUNCTION "another_function"(integer) IMMUTABLE;
-ALTER FUNCTION "another_function"(integer) SECURITY INVOKER;
-ALTER FUNCTION "another_function"(integer) COST 10;
-ALTER FUNCTION "another_function"(integer) ROWS 10;
-ALTER FUNCTION "another_function"(integer) SET "log_duration" TO "0.4";
-ALTER FUNCTION "another_function"(integer) RESET ALL;
-ALTER FUNCTION "another_function"(integer) RESET "debug_assertions" RESET "trace_notify";}
-    ], statements)
+    expected = [
+      %{ALTER FUNCTION "my_function"(integer) RENAME TO "another_function";},
+      %{ALTER FUNCTION "another_function"(integer) OWNER TO "jdoe";}
+    ]
+
+    expected << strip_heredoc(<<-SQL)
+      ALTER FUNCTION "my_function"(integer) RENAME TO "another_function";
+      ALTER FUNCTION "another_function"(integer) OWNER TO "jdoe";
+      ALTER FUNCTION "another_function"(integer) SET SCHEMA "foo";
+      ALTER FUNCTION "another_function"(integer) IMMUTABLE;
+      ALTER FUNCTION "another_function"(integer) SECURITY INVOKER;
+      ALTER FUNCTION "another_function"(integer) COST 10;
+      ALTER FUNCTION "another_function"(integer) ROWS 10;
+      ALTER FUNCTION "another_function"(integer) SET "log_duration" TO "0.4";
+      ALTER FUNCTION "another_function"(integer) RESET ALL;
+      ALTER FUNCTION "another_function"(integer) RESET "debug_assertions" RESET "trace_notify";
+    SQL
+
+    assert_equal(expected, statements)
   end
 end

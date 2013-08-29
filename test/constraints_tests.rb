@@ -18,16 +18,16 @@ class ConstraintTests < MiniTest::Unit::TestCase
       t.unique_constraint [ :name, :email ], :tablespace => 'fubar'
     end
 
-    assert_equal((<<-EOF).strip, statements[0])
-CREATE TABLE "foo" (
-  "id" serial primary key,
-  "bar_id" integer,
-  "name" text,
-  "email" text,
-  UNIQUE ("id", "bar_id"),
-  UNIQUE ("name", "email") USING INDEX TABLESPACE "fubar"
-);
-EOF
+    assert_equal(strip_heredoc(<<-SQL), statements[0])
+      CREATE TABLE "foo" (
+        "id" serial primary key,
+        "bar_id" integer,
+        "name" text,
+        "email" text,
+        UNIQUE ("id", "bar_id"),
+        UNIQUE ("name", "email") USING INDEX TABLESPACE "fubar"
+      );
+    SQL
   end
 
   def test_create_table_with_unique_constraint_on_column
@@ -35,13 +35,13 @@ EOF
       t.integer :bar_id, :unique => true
     end
 
-    assert_equal((<<-EOF).strip, statements[0])
-CREATE TABLE "foo" (
-  "id" serial primary key,
-  "bar_id" integer,
-  UNIQUE ("bar_id")
-);
-EOF
+    assert_equal(strip_heredoc(<<-SQL), statements[0])
+      CREATE TABLE "foo" (
+        "id" serial primary key,
+        "bar_id" integer,
+        UNIQUE ("bar_id")
+      );
+    SQL
   end
 
   def test_add_unique_constraint
@@ -55,8 +55,8 @@ EOF
     )
 
     assert_equal([
-      "ALTER TABLE \"foo\" ADD UNIQUE (\"bar_id\");",
-      "ALTER TABLE \"foo\" ADD CONSTRAINT \"bar_id_unique\" UNIQUE (\"bar_id\") WITH (FILLFACTOR=10) USING INDEX TABLESPACE \"fubar\";"
+      %{ALTER TABLE "foo" ADD UNIQUE ("bar_id");},
+      %{ALTER TABLE "foo" ADD CONSTRAINT "bar_id_unique" UNIQUE ("bar_id") WITH (FILLFACTOR=10) USING INDEX TABLESPACE "fubar";}
     ], statements)
   end
 
@@ -73,16 +73,17 @@ EOF
       t.integer :baz_id, :references => [ :baz ]
     end
 
-    assert_equal([
-      %{CREATE TABLE "foo" (
-  "id" serial primary key,
-  "foo_id" integer,
-  "bar_id" integer,
-  "baz_id" integer,
-  FOREIGN KEY ("foo_id") REFERENCES "foo" ON DELETE SET NULL ON UPDATE CASCADE,
-  FOREIGN KEY ("bar_id") REFERENCES "bar",
-  FOREIGN KEY ("baz_id") REFERENCES "baz"
-);} ], statements)
+    assert_equal([ strip_heredoc(<<-SQL) ], statements)
+      CREATE TABLE "foo" (
+        "id" serial primary key,
+        "foo_id" integer,
+        "bar_id" integer,
+        "baz_id" integer,
+        FOREIGN KEY ("foo_id") REFERENCES "foo" ON DELETE SET NULL ON UPDATE CASCADE,
+        FOREIGN KEY ("bar_id") REFERENCES "bar",
+        FOREIGN KEY ("baz_id") REFERENCES "baz"
+      );
+    SQL
   end
 
   def test_foreign_key_in_table_definition
@@ -95,15 +96,16 @@ EOF
       t.foreign_key [ :schabba_id, :doo_id ], :bar, [ :schabba_id, :doo_id ]
     end
 
-    assert_equal([
-      %{CREATE TABLE "foo" (
-  "id" serial primary key,
-  "schabba_id" integer,
-  "doo_id" integer,
-  FOREIGN KEY ("schabba_id") REFERENCES "bar",
-  FOREIGN KEY ("doo_id") REFERENCES "baz",
-  FOREIGN KEY ("schabba_id", "doo_id") REFERENCES "bar" ("schabba_id", "doo_id")
-);} ], statements)
+    assert_equal([ strip_heredoc(<<-SQL) ], statements)
+      CREATE TABLE "foo" (
+        "id" serial primary key,
+        "schabba_id" integer,
+        "doo_id" integer,
+        FOREIGN KEY ("schabba_id") REFERENCES "bar",
+        FOREIGN KEY ("doo_id") REFERENCES "baz",
+        FOREIGN KEY ("schabba_id", "doo_id") REFERENCES "bar" ("schabba_id", "doo_id")
+      );
+    SQL
   end
 
   def test_add_foreign_key
@@ -114,11 +116,11 @@ EOF
     Mig.add_foreign_key(:foo, :bar_id, :bar, :deferrable => :immediate)
 
     assert_equal([
-      "ALTER TABLE \"foo\" ADD FOREIGN KEY (\"bar_id\") REFERENCES \"bar\";",
-      "ALTER TABLE \"foo\" ADD CONSTRAINT \"bar_fk\" FOREIGN KEY (\"bar_id\") REFERENCES \"bar\" (\"ogc_fid\");",
-      "ALTER TABLE \"foo\" ADD FOREIGN KEY (\"one_id\", \"bar_id\") REFERENCES \"bar\" (\"one_id\", \"bar_id\") MATCH FULL;",
-      "ALTER TABLE \"foo\" ADD FOREIGN KEY (\"bar_id\") REFERENCES \"bar\" ON DELETE SET DEFAULT;",
-      "ALTER TABLE \"foo\" ADD FOREIGN KEY (\"bar_id\") REFERENCES \"bar\" DEFERRABLE INITIALLY IMMEDIATE;"
+      %{ALTER TABLE "foo" ADD FOREIGN KEY ("bar_id") REFERENCES "bar";},
+      %{ALTER TABLE "foo" ADD CONSTRAINT "bar_fk" FOREIGN KEY ("bar_id") REFERENCES "bar" ("ogc_fid");},
+      %{ALTER TABLE "foo" ADD FOREIGN KEY ("one_id", "bar_id") REFERENCES "bar" ("one_id", "bar_id") MATCH FULL;},
+      %{ALTER TABLE "foo" ADD FOREIGN KEY ("bar_id") REFERENCES "bar" ON DELETE SET DEFAULT;},
+      %{ALTER TABLE "foo" ADD FOREIGN KEY ("bar_id") REFERENCES "bar" DEFERRABLE INITIALLY IMMEDIATE;}
     ], statements)
   end
 
@@ -127,8 +129,8 @@ EOF
     Mig.drop_constraint(:foo, :bar, :cascade => true)
 
     assert_equal([
-      "ALTER TABLE \"foo\" DROP CONSTRAINT \"bar\";",
-      "ALTER TABLE \"foo\" DROP CONSTRAINT \"bar\" CASCADE;"
+      %{ALTER TABLE "foo" DROP CONSTRAINT "bar";},
+      %{ALTER TABLE "foo" DROP CONSTRAINT "bar" CASCADE;}
     ], statements)
   end
 
@@ -142,17 +144,18 @@ EOF
       } ]
     end
 
-    assert_equal([
-      %{CREATE TABLE "foo" (
-  "id" serial primary key,
-  "foo_id" integer,
-  "bar_id" integer,
-  "baz_id" integer,
-  CHECK (foo_id != 1),
-  CONSTRAINT "bar_id_not_1" CHECK (bar_id != 1),
-  CHECK (baz_id != 1),
-  CONSTRAINT "baz_id_gt_10" CHECK (baz_id > 10)
-);} ], statements)
+    assert_equal([ strip_heredoc(<<-SQL) ], statements )
+      CREATE TABLE "foo" (
+        "id" serial primary key,
+        "foo_id" integer,
+        "bar_id" integer,
+        "baz_id" integer,
+        CHECK (foo_id != 1),
+        CONSTRAINT "bar_id_not_1" CHECK (bar_id != 1),
+        CHECK (baz_id != 1),
+        CONSTRAINT "baz_id_gt_10" CHECK (baz_id > 10)
+      );
+    SQL
   end
 
   def test_check_constraint_in_table_definition
@@ -169,17 +172,18 @@ EOF
       }
     end
 
-    assert_equal([
-      %{CREATE TABLE "foo" (
-  "id" serial primary key,
-  "foo_id" integer,
-  "bar_id" integer,
-  "baz_id" integer,
-  CHECK (foo_id != 1),
-  CONSTRAINT "bar_id_not_1" CHECK (bar_id != 1),
-  CHECK (baz_id != 1),
-  CONSTRAINT "baz_id_gt_10" CHECK (baz_id > 10)
-);} ], statements)
+    assert_equal([ strip_heredoc(<<-SQL) ], statements)
+      CREATE TABLE "foo" (
+        "id" serial primary key,
+        "foo_id" integer,
+        "bar_id" integer,
+        "baz_id" integer,
+        CHECK (foo_id != 1),
+        CONSTRAINT "bar_id_not_1" CHECK (bar_id != 1),
+        CHECK (baz_id != 1),
+        CONSTRAINT "baz_id_gt_10" CHECK (baz_id > 10)
+      );
+    SQL
   end
 
   def test_add_check_constraint
@@ -187,8 +191,8 @@ EOF
     Mig.add_check_constraint(:foo, 'length(name) < 100', :name => 'name_length_check')
 
     assert_equal([
-      "ALTER TABLE \"foo\" ADD CHECK (length(name) < 100);",
-      "ALTER TABLE \"foo\" ADD CONSTRAINT \"name_length_check\" CHECK (length(name) < 100);"
+      %{ALTER TABLE "foo" ADD CHECK (length(name) < 100);},
+      %{ALTER TABLE "foo" ADD CONSTRAINT "name_length_check" CHECK (length(name) < 100);}
     ], statements)
   end
 
@@ -263,16 +267,23 @@ EOF
       }
     end
 
-    assert_equal([
-      %{CREATE TABLE "foo" (
-  "foo_id" integer,
-  PRIMARY KEY ("foo_id")
-);},
+    expected = []
 
-      %{CREATE TABLE "foo" (
-  "foo_id" integer,
-  PRIMARY KEY ("foo_id") WITH (FILLFACTOR=10) USING INDEX TABLESPACE "fubar"
-);}], statements)
+    expected << strip_heredoc(<<-SQL)
+      CREATE TABLE "foo" (
+        "foo_id" integer,
+        PRIMARY KEY ("foo_id")
+      );
+    SQL
+
+    expected << strip_heredoc(<<-SQL)
+      CREATE TABLE "foo" (
+        "foo_id" integer,
+        PRIMARY KEY ("foo_id") WITH (FILLFACTOR=10) USING INDEX TABLESPACE "fubar"
+      );
+    SQL
+
+    assert_equal(expected, statements)
   end
 
 
@@ -299,22 +310,31 @@ EOF
       }
     end
 
-    assert_equal([
-      %{CREATE TABLE "foo" (
-  "foo_id" integer,
-  PRIMARY KEY ("foo_id")
-);},
+    expected = []
 
-      %{CREATE TABLE "foo" (
-  "foo_id" integer,
-  PRIMARY KEY ("foo_id") WITH (FILLFACTOR=10) USING INDEX TABLESPACE "fubar"
-);},
+    expected << strip_heredoc(<<-SQL)
+      CREATE TABLE "foo" (
+        "foo_id" integer,
+        PRIMARY KEY ("foo_id")
+      );
+    SQL
 
-      %{CREATE TABLE "foo" (
-  "foo_id" integer,
-  "bar_id" integer,
-  PRIMARY KEY ("foo_id", "bar_id") WITH (FILLFACTOR=10) USING INDEX TABLESPACE "fubar"
-);}], statements)
+    expected << strip_heredoc(<<-SQL)
+      CREATE TABLE "foo" (
+        "foo_id" integer,
+        PRIMARY KEY ("foo_id") WITH (FILLFACTOR=10) USING INDEX TABLESPACE "fubar"
+      );
+    SQL
+
+    expected << strip_heredoc(<<-SQL)
+      CREATE TABLE "foo" (
+        "foo_id" integer,
+        "bar_id" integer,
+        PRIMARY KEY ("foo_id", "bar_id") WITH (FILLFACTOR=10) USING INDEX TABLESPACE "fubar"
+      );
+    SQL
+
+    assert_equal(expected, statements)
   end
 
   def test_add_primary_key
@@ -336,8 +356,8 @@ EOF
     Mig.add_foreign_key(:foo, :bar_id, :bar, :not_valid => true)
 
     assert_equal([
-      "ALTER TABLE \"foo\" ADD CHECK (length(name) < 100) NOT VALID;",
-      "ALTER TABLE \"foo\" ADD FOREIGN KEY (\"bar_id\") REFERENCES \"bar\" NOT VALID;"
+      %{ALTER TABLE "foo" ADD CHECK (length(name) < 100) NOT VALID;},
+      %{ALTER TABLE "foo" ADD FOREIGN KEY ("bar_id") REFERENCES "bar" NOT VALID;}
     ], statements)
   end
 
@@ -345,7 +365,7 @@ EOF
     Mig.validate_constraint(:foo, :foo_constraint)
 
     assert_equal([
-      "ALTER TABLE \"foo\" VALIDATE CONSTRAINT \"foo_constraint\";"
+      %{ALTER TABLE "foo" VALIDATE CONSTRAINT "foo_constraint";}
     ], statements)
   end
 
@@ -353,7 +373,7 @@ EOF
     Mig.add_check_constraint(:foo, 'length(name) < 100', :no_inherit => true)
 
     assert_equal([
-      "ALTER TABLE \"foo\" ADD CHECK (length(name) < 100) NO INHERIT;",
+      %{ALTER TABLE "foo" ADD CHECK (length(name) < 100) NO INHERIT;},
     ], statements)
   end
 end

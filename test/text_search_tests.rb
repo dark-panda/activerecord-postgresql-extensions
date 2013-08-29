@@ -11,9 +11,9 @@ class TextSearchTests < MiniTest::Unit::TestCase
     ARBC.create_text_search_configuration(:foo, :source_config => { :pg_catalog => 'english' })
 
     assert_equal([
-      "CREATE TEXT SEARCH CONFIGURATION \"foo\" (PARSER = \"bar\");",
-      "CREATE TEXT SEARCH CONFIGURATION \"foo\" (COPY = \"bar\");",
-      "CREATE TEXT SEARCH CONFIGURATION \"foo\" (COPY = \"pg_catalog\".\"english\");"
+      %{CREATE TEXT SEARCH CONFIGURATION "foo" (PARSER = "bar");},
+      %{CREATE TEXT SEARCH CONFIGURATION "foo" (COPY = "bar");},
+      %{CREATE TEXT SEARCH CONFIGURATION "foo" (COPY = "pg_catalog"."english");}
     ], statements)
 
     assert_raises(ArgumentError) do
@@ -30,8 +30,8 @@ class TextSearchTests < MiniTest::Unit::TestCase
     ARBC.add_text_search_configuration_mapping(:foo, [ :asciiword, :word ], [ :bar, :up ])
 
     assert_equal([
-      "ALTER TEXT SEARCH CONFIGURATION \"foo\" ADD MAPPING FOR \"asciiword\" WITH \"bar\";",
-      "ALTER TEXT SEARCH CONFIGURATION \"foo\" ADD MAPPING FOR \"asciiword\", \"word\" WITH \"bar\", \"up\";"
+      %{ALTER TEXT SEARCH CONFIGURATION "foo" ADD MAPPING FOR "asciiword" WITH "bar";},
+      %{ALTER TEXT SEARCH CONFIGURATION "foo" ADD MAPPING FOR "asciiword", "word" WITH "bar", "up";}
     ], statements)
   end
 
@@ -40,8 +40,8 @@ class TextSearchTests < MiniTest::Unit::TestCase
     ARBC.alter_text_search_configuration_mapping(:foo, [ :asciiword, :word ], [ :bar, :up ])
 
     assert_equal([
-      "ALTER TEXT SEARCH CONFIGURATION \"foo\" ALTER MAPPING FOR \"asciiword\" WITH \"bar\";",
-      "ALTER TEXT SEARCH CONFIGURATION \"foo\" ALTER MAPPING FOR \"asciiword\", \"word\" WITH \"bar\", \"up\";"
+      %{ALTER TEXT SEARCH CONFIGURATION "foo" ALTER MAPPING FOR "asciiword" WITH "bar";},
+      %{ALTER TEXT SEARCH CONFIGURATION "foo" ALTER MAPPING FOR "asciiword", "word" WITH "bar", "up";}
     ], statements)
   end
 
@@ -49,7 +49,7 @@ class TextSearchTests < MiniTest::Unit::TestCase
     ARBC.replace_text_search_configuration_dictionary(:foo, :bar, :ometer)
 
     assert_equal([
-      "ALTER TEXT SEARCH CONFIGURATION \"foo\" ALTER MAPPING REPLACE \"bar\" WITH \"ometer\";"
+      %{ALTER TEXT SEARCH CONFIGURATION "foo" ALTER MAPPING REPLACE "bar" WITH "ometer";}
     ], statements)
   end
 
@@ -58,8 +58,8 @@ class TextSearchTests < MiniTest::Unit::TestCase
     ARBC.alter_text_search_configuration_mapping_replace_dictionary(:foo, [ :hello, :world ], :old, :new)
 
     assert_equal([
-      "ALTER TEXT SEARCH CONFIGURATION \"foo\" ALTER MAPPING FOR \"bar\" REPLACE \"old\" WITH \"new\";",
-      "ALTER TEXT SEARCH CONFIGURATION \"foo\" ALTER MAPPING FOR \"hello\", \"world\" REPLACE \"old\" WITH \"new\";"
+      %{ALTER TEXT SEARCH CONFIGURATION "foo" ALTER MAPPING FOR "bar" REPLACE "old" WITH "new";},
+      %{ALTER TEXT SEARCH CONFIGURATION "foo" ALTER MAPPING FOR "hello", "world" REPLACE "old" WITH "new";}
     ], statements)
   end
 
@@ -69,9 +69,9 @@ class TextSearchTests < MiniTest::Unit::TestCase
     ARBC.drop_text_search_configuration_mapping(:foo, :bar, :if_exists => true)
 
     assert_equal([
-      "ALTER TEXT SEARCH CONFIGURATION \"foo\" DROP MAPPING FOR \"bar\";",
-      "ALTER TEXT SEARCH CONFIGURATION \"foo\" DROP MAPPING FOR \"bar\", \"blort\";",
-      "ALTER TEXT SEARCH CONFIGURATION \"foo\" DROP MAPPING IF EXISTS FOR \"bar\";"
+      %{ALTER TEXT SEARCH CONFIGURATION "foo" DROP MAPPING FOR "bar";},
+      %{ALTER TEXT SEARCH CONFIGURATION "foo" DROP MAPPING FOR "bar", "blort";},
+      %{ALTER TEXT SEARCH CONFIGURATION "foo" DROP MAPPING IF EXISTS FOR "bar";}
     ], statements)
 
     assert_raises(ArgumentError) do
@@ -87,7 +87,7 @@ class TextSearchTests < MiniTest::Unit::TestCase
     ARBC.rename_text_search_configuration(:foo, :bar)
 
     assert_equal([
-      "ALTER TEXT SEARCH CONFIGURATION \"foo\" RENAME TO \"bar\";"
+      %{ALTER TEXT SEARCH CONFIGURATION "foo" RENAME TO "bar";}
     ], statements)
   end
 
@@ -95,7 +95,7 @@ class TextSearchTests < MiniTest::Unit::TestCase
     ARBC.alter_text_search_configuration_owner(:foo, :bar)
 
     assert_equal([
-      "ALTER TEXT SEARCH CONFIGURATION \"foo\" OWNER TO \"bar\";"
+      %{ALTER TEXT SEARCH CONFIGURATION "foo" OWNER TO "bar";}
     ], statements)
   end
 
@@ -103,7 +103,7 @@ class TextSearchTests < MiniTest::Unit::TestCase
     ARBC.alter_text_search_configuration_schema(:foo, :bar)
 
     assert_equal([
-      "ALTER TEXT SEARCH CONFIGURATION \"foo\" SET SCHEMA \"bar\";"
+      %{ALTER TEXT SEARCH CONFIGURATION "foo" SET SCHEMA "bar";}
     ], statements)
   end
 
@@ -113,9 +113,9 @@ class TextSearchTests < MiniTest::Unit::TestCase
     ARBC.drop_text_search_configuration(:foo, :if_exists => true, :cascade => true)
 
     assert_equal([
-      "DROP TEXT SEARCH CONFIGURATION \"foo\";",
-      "DROP TEXT SEARCH CONFIGURATION \"foo\".\"bar\";",
-      "DROP TEXT SEARCH CONFIGURATION IF EXISTS \"foo\" CASCADE;"
+      %{DROP TEXT SEARCH CONFIGURATION "foo";},
+      %{DROP TEXT SEARCH CONFIGURATION "foo"."bar";},
+      %{DROP TEXT SEARCH CONFIGURATION IF EXISTS "foo" CASCADE;}
     ], statements)
   end
 
@@ -124,8 +124,8 @@ class TextSearchTests < MiniTest::Unit::TestCase
     ARBC.create_text_search_dictionary(:foo, { :pg_catalog => :snowball }, { :language => 'english' })
 
     assert_equal([
-      "CREATE TEXT SEARCH DICTIONARY \"foo\" (TEMPLATE = \"bar\", \"language\" = 'english');",
-      "CREATE TEXT SEARCH DICTIONARY \"foo\" (TEMPLATE = \"pg_catalog\".\"snowball\", \"language\" = 'english');"
+      %{CREATE TEXT SEARCH DICTIONARY "foo" (TEMPLATE = "bar", "language" = 'english');},
+      %{CREATE TEXT SEARCH DICTIONARY "foo" (TEMPLATE = "pg_catalog"."snowball", "language" = 'english');}
     ], statements)
   end
 
@@ -135,9 +135,9 @@ class TextSearchTests < MiniTest::Unit::TestCase
     ARBC.drop_text_search_dictionary(:foo, :if_exists => true, :cascade => true)
 
     assert_equal([
-      "DROP TEXT SEARCH DICTIONARY \"foo\";",
-      "DROP TEXT SEARCH DICTIONARY \"foo\".\"bar\";",
-      "DROP TEXT SEARCH DICTIONARY IF EXISTS \"foo\" CASCADE;"
+      %{DROP TEXT SEARCH DICTIONARY "foo";},
+      %{DROP TEXT SEARCH DICTIONARY "foo"."bar";},
+      %{DROP TEXT SEARCH DICTIONARY IF EXISTS "foo" CASCADE;}
     ], statements)
   end
 
@@ -145,7 +145,7 @@ class TextSearchTests < MiniTest::Unit::TestCase
     ARBC.rename_text_search_dictionary(:foo, :bar)
 
     assert_equal([
-      "ALTER TEXT SEARCH DICTIONARY \"foo\" RENAME TO \"bar\";"
+      %{ALTER TEXT SEARCH DICTIONARY "foo" RENAME TO "bar";}
     ], statements)
   end
 
@@ -153,7 +153,7 @@ class TextSearchTests < MiniTest::Unit::TestCase
     ARBC.alter_text_search_dictionary_owner(:foo, :bar)
 
     assert_equal([
-      "ALTER TEXT SEARCH DICTIONARY \"foo\" OWNER TO \"bar\";"
+      %{ALTER TEXT SEARCH DICTIONARY "foo" OWNER TO "bar";}
     ], statements)
   end
 
@@ -161,7 +161,7 @@ class TextSearchTests < MiniTest::Unit::TestCase
     ARBC.alter_text_search_dictionary_schema(:foo, :bar)
 
     assert_equal([
-      "ALTER TEXT SEARCH DICTIONARY \"foo\" SET SCHEMA \"bar\";"
+      %{ALTER TEXT SEARCH DICTIONARY "foo" SET SCHEMA "bar";}
     ], statements)
   end
 
@@ -170,8 +170,8 @@ class TextSearchTests < MiniTest::Unit::TestCase
     ARBC.create_text_search_template(:foo, :lexize => 'bar', :init => 'lol')
 
     assert_equal([
-      "CREATE TEXT SEARCH TEMPLATE \"foo\" (LEXIZE = \"bar\");",
-      "CREATE TEXT SEARCH TEMPLATE \"foo\" (INIT = \"lol\", LEXIZE = \"bar\");"
+      %{CREATE TEXT SEARCH TEMPLATE "foo" (LEXIZE = "bar");},
+      %{CREATE TEXT SEARCH TEMPLATE "foo" (INIT = "lol", LEXIZE = "bar");}
     ], statements)
 
     assert_raises(ArgumentError) do
@@ -185,9 +185,9 @@ class TextSearchTests < MiniTest::Unit::TestCase
     ARBC.drop_text_search_template(:foo, :if_exists => true, :cascade => true)
 
     assert_equal([
-      "DROP TEXT SEARCH TEMPLATE \"foo\";",
-      "DROP TEXT SEARCH TEMPLATE \"foo\".\"bar\";",
-      "DROP TEXT SEARCH TEMPLATE IF EXISTS \"foo\" CASCADE;"
+      %{DROP TEXT SEARCH TEMPLATE "foo";},
+      %{DROP TEXT SEARCH TEMPLATE "foo"."bar";},
+      %{DROP TEXT SEARCH TEMPLATE IF EXISTS "foo" CASCADE;}
     ], statements)
   end
 
@@ -195,7 +195,7 @@ class TextSearchTests < MiniTest::Unit::TestCase
     ARBC.rename_text_search_template(:foo, :bar)
 
     assert_equal([
-      "ALTER TEXT SEARCH TEMPLATE \"foo\" RENAME TO \"bar\";"
+      %{ALTER TEXT SEARCH TEMPLATE "foo" RENAME TO "bar";}
     ], statements)
   end
 
@@ -203,7 +203,7 @@ class TextSearchTests < MiniTest::Unit::TestCase
     ARBC.alter_text_search_template_schema(:foo, :bar)
 
     assert_equal([
-      "ALTER TEXT SEARCH TEMPLATE \"foo\" SET SCHEMA \"bar\";"
+      %{ALTER TEXT SEARCH TEMPLATE "foo" SET SCHEMA "bar";}
     ], statements)
   end
 
@@ -224,8 +224,8 @@ class TextSearchTests < MiniTest::Unit::TestCase
     })
 
     assert_equal([
-      "CREATE TEXT SEARCH PARSER \"foo\" (START = \"start\", GETTOKEN = \"gettoken\", END = \"end\", LEXTYPES = \"lextypes\");",
-      "CREATE TEXT SEARCH PARSER \"foo\" (START = \"start\", GETTOKEN = \"gettoken\", END = \"end\", LEXTYPES = \"lextypes\", HEADLINE = \"headline\");"
+      %{CREATE TEXT SEARCH PARSER "foo" (START = "start", GETTOKEN = "gettoken", END = "end", LEXTYPES = "lextypes");},
+      %{CREATE TEXT SEARCH PARSER "foo" (START = "start", GETTOKEN = "gettoken", END = "end", LEXTYPES = "lextypes", HEADLINE = "headline");}
     ], statements)
 
     assert_raises(ArgumentError) do
@@ -239,9 +239,9 @@ class TextSearchTests < MiniTest::Unit::TestCase
     ARBC.drop_text_search_parser(:foo, :if_exists => true, :cascade => true)
 
     assert_equal([
-      "DROP TEXT SEARCH PARSER \"foo\";",
-      "DROP TEXT SEARCH PARSER \"foo\".\"bar\";",
-      "DROP TEXT SEARCH PARSER IF EXISTS \"foo\" CASCADE;"
+      %{DROP TEXT SEARCH PARSER "foo";},
+      %{DROP TEXT SEARCH PARSER "foo"."bar";},
+      %{DROP TEXT SEARCH PARSER IF EXISTS "foo" CASCADE;}
     ], statements)
   end
 
@@ -249,7 +249,7 @@ class TextSearchTests < MiniTest::Unit::TestCase
     ARBC.rename_text_search_parser(:foo, :bar)
 
     assert_equal([
-      "ALTER TEXT SEARCH PARSER \"foo\" RENAME TO \"bar\";"
+      %{ALTER TEXT SEARCH PARSER "foo" RENAME TO "bar";}
     ], statements)
   end
 
@@ -257,7 +257,7 @@ class TextSearchTests < MiniTest::Unit::TestCase
     ARBC.alter_text_search_parser_schema(:foo, :bar)
 
     assert_equal([
-      "ALTER TEXT SEARCH PARSER \"foo\" SET SCHEMA \"bar\";"
+      %{ALTER TEXT SEARCH PARSER "foo" SET SCHEMA "bar";}
     ], statements)
   end
 end

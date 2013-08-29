@@ -116,7 +116,7 @@ module ActiveRecord
 
       # Returns an Array of available sequences.
       def sequences(name = nil)
-        query(<<-SQL, name).map { |row| row[0] }
+        query(PostgreSQLExtensions::Utils.strip_heredoc(<<-SQL), name).map { |row| row[0] }
           SELECT c.relname AS sequencename
           FROM pg_class c
           WHERE c.relkind = 'S'::"char";

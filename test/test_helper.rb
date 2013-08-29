@@ -100,6 +100,8 @@ class ActiveRecord::ConnectionAdapters::PostgreSQLAdapter
 end
 
 module PostgreSQLExtensionsTestHelper
+  include ActiveRecord::PostgreSQLExtensions::Utils
+
   class << self
     def statements
       @statements ||= []

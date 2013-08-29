@@ -194,11 +194,11 @@ class ExtensionsTests < MiniTest::Unit::TestCase
       e.domain :bar
     end
 
-    assert_equal([
-      %{ALTER EXTENSION "foo" DROP COLLATION "bar";
-ALTER EXTENSION "foo" ADD CONVERSION "bar";
-ALTER EXTENSION "foo" ADD DOMAIN "bar";}
-    ], statements)
+    assert_equal([ strip_heredoc(<<-SQL) ], statements)
+      ALTER EXTENSION "foo" DROP COLLATION "bar";
+      ALTER EXTENSION "foo" ADD CONVERSION "bar";
+      ALTER EXTENSION "foo" ADD DOMAIN "bar";
+    SQL
   end
 
   def test_alter_extension_cast_option
@@ -210,11 +210,11 @@ ALTER EXTENSION "foo" ADD DOMAIN "bar";}
       e.cast :source => :hello, :target => :world
     end
 
-    assert_equal([
-      %{ALTER EXTENSION "foo" ADD CAST ("hello" AS "world");
-ALTER EXTENSION "foo" ADD CAST ("hello" AS "world");
-ALTER EXTENSION "foo" ADD CAST ("hello" AS "world");}
-    ], statements)
+    assert_equal([ strip_heredoc(<<-SQL) ], statements)
+      ALTER EXTENSION "foo" ADD CAST ("hello" AS "world");
+      ALTER EXTENSION "foo" ADD CAST ("hello" AS "world");
+      ALTER EXTENSION "foo" ADD CAST ("hello" AS "world");
+    SQL
   end
 
   def test_alter_extension_aggregate_option
@@ -225,10 +225,10 @@ ALTER EXTENSION "foo" ADD CAST ("hello" AS "world");}
       e.aggregate :bar, :type_a, :type_b, :type_c
     end
 
-    assert_equal([
-      %{ALTER EXTENSION "foo" ADD AGGREGATE "bar" ("type_a", "type_b", "type_c");
-ALTER EXTENSION "foo" ADD AGGREGATE "bar" ("type_a", "type_b", "type_c");}
-    ], statements)
+    assert_equal([ strip_heredoc(<<-SQL) ], statements)
+      ALTER EXTENSION "foo" ADD AGGREGATE "bar" ("type_a", "type_b", "type_c");
+      ALTER EXTENSION "foo" ADD AGGREGATE "bar" ("type_a", "type_b", "type_c");
+    SQL
   end
 
   def test_alter_extension_operator_option
@@ -240,11 +240,11 @@ ALTER EXTENSION "foo" ADD AGGREGATE "bar" ("type_a", "type_b", "type_c");}
       e.operator :name => :bar, :left_type => :hello, :right_type => :world
     end
 
-    assert_equal([
-      %{ALTER EXTENSION "foo" ADD OPERATOR "bar" ("hello", "world");
-ALTER EXTENSION "foo" ADD OPERATOR "bar" ("hello", "world");
-ALTER EXTENSION "foo" ADD OPERATOR "bar" ("hello", "world");}
-    ], statements)
+    assert_equal([ strip_heredoc(<<-SQL) ], statements)
+      ALTER EXTENSION "foo" ADD OPERATOR "bar" ("hello", "world");
+      ALTER EXTENSION "foo" ADD OPERATOR "bar" ("hello", "world");
+      ALTER EXTENSION "foo" ADD OPERATOR "bar" ("hello", "world");
+    SQL
   end
 
   def test_alter_extension_operator_class_option
@@ -257,12 +257,12 @@ ALTER EXTENSION "foo" ADD OPERATOR "bar" ("hello", "world");}
       e.operator_class :name => :hello, :indexing_method => :world
     end
 
-    assert_equal([
-      %{ALTER EXTENSION "foo" ADD OPERATOR CLASS "hello" USING "world");
-ALTER EXTENSION "foo" ADD OPERATOR CLASS "hello" USING "world");
-ALTER EXTENSION "foo" ADD OPERATOR CLASS "hello" USING "world");
-ALTER EXTENSION "foo" ADD OPERATOR CLASS "hello" USING "world");}
-    ], statements)
+    assert_equal([ strip_heredoc(<<-SQL) ], statements)
+      ALTER EXTENSION "foo" ADD OPERATOR CLASS "hello" USING "world");
+      ALTER EXTENSION "foo" ADD OPERATOR CLASS "hello" USING "world");
+      ALTER EXTENSION "foo" ADD OPERATOR CLASS "hello" USING "world");
+      ALTER EXTENSION "foo" ADD OPERATOR CLASS "hello" USING "world");
+    SQL
   end
 
   def test_alter_extension_operator_family_option
@@ -275,12 +275,12 @@ ALTER EXTENSION "foo" ADD OPERATOR CLASS "hello" USING "world");}
       e.operator_family :name => :hello, :indexing_method => :world
     end
 
-    assert_equal([
-      %{ALTER EXTENSION "foo" ADD OPERATOR FAMILY "hello" USING "world");
-ALTER EXTENSION "foo" ADD OPERATOR FAMILY "hello" USING "world");
-ALTER EXTENSION "foo" ADD OPERATOR FAMILY "hello" USING "world");
-ALTER EXTENSION "foo" ADD OPERATOR FAMILY "hello" USING "world");}
-    ], statements)
+    assert_equal([ strip_heredoc(<<-SQL) ], statements)
+      ALTER EXTENSION "foo" ADD OPERATOR FAMILY "hello" USING "world");
+      ALTER EXTENSION "foo" ADD OPERATOR FAMILY "hello" USING "world");
+      ALTER EXTENSION "foo" ADD OPERATOR FAMILY "hello" USING "world");
+      ALTER EXTENSION "foo" ADD OPERATOR FAMILY "hello" USING "world");
+    SQL
   end
 
   def test_alter_extension_function_option
@@ -292,10 +292,10 @@ ALTER EXTENSION "foo" ADD OPERATOR FAMILY "hello" USING "world");}
       e.function :name => :bar, :arguments => "VARIADIC hello world"
     end
 
-    assert_equal([
-      %{ALTER EXTENSION "foo" ADD FUNCTION "bar"(VARIADIC hello world);
-ALTER EXTENSION "foo" ADD FUNCTION "bar"(VARIADIC hello world);
-ALTER EXTENSION "foo" ADD FUNCTION "bar"(VARIADIC hello world);}
-    ], statements)
+    assert_equal([ strip_heredoc(<<-SQL) ], statements)
+      ALTER EXTENSION "foo" ADD FUNCTION "bar"(VARIADIC hello world);
+      ALTER EXTENSION "foo" ADD FUNCTION "bar"(VARIADIC hello world);
+      ALTER EXTENSION "foo" ADD FUNCTION "bar"(VARIADIC hello world);
+    SQL
   end
 end

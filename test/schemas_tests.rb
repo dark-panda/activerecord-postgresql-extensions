@@ -10,8 +10,8 @@ class SchemasTests < MiniTest::Unit::TestCase
     Mig.create_schema(:foo, :authorization => 'bar')
 
     assert_equal([
-      "CREATE SCHEMA \"foo\";",
-      "CREATE SCHEMA \"foo\" AUTHORIZATION \"bar\";"
+      %{CREATE SCHEMA "foo";},
+      %{CREATE SCHEMA "foo" AUTHORIZATION "bar";}
     ], statements)
   end
 
@@ -20,8 +20,8 @@ class SchemasTests < MiniTest::Unit::TestCase
     Mig.drop_schema(:foo, :if_exists => true, :cascade => true)
 
     assert_equal([
-      "DROP SCHEMA \"foo\";",
-      "DROP SCHEMA IF EXISTS \"foo\" CASCADE;"
+      %{DROP SCHEMA "foo";},
+      %{DROP SCHEMA IF EXISTS "foo" CASCADE;}
     ], statements)
   end
 
@@ -29,7 +29,7 @@ class SchemasTests < MiniTest::Unit::TestCase
     Mig.alter_schema_name(:foo, :bar)
 
     assert_equal([
-      "ALTER SCHEMA \"foo\" RENAME TO \"bar\";"
+      %{ALTER SCHEMA "foo" RENAME TO "bar";}
     ], statements)
   end
 
@@ -37,7 +37,7 @@ class SchemasTests < MiniTest::Unit::TestCase
     Mig.alter_schema_owner(:foo, :bar)
 
     assert_equal([
-      "ALTER SCHEMA \"foo\" OWNER TO \"bar\";"
+      %{ALTER SCHEMA "foo" OWNER TO "bar";}
     ], statements)
   end
 end

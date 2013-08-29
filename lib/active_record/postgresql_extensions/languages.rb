@@ -66,7 +66,7 @@ module ActiveRecord
 
       # Returns an Array of available languages.
       def languages(name = nil)
-        query(<<-SQL, name).map { |row| row[0] }
+        query(PostgreSQLExtensions::Utils.strip_heredoc(<<-SQL), name).map { |row| row[0] }
           SELECT lanname
           FROM pg_language;
         SQL

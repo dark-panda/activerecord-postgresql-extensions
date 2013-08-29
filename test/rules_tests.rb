@@ -17,8 +17,8 @@ class RulesTests < MiniTest::Unit::TestCase
     )
 
     assert_equal([
-      "CREATE RULE \"ignore_root\" AS ON UPDATE TO \"foos\" WHERE user_id = 0 DO INSTEAD NOTHING;",
-      "CREATE  OR REPLACE RULE \"ignore_root\" AS ON UPDATE TO \"foos\" WHERE user_id > 0 DO INSTEAD SELECT * FROM non_admins;"
+      %{CREATE RULE "ignore_root" AS ON UPDATE TO "foos" WHERE user_id = 0 DO INSTEAD NOTHING;},
+      %{CREATE  OR REPLACE RULE "ignore_root" AS ON UPDATE TO "foos" WHERE user_id > 0 DO INSTEAD SELECT * FROM non_admins;}
     ], statements)
   end
 
@@ -26,7 +26,7 @@ class RulesTests < MiniTest::Unit::TestCase
     ARBC.drop_rule(:foo, :bar)
 
     assert_equal([
-      "DROP RULE \"foo\" ON \"bar\";",
+      %{DROP RULE "foo" ON "bar";}
     ], statements)
   end
 end

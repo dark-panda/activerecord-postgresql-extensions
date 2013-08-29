@@ -17,6 +17,11 @@ module ActiveRecord
         end
       end
 
+      def strip_heredoc(str)
+        indent = str.scan(/^[ \t]*(?=\S)/).min.try(:size) || 0
+        str.gsub(/^[ \t]{#{indent}}/, '').strip
+      end
+
       class << self
         include Utils
       end

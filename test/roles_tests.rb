@@ -23,7 +23,7 @@ class RolesTests < MiniTest::Unit::TestCase
     })
 
     assert_equal([
-      'CREATE ROLE "foo";',
+      %{CREATE ROLE "foo";},
       %{CREATE ROLE "foo" SUPERUSER CREATEDB CREATEROLE NOINHERIT LOGIN CONNECTION LIMIT 10 ENCRYPTED PASSWORD 'testing' VALID UNTIL '2011-10-12' IN ROLE "bar" ROLE "baz" ADMIN "blort";}
     ], statements)
   end
@@ -55,9 +55,9 @@ class RolesTests < MiniTest::Unit::TestCase
     ARBC.drop_role(%w{ foo bar baz }, :if_exists => true)
 
     assert_equal([
-      'DROP ROLE "foo";',
-      'DROP ROLE "foo", "bar", "baz";',
-      'DROP ROLE IF EXISTS "foo", "bar", "baz";',
+      %{DROP ROLE "foo";},
+      %{DROP ROLE "foo", "bar", "baz";},
+      %{DROP ROLE IF EXISTS "foo", "bar", "baz";}
     ], statements)
   end
 end
