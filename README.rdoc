@@ -26,8 +26,8 @@ PostgreSQL adapter including:
 
 * support for some PostGIS functionality including some support for using
   PostGIS columns in migrations. For manipulating PostGIS data, see our
-  geos-extensions gem at https://github.com/zoocasa/geos-extensions or
-  the RGeo project at https://github.com/dazuma/rgeo .
+  activerecord-spatial gem at https://github.com/zoocasa/activerecord-spatial
+  or the RGeo project at https://github.com/dazuma/rgeo .
 
 == Building db/schema.rb
 
