@@ -347,6 +347,7 @@ module ActiveRecord
           self.raw_connection.put_copy_end
         end
       end
+      alias :copy_from :copy_from_file
 
       # Returns an Array of database views.
       def views(name = nil)
