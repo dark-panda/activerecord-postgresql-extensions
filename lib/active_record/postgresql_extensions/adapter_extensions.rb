@@ -279,7 +279,7 @@ module ActiveRecord
       #
       # ==== Local Server Files vs. Local Client Files
       #
-      # The copy_from_file method allows you to import rows from a file
+      # The copy_from method allows you to import rows from a file
       # that exists on either your client's file system or on the
       # database server's file system using the <tt>:local</tt> option.
       #
@@ -311,7 +311,7 @@ module ActiveRecord
       #   exists on the file system accessible to the database server,
       #   something that you may not even have access to in the first
       #   place.
-      def copy_from_file(table_name, file, options = {})
+      def copy_from(table_name, file, options = {})
         options = {
           :local => true
         }.merge(options)
@@ -358,7 +358,7 @@ module ActiveRecord
           self.raw_connection.put_copy_end
         end
       end
-      alias :copy_from :copy_from_file
+      alias :copy_from_file :copy_from
 
       # Returns an Array of database views.
       def views(name = nil)
