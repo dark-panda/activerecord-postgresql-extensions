@@ -9,37 +9,41 @@ module ActiveRecord
 
     module Features
       class << self
-        def extensions?
-          if defined?(@has_extensions)
-            @has_extensions
-          else
-            @has_extensions = ActiveRecord::PostgreSQLExtensions.SERVER_VERSION >= '9.1'
-          end
+        %w{
+          extensions
+          foreign_tables
+          modify_mass_privileges
+          postgis
+        }.each do |feature|
+          self.class_eval(<<-RUBY, __FILE__, __LINE__ + 1)
+            def #{feature}?
+              sniff_features unless sniffed?
+              !!@has_#{feature}
+            end
+          RUBY
         end
 
-        def foreign_tables?
-          if defined?(@has_foreign_tables)
-            @has_foreign_tables
-          else
-            @has_foreign_tables = ActiveRecord::PostgreSQLExtensions.SERVER_VERSION >= '9.1'
+        private
+          def sniffed?
+            @sniffed
           end
-        end
 
-        def modify_mass_privileges?
-          if defined?(@has_modify_mass_privileges)
-            @has_modify_mass_privileges
-          else
-            @has_modify_mass_privileges = ActiveRecord::PostgreSQLExtensions.SERVER_VERSION >= '9.0'
-          end
-        end
+          def sniff_features
+            @sniffed = true
 
-        def postgis?
-          if defined?(@has_postgis)
-            @has_postgis
-          else
-            @has_postgis = !!ActiveRecord::PostgreSQLExtensions::PostGIS.VERSION
+            if ActiveRecord::PostgreSQLExtensions.SERVER_VERSION >= '9.1'
+              @has_extensions = true
+              @has_foreign_tables = true
+            end
+
+            if ActiveRecord::PostgreSQLExtensions.SERVER_VERSION >= '9.0'
+              @has_modify_mass_privileges = true
+            end
+
+            if !!ActiveRecord::PostgreSQLExtensions::PostGIS.VERSION
+              @has_postgis = true
+            end
           end
-        end
       end
     end
   end
