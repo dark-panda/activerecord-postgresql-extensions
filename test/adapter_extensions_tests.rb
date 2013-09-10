@@ -247,4 +247,14 @@ class AdapterExtensionTests < PostgreSQLExtensionsTestCase
       %{COPY "foo" FROM STDIN ENCODING 'UTF-8';}
     ], statements)
   end
+
+  def test_copy_from_program
+    skip unless ActiveRecord::PostgreSQLExtensions::Features.copy_from_program?
+
+    Mig.copy_from(:foo, 'cat /dev/null', :program => true) rescue nil
+
+    assert_equal([
+      %{COPY "foo" FROM PROGRAM 'cat /dev/null';}
+    ], statements)
+  end
 end

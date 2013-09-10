@@ -277,15 +277,22 @@ module ActiveRecord
       # * <tt>:encoding</tt> - set the encoding of the input. Available in
       #   PostgreSQL 9.1+.
       #
-      # ==== Local Server Files vs. Local Client Files
+      # ==== Local Server Files vs. Local Client Files vs. PROGRAM
       #
       # The copy_from method allows you to import rows from a file
       # that exists on either your client's file system or on the
       # database server's file system using the <tt>:local</tt> option.
       #
+      # PostgreSQL 9.3 additionally introduced the PROGRAM option to COPY
+      # FROM that allows you to pipe the output of a shell command to
+      # STDIN. This option requires that the COPY FROM command be run from on
+      # the server and as such may be limited by server restrictions such as
+      # access controls and permissions.
+      #
       # To process a file on the remote database server's file system:
       #
-      # * the file must be given as an absolute path;
+      # * the file must be given as an absolute path or as a valid shell
+      #   command if using the PROGRAM option;
       # * must be readable by the user that the actual PostgreSQL
       #   database server runs under; and
       # * the COPY FROM command itself can only be performed by database
@@ -324,7 +331,9 @@ module ActiveRecord
           sql << ' (' << Array(options[:columns]).collect { |c| quote_column_name(c) }.join(', ') << ')'
         end
 
-        if options[:local]
+        if options[:program]
+          sql << " FROM PROGRAM #{quote(file)}"
+        elsif options[:local]
           sql << " FROM STDIN"
         else
           sql << " FROM #{quote(file)}"
@@ -351,7 +360,9 @@ module ActiveRecord
 
         execute "#{sql};"
 
-        if options[:local]
+        if options[:program]
+          # no-op
+        elsif options[:local]
           File.open(file, 'r').each do |l|
             self.raw_connection.put_copy_data(l)
           end
@@ -671,6 +682,10 @@ module ActiveRecord
 
       private
         def assert_valid_copy_from_options(options)
+          if options[:program] && !ActiveRecord::PostgreSQLExtensions::Features.copy_from_program?
+            raise InvalidCopyFromOptions.new("The :program option is only available in PostgreSQL 9.3+.")
+          end
+
           if options[:freeze] && !ActiveRecord::PostgreSQLExtensions::Features.copy_from_freeze?
             raise InvalidCopyFromOptions.new("The :freeze option is only available in PostgreSQL 9.3+.")
           end

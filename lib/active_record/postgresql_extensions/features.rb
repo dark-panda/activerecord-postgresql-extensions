@@ -13,6 +13,7 @@ module ActiveRecord
           extensions
           copy_from_freeze
           copy_from_encoding
+          copy_from_program
           foreign_tables
           modify_mass_privileges
           postgis
@@ -35,6 +36,7 @@ module ActiveRecord
 
             if ActiveRecord::PostgreSQLExtensions.SERVER_VERSION >= '9.3'
               @has_copy_from_freeze = true
+              @has_copy_from_program = true
             end
 
             if ActiveRecord::PostgreSQLExtensions.SERVER_VERSION >= '9.1'
