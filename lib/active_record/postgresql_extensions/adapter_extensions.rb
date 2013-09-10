@@ -309,10 +309,10 @@ module ActiveRecord
           :local => true
         }.merge(options)
 
-        sql = "COPY #{quote_table_name(table_name)} "
+        sql = "COPY #{quote_table_name(table_name)}"
 
         unless options[:columns].blank?
-          sql << '(' << Array(options[:columns]).collect { |c| quote_column_name(c) }.join(', ') << ')'
+          sql << ' (' << Array(options[:columns]).collect { |c| quote_column_name(c) }.join(', ') << ')'
         end
 
         if options[:local]
@@ -338,7 +338,7 @@ module ActiveRecord
           end
         end
 
-        execute sql
+        execute "#{sql};"
 
         if options[:local]
           File.open(file, 'r').each do |l|
