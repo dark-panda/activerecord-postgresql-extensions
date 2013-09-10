@@ -2,9 +2,7 @@
 $: << File.dirname(__FILE__)
 require 'test_helper'
 
-class TablespaceTests < MiniTest::Unit::TestCase
-  include PostgreSQLExtensionsTestHelper
-
+class TablespaceTests < PostgreSQLExtensionsTestCase
   def test_create_tablespace
     Mig.create_tablespace('foo', '/tmp/foo')
     Mig.create_tablespace('foo', '/tmp/foo', :owner => :bar)

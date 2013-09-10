@@ -2,9 +2,7 @@
 $: << File.dirname(__FILE__)
 require 'test_helper'
 
-class ExtensionsTests < MiniTest::Unit::TestCase
-  include PostgreSQLExtensionsTestHelper
-
+class ExtensionsTests < PostgreSQLExtensionsTestCase
   def test_create_extension
     skip if !ActiveRecord::PostgreSQLExtensions::Features.extensions?
 

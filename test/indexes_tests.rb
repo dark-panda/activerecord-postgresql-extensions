@@ -2,9 +2,7 @@
 $: << File.dirname(__FILE__)
 require 'test_helper'
 
-class IndexTests < MiniTest::Unit::TestCase
-  include PostgreSQLExtensionsTestHelper
-
+class IndexTests < PostgreSQLExtensionsTestCase
   def test_create_index
     Mig.create_index(:foo_names_idx, :foo, [ :first_name, :last_name ])
     Mig.create_index(:foo_bar_id_idx, :foo, :column => :bar_id)

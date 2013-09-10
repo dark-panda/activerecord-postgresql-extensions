@@ -2,9 +2,7 @@
 $: << File.dirname(__FILE__)
 require 'test_helper'
 
-class TypesTests < MiniTest::Unit::TestCase
-  include PostgreSQLExtensionsTestHelper
-
+class TypesTests < PostgreSQLExtensionsTestCase
   def test_types
     types = ARBC.real_execute do
       ARBC.types
@@ -21,9 +19,7 @@ class TypesTests < MiniTest::Unit::TestCase
     end
   end
 
-  class EnumTests < MiniTest::Unit::TestCase
-    include PostgreSQLExtensionsTestHelper
-
+  class EnumTests < PostgreSQLExtensionsTestCase
     def setup
       ARBC.real_execute do
         Mig.drop_type(:foo_enum, :if_exists => true)
@@ -84,13 +80,9 @@ class TypesTests < MiniTest::Unit::TestCase
 
     def test_enum_values
       ARBC.real_execute do
-        ARBC.transaction do
-          Mig.create_enum(:foo_enum, :one, :two, :three)
+        Mig.create_enum(:foo_enum, :one, :two, :three)
 
-          assert_equal(%w{ one two three }, ARBC.enum_values(:foo_enum))
-
-          raise ActiveRecord::Rollback
-        end
+        assert_equal(%w{ one two three }, ARBC.enum_values(:foo_enum))
       end
     end
   end

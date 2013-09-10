@@ -149,6 +149,11 @@ end
 class Foo < ActiveRecord::Base
 end
 
+class PostgreSQLExtensionsTestCase < ActiveRecord::TestCase
+  include ActiveRecord::TestFixtures
+  include PostgreSQLExtensionsTestHelper
+end
+
 if RUBY_VERSION >= '1.9'
   MiniTest::Reporters.use!(MiniTest::Reporters::SpecReporter.new)
 end

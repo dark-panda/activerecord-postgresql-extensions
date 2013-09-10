@@ -2,9 +2,7 @@
 $: << File.dirname(__FILE__)
 require 'test_helper'
 
-class TriggerTests < MiniTest::Unit::TestCase
-  include PostgreSQLExtensionsTestHelper
-
+class TriggerTests < PostgreSQLExtensionsTestCase
   def test_enable_triggers
     Foo.enable_triggers
     Foo.enable_triggers(:bar)

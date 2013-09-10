@@ -2,9 +2,7 @@
 $: << File.dirname(__FILE__)
 require 'test_helper'
 
-class TextSearchTests < MiniTest::Unit::TestCase
-  include PostgreSQLExtensionsTestHelper
-
+class TextSearchTests < PostgreSQLExtensionsTestCase
   def test_create_text_search_configuration
     ARBC.create_text_search_configuration(:foo, :parser_name => 'bar')
     ARBC.create_text_search_configuration(:foo, :source_config => 'bar')

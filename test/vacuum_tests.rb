@@ -2,9 +2,7 @@
 $: << File.dirname(__FILE__)
 require 'test_helper'
 
-class VacuumTests < MiniTest::Unit::TestCase
-  include PostgreSQLExtensionsTestHelper
-
+class VacuumTests < PostgreSQLExtensionsTestCase
   def test_vacuum
     ARBC.vacuum
     ARBC.vacuum(:full => true, :freeze => true, :verbose  => true, :analyze => true)

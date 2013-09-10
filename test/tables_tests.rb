@@ -2,9 +2,7 @@
 $: << File.dirname(__FILE__)
 require 'test_helper'
 
-class TablesTests < MiniTest::Unit::TestCase
-  include PostgreSQLExtensionsTestHelper
-
+class TablesTests < PostgreSQLExtensionsTestCase
   def test_default_with_expression
     Mig.create_table('foo') do |t|
       t.integer :foo_id, :default => { :expression => '10 + 20' }

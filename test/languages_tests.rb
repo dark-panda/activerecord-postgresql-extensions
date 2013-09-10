@@ -2,9 +2,7 @@
 $: << File.dirname(__FILE__)
 require 'test_helper'
 
-class LanguagesTests < MiniTest::Unit::TestCase
-  include PostgreSQLExtensionsTestHelper
-
+class LanguagesTests < PostgreSQLExtensionsTestCase
   def test_create_language
     ARBC.create_language(:foo)
     ARBC.create_language(

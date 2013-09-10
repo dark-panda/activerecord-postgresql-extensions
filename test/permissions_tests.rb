@@ -2,9 +2,7 @@
 $: << File.dirname(__FILE__)
 require 'test_helper'
 
-class PermissionsTests < MiniTest::Unit::TestCase
-  include PostgreSQLExtensionsTestHelper
-
+class PermissionsTests < PostgreSQLExtensionsTestCase
   def test_grant_table_privileges
     Mig.grant_table_privileges(:foo, :select, :nobody)
     Mig.grant_table_privileges(:foo, [ :select, :update, :delete, :insert ], [ :nobody, :somebody ])

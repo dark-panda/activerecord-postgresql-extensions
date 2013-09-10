@@ -2,9 +2,7 @@
 $: << File.dirname(__FILE__)
 require 'test_helper'
 
-class ConstraintTests < MiniTest::Unit::TestCase
-  include PostgreSQLExtensionsTestHelper
-
+class ConstraintTests < PostgreSQLExtensionsTestCase
   def setup
     clear_statements!
   end

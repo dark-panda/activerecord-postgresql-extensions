@@ -2,9 +2,7 @@
 $: << File.dirname(__FILE__)
 require 'test_helper'
 
-class FunctionsTests < MiniTest::Unit::TestCase
-  include PostgreSQLExtensionsTestHelper
-
+class FunctionsTests < PostgreSQLExtensionsTestCase
   def test_create_function
     ARBC.create_function(:test, :integer, :integer, :sql) do
       "select 10;"

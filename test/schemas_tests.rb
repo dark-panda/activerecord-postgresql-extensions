@@ -2,9 +2,7 @@
 $: << File.dirname(__FILE__)
 require 'test_helper'
 
-class SchemasTests < MiniTest::Unit::TestCase
-  include PostgreSQLExtensionsTestHelper
-
+class SchemasTests < PostgreSQLExtensionsTestCase
   def test_create_schema
     Mig.create_schema(:foo)
     Mig.create_schema(:foo, :authorization => 'bar')

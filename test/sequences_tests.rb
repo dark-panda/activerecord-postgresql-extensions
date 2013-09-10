@@ -2,9 +2,7 @@
 $: << File.dirname(__FILE__)
 require 'test_helper'
 
-class SequenceTests < MiniTest::Unit::TestCase
-  include PostgreSQLExtensionsTestHelper
-
+class SequenceTests < PostgreSQLExtensionsTestCase
   def test_create_sequence
     Mig.create_sequence(
       'what_a_sequence_of_events',

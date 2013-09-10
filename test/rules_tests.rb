@@ -2,9 +2,7 @@
 $: << File.dirname(__FILE__)
 require 'test_helper'
 
-class RulesTests < MiniTest::Unit::TestCase
-  include PostgreSQLExtensionsTestHelper
-
+class RulesTests < PostgreSQLExtensionsTestCase
   def test_create_rule
     ARBC.create_rule(
       :ignore_root, :update, :foos, :instead, :nothing, :conditions => 'user_id = 0'

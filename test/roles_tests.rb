@@ -2,9 +2,7 @@
 $: << File.dirname(__FILE__)
 require 'test_helper'
 
-class RolesTests < MiniTest::Unit::TestCase
-  include PostgreSQLExtensionsTestHelper
-
+class RolesTests < PostgreSQLExtensionsTestCase
   def test_create_role
     ARBC.create_role('foo')
     ARBC.create_role('foo', {

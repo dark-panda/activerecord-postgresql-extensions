@@ -2,9 +2,7 @@
 $: << File.dirname(__FILE__)
 require 'test_helper'
 
-class AdapterExtensionTests < MiniTest::Unit::TestCase
-  include PostgreSQLExtensionsTestHelper
-
+class AdapterExtensionTests < PostgreSQLExtensionsTestCase
   def test_quote_table_name_with_schema_string
     assert_equal(%{"foo"."bar"}, ARBC.quote_table_name('foo.bar'))
   end

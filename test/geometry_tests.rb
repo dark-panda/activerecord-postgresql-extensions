@@ -3,9 +3,7 @@ $: << File.dirname(__FILE__)
 require 'test_helper'
 
 if (ActiveRecord::PostgreSQLExtensions::PostGIS.VERSION[:lib] rescue '') >= '2.0'
-  class GeometryTests < MiniTest::Unit::TestCase
-    include PostgreSQLExtensionsTestHelper
-
+  class GeometryTests < PostgreSQLExtensionsTestCase
     def test_create_geometry
       skip if !ActiveRecord::PostgreSQLExtensions::Features.postgis?
 
