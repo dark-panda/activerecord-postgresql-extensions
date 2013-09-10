@@ -1,5 +1,8 @@
 
 module ActiveRecord
+  class InvalidCopyFromOptions < ActiveRecordError #:nodoc:
+  end
+
   module ConnectionAdapters
     class PostgreSQLAdapter
       # with_schema is kind of like with_scope. It wraps various
@@ -269,6 +272,8 @@ module ActiveRecord
       # * <tt>:not_null</tt> - allows you to specify one or more columns
       #   to be inserted with a default value rather than NULL for any
       #   missing values.
+      # * <tt>:freeze</tt> - a performance enhancement added in PostgreSQL 9.3.
+      #   See the PostgreSQL documentation for details.
       #
       # ==== Local Server Files vs. Local Client Files
       #
@@ -309,6 +314,8 @@ module ActiveRecord
           :local => true
         }.merge(options)
 
+        assert_valid_copy_from_options(options)
+
         sql = "COPY #{quote_table_name(table_name)}"
 
         unless options[:columns].blank?
@@ -321,6 +328,7 @@ module ActiveRecord
           sql << " FROM #{quote(file)}"
         end
 
+        sql << ' FREEZE' if options[:freeze]
         sql << ' BINARY' if options[:binary]
         sql << ' OIDS' if options[:oids]
         sql << " DELIMITER AS #{quote(options[:delimiter])}" if options[:delimiter]
@@ -657,6 +665,13 @@ module ActiveRecord
         end
       end
       alias_method_chain :change_column_null, :expression
+
+      private
+        def assert_valid_copy_from_options(options)
+          if options[:freeze] && !ActiveRecord::PostgreSQLExtensions::Features.copy_from_freeze?
+            raise InvalidCopyFromOptions.new("The :freeze option is only available in PostgreSQL 9.3+.")
+          end
+        end
     end
 
     class PostgreSQLColumn

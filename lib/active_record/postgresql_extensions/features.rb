@@ -11,6 +11,7 @@ module ActiveRecord
       class << self
         %w{
           extensions
+          copy_from_freeze
           foreign_tables
           modify_mass_privileges
           postgis
@@ -30,6 +31,10 @@ module ActiveRecord
 
           def sniff_features
             @sniffed = true
+
+            if ActiveRecord::PostgreSQLExtensions.SERVER_VERSION >= '9.3'
+              @has_copy_from_freeze = true
+            end
 
             if ActiveRecord::PostgreSQLExtensions.SERVER_VERSION >= '9.1'
               @has_extensions = true
