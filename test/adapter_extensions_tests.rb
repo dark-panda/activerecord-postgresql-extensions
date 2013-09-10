@@ -205,4 +205,30 @@ class AdapterExtensionTests < PostgreSQLExtensionsTestCase
       %{ALTER TABLE "foo" ALTER "bar" DROP NOT NULL},
     ], statements)
   end
+
+  def test_copy_from_file
+    Mig.copy_from_file(:foo, '/dev/null') rescue nil
+    Mig.copy_from_file(:foo, '/dev/null', :columns => :name) rescue nil
+    Mig.copy_from_file(:foo, '/dev/null', :columns => [ :name, :description ]) rescue nil
+    Mig.copy_from_file(:foo, '/dev/null', :local => true) rescue nil
+    Mig.copy_from_file(:foo, '/dev/null', :freeze => true) rescue nil
+    Mig.copy_from_file(:foo, '/dev/null', :binary => true) rescue nil
+    Mig.copy_from_file(:foo, '/dev/null', :csv => true) rescue nil
+    Mig.copy_from_file(:foo, '/dev/null', :csv => { :header => true, :quote => '|', :escape => '&' }) rescue nil
+    Mig.copy_from_file(:foo, '/dev/null', :encoding => 'UTF-8') rescue nil
+    Mig.copy_from_file(:foo, '/dev/null', :local => false)
+
+    assert_equal([
+      %{COPY "foo" FROM STDIN;},
+      %{COPY "foo" ("name") FROM STDIN;},
+      %{COPY "foo" ("name", "description") FROM STDIN;},
+      %{COPY "foo" FROM STDIN;},
+      %{COPY "foo" FROM STDIN FREEZE;},
+      %{COPY "foo" FROM STDIN BINARY;},
+      %{COPY "foo" FROM STDIN CSV;},
+      %{COPY "foo" FROM STDIN CSV HEADER QUOTE AS '|' ESCAPE AS '&';},
+      %{COPY "foo" FROM STDIN ENCODING 'UTF-8';},
+      %{COPY "foo" FROM '/dev/null';}
+    ], statements)
+  end
 end
