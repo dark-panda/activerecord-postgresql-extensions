@@ -150,17 +150,19 @@ class PostgreSQLExtensionsTestCase < ActiveRecord::TestCase
   include ActiveRecord::TestFixtures
   include PostgreSQLExtensionsTestHelper
 
-  attr_writer :tagged_logger
+  if ActiveRecord::VERSION::MAJOR < 4
+    attr_writer :tagged_logger
 
-  def before_setup
-    if tagged_logger
-      heading = "#{self.class}: #{__name__}"
-      divider = '-' * heading.size
-      tagged_logger.info divider
-      tagged_logger.info heading
-      tagged_logger.info divider
+    def before_setup
+      if tagged_logger
+        heading = "#{self.class}: #{__name__}"
+        divider = '-' * heading.size
+        tagged_logger.info divider
+        tagged_logger.info heading
+        tagged_logger.info divider
+      end
+      super
     end
-    super
   end
 
   private
