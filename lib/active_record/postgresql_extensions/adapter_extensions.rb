@@ -274,6 +274,8 @@ module ActiveRecord
       #   missing values.
       # * <tt>:freeze</tt> - a performance enhancement added in PostgreSQL 9.3.
       #   See the PostgreSQL documentation for details.
+      # * <tt>:encoding</tt> - set the encoding of the input. Available in
+      #   PostgreSQL 9.1+.
       #
       # ==== Local Server Files vs. Local Client Files
       #
@@ -333,6 +335,7 @@ module ActiveRecord
         sql << ' OIDS' if options[:oids]
         sql << " DELIMITER AS #{quote(options[:delimiter])}" if options[:delimiter]
         sql << " NULL AS #{quote(options[:null_as])}" if options[:null]
+        sql << " ENCODING #{quote(options[:encoding])}" if options[:encoding]
 
         if options[:csv]
           sql << ' CSV'
@@ -670,6 +673,10 @@ module ActiveRecord
         def assert_valid_copy_from_options(options)
           if options[:freeze] && !ActiveRecord::PostgreSQLExtensions::Features.copy_from_freeze?
             raise InvalidCopyFromOptions.new("The :freeze option is only available in PostgreSQL 9.3+.")
+          end
+
+          if options[:encoding] && !ActiveRecord::PostgreSQLExtensions::Features.copy_from_encoding?
+            raise InvalidCopyFromOptions.new("The :encoding option is only available in PostgreSQL 9.1+.")
           end
         end
     end

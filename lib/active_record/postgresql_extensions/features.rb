@@ -12,6 +12,7 @@ module ActiveRecord
         %w{
           extensions
           copy_from_freeze
+          copy_from_encoding
           foreign_tables
           modify_mass_privileges
           postgis
@@ -39,6 +40,7 @@ module ActiveRecord
             if ActiveRecord::PostgreSQLExtensions.SERVER_VERSION >= '9.1'
               @has_extensions = true
               @has_foreign_tables = true
+              @has_copy_from_encoding = true
             end
 
             if ActiveRecord::PostgreSQLExtensions.SERVER_VERSION >= '9.0'
