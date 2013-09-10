@@ -152,6 +152,24 @@ end
 class PostgreSQLExtensionsTestCase < ActiveRecord::TestCase
   include ActiveRecord::TestFixtures
   include PostgreSQLExtensionsTestHelper
+
+  attr_writer :tagged_logger
+
+  def before_setup
+    if tagged_logger
+      heading = "#{self.class}: #{__name__}"
+      divider = '-' * heading.size
+      tagged_logger.info divider
+      tagged_logger.info heading
+      tagged_logger.info divider
+    end
+    super
+  end
+
+  private
+    def tagged_logger
+      @tagged_logger ||= (defined?(ActiveRecord::Base.logger) && ActiveRecord::Base.logger)
+    end
 end
 
 if RUBY_VERSION >= '1.9'
