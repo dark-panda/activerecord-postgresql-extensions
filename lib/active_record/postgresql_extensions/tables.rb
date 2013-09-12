@@ -112,7 +112,7 @@ module ActiveRecord
         execute table_definition.to_s
         unless table_definition.post_processing.blank?
           table_definition.post_processing.each do |pp|
-            execute pp
+            execute pp.to_s
           end
         end
       end
@@ -175,7 +175,7 @@ module ActiveRecord
     # been created. See the source code for PostgreSQLAdapter#create_table
     # and PostgreSQLTableDefinition#geometry for an example of its use.
     class PostgreSQLTableDefinition < TableDefinition
-      attr_accessor :base, :table_name, :options, :post_processing
+      attr_accessor :base, :table_name, :options
 
       def initialize(base, table_name, options = {}) #:nodoc:
         @table_constraints = Array.new
@@ -349,6 +349,11 @@ module ActiveRecord
         self
       end
       alias_method_chain :column, :constraints
+
+      # Add statements to execute to after a table has been created.
+      def post_processing
+        @post_processing ||= []
+      end
 
       private
         LIKE_TYPES = %w{ defaults constraints indexes }.freeze

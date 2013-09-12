@@ -167,13 +167,11 @@ module ActiveRecord
           [ schema || 'public', table_name ]
         end
 
-        @post_processing ||= Array.new
-
         if opts[:add_geometry_columns_entry] &&
           opts[:spatial_column_type].to_s != 'geography' &&
           ActiveRecord::PostgreSQLExtensions::PostGIS.VERSION[:lib] < '2.0'
 
-          @post_processing << sprintf(
+          self.post_processing << sprintf(
             "DELETE FROM \"geometry_columns\" WHERE f_table_catalog = '' AND " +
             "f_table_schema = %s AND " +
             "f_table_name = %s AND " +
@@ -183,7 +181,7 @@ module ActiveRecord
             base.quote(column_name.to_s)
           )
 
-          @post_processing << sprintf(
+          self.post_processing << sprintf(
             "INSERT INTO \"geometry_columns\" VALUES ('', %s, %s, %s, %d, %d, %s);",
             base.quote(current_scoped_schema.to_s),
             base.quote(current_table_name.to_s),
@@ -201,7 +199,7 @@ module ActiveRecord
             "#{current_table_name}_#{column_name}_gist_index"
           end
 
-          @post_processing << PostgreSQLIndexDefinition.new(
+          self.post_processing << PostgreSQLIndexDefinition.new(
             base,
             index_name,
             { current_scoped_schema => current_table_name },
