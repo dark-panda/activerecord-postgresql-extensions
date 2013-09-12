@@ -178,7 +178,6 @@ module ActiveRecord
       attr_accessor :base, :table_name, :options
 
       def initialize(base, table_name, options = {}) #:nodoc:
-        @table_constraints = Array.new
         @table_name, @options = table_name, options
         super(base)
       end
@@ -216,7 +215,7 @@ module ActiveRecord
           ary << @columns.collect(&:to_sql)
           ary << @like if defined?(@like) && @like
         end
-        ary << @table_constraints unless @table_constraints.empty?
+        ary << table_constraints unless table_constraints.empty?
 
         unless ary.empty?
           sql << " (\n  "
@@ -268,29 +267,29 @@ module ActiveRecord
       # Add a CHECK constraint to the table. See
       # PostgreSQLCheckConstraint for more details.
       def check_constraint(expression, options = {})
-        @table_constraints << PostgreSQLCheckConstraint.new(@base, expression, options)
+        table_constraints << PostgreSQLCheckConstraint.new(@base, expression, options)
       end
 
       # Add a UNIQUE constraint to the table. See
       # PostgreSQLUniqueConstraint for more details.
       def unique_constraint(columns, options = {})
-        @table_constraints << PostgreSQLUniqueConstraint.new(@base, columns, options)
+        table_constraints << PostgreSQLUniqueConstraint.new(@base, columns, options)
       end
 
       # Add a FOREIGN KEY constraint to the table. See
       # PostgreSQLForeignKeyConstraint for more details.
       def foreign_key(columns, ref_table, *args)
-        @table_constraints << PostgreSQLForeignKeyConstraint.new(@base, columns, ref_table, *args)
+        table_constraints << PostgreSQLForeignKeyConstraint.new(@base, columns, ref_table, *args)
       end
 
       # Add an EXCLUDE constraint to the table. See PostgreSQLExcludeConstraint
       # for more details.
       def exclude(excludes, options = {})
-        @table_constraints << PostgreSQLExcludeConstraint.new(@base, table_name, excludes, options)
+        table_constraints << PostgreSQLExcludeConstraint.new(@base, table_name, excludes, options)
       end
 
       def primary_key_constraint(columns, options = {})
-        @table_constraints << PostgreSQLPrimaryKeyConstraint.new(@base, columns, options)
+        table_constraints << PostgreSQLPrimaryKeyConstraint.new(@base, columns, options)
       end
 
       def column_with_constraints(name, type, *args) #:nodoc:
@@ -308,7 +307,7 @@ module ActiveRecord
             check
           end
 
-          @table_constraints << check.collect do |c|
+          table_constraints << check.collect do |c|
             if c.is_a?(Hash)
               PostgreSQLCheckConstraint.new(@base, c.delete(:expression), c)
             else
@@ -324,7 +323,7 @@ module ActiveRecord
             [ references, {} ]
           end
 
-          @table_constraints << PostgreSQLForeignKeyConstraint.new(
+          table_constraints << PostgreSQLForeignKeyConstraint.new(
             @base,
             name,
             ref_table,
@@ -336,14 +335,14 @@ module ActiveRecord
           unless unique.is_a?(Hash)
             unique = {}
           end
-          @table_constraints << PostgreSQLUniqueConstraint.new(@base, name, unique)
+          table_constraints << PostgreSQLUniqueConstraint.new(@base, name, unique)
         end
 
         if primary_key
           unless primary_key.is_a?(Hash)
             primary_key = {}
           end
-          @table_constraints << PostgreSQLPrimaryKeyConstraint.new(@base, name, primary_key)
+          table_constraints << PostgreSQLPrimaryKeyConstraint.new(@base, name, primary_key)
         end
 
         self
@@ -357,6 +356,10 @@ module ActiveRecord
 
       private
         LIKE_TYPES = %w{ defaults constraints indexes }.freeze
+
+        def table_constraints
+          @table_constraints ||= []
+        end
 
         def assert_valid_like_types(likes) #:nodoc:
           unless likes.blank?

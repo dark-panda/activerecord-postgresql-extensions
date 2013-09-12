@@ -134,20 +134,20 @@ module ActiveRecord
             ActiveRecord::PostgreSQLExtensions::PostGIS.VERSION[:lib] < '2.0' ||
             opts[:force_constraints]
           )
-            @table_constraints << PostgreSQLCheckConstraint.new(
+            table_constraints << PostgreSQLCheckConstraint.new(
               base,
               "ST_srid(#{base.quote_column_name(column_name)}) = (#{opts[:srid].to_i})",
               :name => "enforce_srid_#{column_name}"
             )
 
-            @table_constraints << PostgreSQLCheckConstraint.new(
+            table_constraints << PostgreSQLCheckConstraint.new(
               base,
               "ST_ndims(#{base.quote_column_name(column_name)}) = #{opts[:ndims].to_i}",
               :name => "enforce_dims_#{column_name}"
             )
 
             if opts[:geometry_type].to_s.upcase != 'GEOMETRY'
-              @table_constraints << PostgreSQLCheckConstraint.new(
+              table_constraints << PostgreSQLCheckConstraint.new(
                 base,
                 "geometrytype(#{base.quote_column_name(column_name)}) = '#{opts[:geometry_type].to_s.upcase}'::text OR #{base.quote_column_name(column_name)} IS NULL",
                 :name => "enforce_geotype_#{column_name}"
