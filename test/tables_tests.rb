@@ -167,4 +167,24 @@ class TablesTests < PostgreSQLExtensionsTestCase
       );
     SQL
   end
+
+  def test_index
+    Mig.create_table('foo') do |t|
+      t.text :blort
+      t.index :foo_blort_idx, :blort, :using => :gist
+    end
+
+    assert_equal([
+      strip_heredoc(%{
+        CREATE TABLE "foo" (
+          "id" serial primary key,
+          "blort" text
+        );
+      }),
+
+      strip_heredoc(%{
+        CREATE INDEX "foo_blort_idx" ON "foo" USING "gist"("blort");
+      })
+    ], statements)
+  end
 end

@@ -349,6 +349,13 @@ module ActiveRecord
       end
       alias_method_chain :column, :constraints
 
+      # Add an INDEX to the table. This INDEX will be added during post
+      # processing after the table has been created. See
+      # PostgreSQLIndexDefinition for more details.
+      def index(name, columns, options = {})
+        post_processing << PostgreSQLIndexDefinition.new(@base, name, self.table_name, columns, options)
+      end
+
       # Add statements to execute to after a table has been created.
       def post_processing
         @post_processing ||= []
