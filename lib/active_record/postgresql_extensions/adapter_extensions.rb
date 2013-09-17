@@ -358,15 +358,26 @@ module ActiveRecord
           end
         end
 
-        execute "#{sql};"
+        sql << ';'
 
-        if options[:program]
-          # no-op
-        elsif options[:local]
-          File.open(file, 'r').each do |l|
-            self.raw_connection.put_copy_data(l)
+        if options[:program] || !options[:local]
+          execute sql
+        else
+          fp = File.open(file, 'r')
+
+          if self.raw_connection.respond_to?(:copy_data)
+            self.raw_connection.copy_data(sql) do
+              fp.each do |l|
+                self.raw_connection.put_copy_data(l)
+              end
+            end
+          else
+            execute sql
+            fp.each do |l|
+              self.raw_connection.put_copy_data(l)
+            end
+            self.raw_connection.put_copy_end
           end
-          self.raw_connection.put_copy_end
         end
       end
       alias :copy_from_file :copy_from

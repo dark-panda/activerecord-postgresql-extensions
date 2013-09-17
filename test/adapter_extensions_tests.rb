@@ -206,15 +206,29 @@ class AdapterExtensionTests < PostgreSQLExtensionsTestCase
     ], statements)
   end
 
+  def stub_copy_from
+    if ARBC.raw_connection.respond_to?(:copy_data)
+      ARBC.raw_connection.stub(:copy_data, proc { |sql|
+        statements << sql
+      }) do
+        yield
+      end
+    else
+      yield
+    end
+  end
+
   def test_copy_from
-    Mig.copy_from(:foo, '/dev/null') rescue nil
-    Mig.copy_from(:foo, '/dev/null', :columns => :name) rescue nil
-    Mig.copy_from(:foo, '/dev/null', :columns => [ :name, :description ]) rescue nil
-    Mig.copy_from(:foo, '/dev/null', :local => true) rescue nil
-    Mig.copy_from(:foo, '/dev/null', :binary => true) rescue nil
-    Mig.copy_from(:foo, '/dev/null', :csv => true) rescue nil
-    Mig.copy_from(:foo, '/dev/null', :csv => { :header => true, :quote => '|', :escape => '&' }) rescue nil
-    Mig.copy_from(:foo, '/dev/null', :local => false)
+    stub_copy_from do
+      Mig.copy_from(:foo, '/dev/null') rescue nil
+      Mig.copy_from(:foo, '/dev/null', :columns => :name) rescue nil
+      Mig.copy_from(:foo, '/dev/null', :columns => [ :name, :description ]) rescue nil
+      Mig.copy_from(:foo, '/dev/null', :local => true) rescue nil
+      Mig.copy_from(:foo, '/dev/null', :binary => true) rescue nil
+      Mig.copy_from(:foo, '/dev/null', :csv => true) rescue nil
+      Mig.copy_from(:foo, '/dev/null', :csv => { :header => true, :quote => '|', :escape => '&' }) rescue nil
+      Mig.copy_from(:foo, '/dev/null', :local => false)
+    end
 
     assert_equal([
       %{COPY "foo" FROM STDIN;},
@@ -231,7 +245,9 @@ class AdapterExtensionTests < PostgreSQLExtensionsTestCase
   def test_copy_from_with_freeze_option
     skip unless ActiveRecord::PostgreSQLExtensions::Features.copy_from_freeze?
 
-    Mig.copy_from(:foo, '/dev/null', :freeze => true) rescue nil
+    stub_copy_from do
+      Mig.copy_from(:foo, '/dev/null', :freeze => true) rescue nil
+    end
 
     assert_equal([
       %{COPY "foo" FROM STDIN FREEZE;}
@@ -241,7 +257,9 @@ class AdapterExtensionTests < PostgreSQLExtensionsTestCase
   def test_copy_from_with_encoding_option
     skip unless ActiveRecord::PostgreSQLExtensions::Features.copy_from_encoding?
 
-    Mig.copy_from(:foo, '/dev/null', :encoding => 'UTF-8') rescue nil
+    stub_copy_from do
+      Mig.copy_from(:foo, '/dev/null', :encoding => 'UTF-8') rescue nil
+    end
 
     assert_equal([
       %{COPY "foo" FROM STDIN ENCODING 'UTF-8';}
