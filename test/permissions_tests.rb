@@ -39,6 +39,38 @@ class PermissionsTests < PostgreSQLExtensionsTestCase
     ], statements)
   end
 
+  def test_grant_view_privileges
+    Mig.grant_view_privileges(:foo, :select, :nobody)
+    Mig.grant_view_privileges(:foo, [ :select, :update, :delete, :insert ], [ :nobody, :somebody ])
+    Mig.grant_view_privileges(:foo, :select, :nobody, :with_grant_option => true)
+    Mig.grant_view_privileges(:foo, :select, :nobody, :cascade => true)
+    Mig.grant_view_privileges(:foo, :select, :public, :cascade => true)
+
+    assert_equal([
+      %{GRANT SELECT ON "foo" TO "nobody";},
+      %{GRANT SELECT, UPDATE, DELETE, INSERT ON "foo" TO "nobody", "somebody";},
+      %{GRANT SELECT ON "foo" TO "nobody" WITH GRANT OPTION;},
+      %{GRANT SELECT ON "foo" TO "nobody";},
+      %{GRANT SELECT ON "foo" TO PUBLIC;}
+    ], statements)
+  end
+
+  def test_revoke_view_privileges
+    Mig.revoke_view_privileges(:foo, :select, :nobody)
+    Mig.revoke_view_privileges(:foo, [ :select, :update, :delete, :insert ], [ :nobody, :somebody ])
+    Mig.revoke_view_privileges(:foo, :select, :nobody, :with_grant_option => true)
+    Mig.revoke_view_privileges(:foo, :select, :nobody, :cascade => true)
+    Mig.revoke_view_privileges(:foo, :select, :public, :cascade => true)
+
+    assert_equal([
+      %{REVOKE SELECT ON "foo" FROM "nobody";},
+      %{REVOKE SELECT, UPDATE, DELETE, INSERT ON "foo" FROM "nobody", "somebody";},
+      %{REVOKE SELECT ON "foo" FROM "nobody";},
+      %{REVOKE SELECT ON "foo" FROM "nobody" CASCADE;},
+      %{REVOKE SELECT ON "foo" FROM PUBLIC CASCADE;},
+    ], statements)
+  end
+
   def test_grant_sequence_privileges
     Mig.grant_sequence_privileges(:foo, :select, :nobody)
     Mig.grant_sequence_privileges(:foo, [ :select, :update ], [ :nobody, :somebody ])

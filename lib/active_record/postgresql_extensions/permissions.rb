@@ -66,6 +66,14 @@ module ActiveRecord
         execute PostgreSQLGrantPrivilege.new(self, :tablespace, tablespaces, privileges, roles, options).to_sql
       end
 
+      # Grants privileges on views. You can specify multiple views,
+      # roles and privileges all at once using Arrays for each of the
+      # desired parameters. See PostgreSQLGrantPrivilege for
+      # usage.
+      def grant_view_privileges(views, privileges, roles, options = {})
+        execute PostgreSQLGrantPrivilege.new(self, :view, views, privileges, roles, options, :named_object_type => false).to_sql
+      end
+
       # Grants role membership to another role. You can specify multiple
       # roles for both the roles and the role_names parameters using
       # Arrays.
@@ -139,6 +147,14 @@ module ActiveRecord
         execute PostgreSQLRevokePrivilege.new(self, :tablespace, tablespaces, privileges, roles, options).to_sql
       end
 
+      # Revokes view privileges. You can specify multiple views,
+      # roles and privileges all at once using Arrays for each of the
+      # desired parameters. See PostgreSQLRevokePrivilege for
+      # usage.
+      def revoke_view_privileges(views, privileges, roles, options = {})
+        execute PostgreSQLRevokePrivilege.new(self, :view, views, privileges, roles, options, :named_object_type => false).to_sql
+      end
+
       # Revokes role membership. You can specify multiple
       # roles for both the roles and the role_names parameters using
       # Arrays.
@@ -178,7 +194,8 @@ module ActiveRecord
           :function      => [ 'execute', 'all' ],
           :language      => [ 'usage', 'all' ],
           :schema        => [ 'create', 'usage', 'all' ],
-          :tablespace    => [ 'create', 'all' ]
+          :tablespace    => [ 'create', 'all' ],
+          :view          => [ 'select', 'insert', 'update', 'delete', 'references', 'trigger', 'all' ]
         }.freeze
 
         def assert_valid_privileges type, privileges
@@ -221,7 +238,8 @@ module ActiveRecord
     class PostgreSQLGrantPrivilege < PostgreSQLPrivilege
       def to_sql #:nodoc:
         my_query_options = {
-          :quote_objects => true
+          :quote_objects => true,
+          :named_object_type => true
         }.merge query_options
 
         sql = "GRANT #{Array(privileges).collect(&:to_s).collect(&:upcase).join(', ')} ON "
@@ -233,7 +251,8 @@ module ActiveRecord
 
           sql << "ALL #{type.to_s.upcase}S IN SCHEMA #{base.quote_schema(objects)}"
         else
-          sql << "#{type.to_s.upcase} "
+          sql << "#{type.to_s.upcase} " if my_query_options[:named_object_type]
+
           sql << Array(objects).collect do |t|
             if my_query_options[:quote_objects]
               if my_query_options[:ignore_schema]
@@ -299,7 +318,8 @@ module ActiveRecord
     class PostgreSQLRevokePrivilege < PostgreSQLPrivilege
       def to_sql #:nodoc:
         my_query_options = {
-          :quote_objects => true
+          :quote_objects => true,
+          :named_object_type => true
         }.merge query_options
 
         sql = 'REVOKE '
@@ -313,7 +333,8 @@ module ActiveRecord
 
           sql << "ALL #{type.to_s.upcase}S IN SCHEMA #{base.quote_schema(objects)}"
         else
-          sql << "#{type.to_s.upcase} "
+          sql << "#{type.to_s.upcase} " if my_query_options[:named_object_type]
+
           sql << Array(objects).collect do |t|
             if my_query_options[:quote_objects]
               if my_query_options[:ignore_schema]
