@@ -296,4 +296,12 @@ class ExtensionsTests < PostgreSQLExtensionsTestCase
       ALTER EXTENSION "foo" ADD FUNCTION "bar"(VARIADIC hello world);
     SQL
   end
+
+  def test_alter_extension_bad_action
+    assert_raises(ArgumentError) do
+      ARBC.alter_extension(:foo, {
+        :blort_collation => :bar
+      })
+    end
+  end
 end

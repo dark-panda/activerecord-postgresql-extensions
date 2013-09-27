@@ -187,6 +187,8 @@ module ActiveRecord
             action = :add
           end
 
+          assert_valid_action(action)
+
           sql = "ALTER EXTENSION #{@base.quote_generic(@name || name)} #{action.to_s.upcase} "
           sql << case option
             when 'aggregate'
@@ -234,6 +236,9 @@ module ActiveRecord
                 extract_hash_or_array_options(args, :name, :indexing_method)
 
               "#{option.upcase.gsub('_', ' ')} #{@base.quote_generic(object_name)} USING #{@base.quote_generic(indexing_method)})"
+
+            else
+              raise ArgumentError.new("Unknown operation #{option}")
           end
           sql
         end
