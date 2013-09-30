@@ -21,12 +21,6 @@ module ActiveRecord
     end
   end
 
-  class InvalidConstraintDependencyAction < ActiveRecordError #:nodoc:
-    def initialize(option)
-      super("Invalid constraint dependency action - #{option}")
-    end
-  end
-
   module ConnectionAdapters
     class PostgreSQLAdapter
       # Adds a CHECK constraint to the table. See
