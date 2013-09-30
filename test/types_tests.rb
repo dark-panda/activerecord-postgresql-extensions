@@ -85,5 +85,11 @@ class TypesTests < PostgreSQLExtensionsTestCase
         assert_equal(%w{ one two three }, ARBC.enum_values(:foo_enum))
       end
     end
+
+    def test_both_before_and_after_add_enum_value
+      assert_raises(ActiveRecord::InvalidAddEnumValueOptions) do
+        Mig.add_enum_value(:foo_enum, :blort, :after => :foo, :before => :bar)
+      end
+    end
   end
 end

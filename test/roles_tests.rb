@@ -5,6 +5,16 @@ require 'test_helper'
 class RolesTests < PostgreSQLExtensionsTestCase
   def test_create_role
     ARBC.create_role('foo')
+
+    ARBC.create_role('foo', {
+      :password => 'testing',
+      :encrypted_password => false
+    })
+
+    ARBC.create_role('foo', {
+      :valid_until => 'foo'
+    })
+
     ARBC.create_role('foo', {
       :superuser => true,
       :create_db => true,
@@ -22,6 +32,8 @@ class RolesTests < PostgreSQLExtensionsTestCase
 
     assert_equal([
       %{CREATE ROLE "foo";},
+      %{CREATE ROLE "foo" UNENCRYPTED PASSWORD 'testing';},
+      %{CREATE ROLE "foo" VALID UNTIL 'foo';},
       %{CREATE ROLE "foo" SUPERUSER CREATEDB CREATEROLE NOINHERIT LOGIN CONNECTION LIMIT 10 ENCRYPTED PASSWORD 'testing' VALID UNTIL '2011-10-12' IN ROLE "bar" ROLE "baz" ADMIN "blort";}
     ], statements)
   end

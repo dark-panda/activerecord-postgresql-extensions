@@ -60,4 +60,10 @@ class TablespaceTests < PostgreSQLExtensionsTestCase
       );
     SQL
   end
+
+  def test_invalid_tablespace_parameters
+    assert_raises(ActiveRecord::InvalidTablespaceParameter) do
+      Mig.alter_tablespace_parameters('foo', :blart => 2.0)
+    end
+  end
 end

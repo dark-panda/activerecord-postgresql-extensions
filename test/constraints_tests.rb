@@ -374,4 +374,42 @@ class ConstraintTests < PostgreSQLExtensionsTestCase
       %{ALTER TABLE "foo" ADD CHECK (length(name) < 100) NO INHERIT;},
     ], statements)
   end
+
+  def test_invalid_deferrable_option
+    assert_raises(ActiveRecord::InvalidDeferrableOption) do
+      Mig.add_foreign_key(:foo, :bar_id, :bar, :deferrable => :foo)
+    end
+  end
+
+  def test_true_deferrable_option
+    Mig.add_foreign_key(:foo, :bar_id, :bar, :deferrable => true)
+
+    assert_equal([
+      %{ALTER TABLE "foo" ADD FOREIGN KEY ("bar_id") REFERENCES "bar" DEFERRABLE;}
+    ], statements)
+  end
+
+  def test_false_deferrable_option
+    Mig.add_foreign_key(:foo, :bar_id, :bar, :deferrable => false)
+
+    assert_equal([
+      %{ALTER TABLE "foo" ADD FOREIGN KEY ("bar_id") REFERENCES "bar" NOT DEFERRABLE;}
+    ], statements)
+  end
+
+  def test_invalid_match_type
+    assert_raises(ActiveRecord::InvalidMatchType) do
+      Mig.add_foreign_key(:foo, :bar_id, :bar, :match => :foo)
+    end
+  end
+
+  def test_invalid_action_type
+    assert_raises(ActiveRecord::InvalidForeignKeyAction) do
+      Mig.add_foreign_key(:foo, :bar_id, :bar, :on_delete => :blort)
+    end
+
+    assert_raises(ActiveRecord::InvalidForeignKeyAction) do
+      Mig.add_foreign_key(:foo, :bar_id, :bar, :on_update => :blort)
+    end
+  end
 end
