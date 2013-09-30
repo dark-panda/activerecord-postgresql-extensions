@@ -10,16 +10,24 @@ module ActiveRecord
 
   module ConnectionAdapters
     class PostgreSQLAdapter
+      # Creates a PostgreSQL ROLE. See PostgreSQLRole for details on options.
       def create_role(name, options = {})
         execute PostgreSQLRole.new(self, :create, name, options).to_sql
       end
       alias :create_user :create_role
 
+      # Alters a PostgreSQL ROLE. See PostgreSQLRole for details on options.
       def alter_role(name, options = {})
         execute PostgreSQLRole.new(self, :alter, name, options).to_sql
       end
       alias :alter_user :alter_role
 
+      # Drop PostgreSQL ROLEs.
+      #
+      # ==== Options
+      #
+      # * <tt>:if_exists</tt> - don't raise an error if the ROLE doesn't
+      #   exist. The default is false.
       def drop_role(*args)
         options = args.extract_options!
         args.flatten!
@@ -32,8 +40,8 @@ module ActiveRecord
       alias :drop_user :drop_role
     end
 
-    # This is a base class for PostgreSQLGrantPrivilege and
-    # PostgreSQLRevokePrivilege and is not meant to be used directly.
+    # This is a base class for creating and altering ROLEs and is not meant to
+    # be used directly.
     class PostgreSQLRole
       attr_accessor :base, :action, :name, :options
 
