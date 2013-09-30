@@ -39,7 +39,7 @@ class TablespaceTests < PostgreSQLExtensionsTestCase
     ], statements)
   end
 
-  def test_alter_tablespace_paramters
+  def test_alter_tablespace_parameters
     Mig.alter_tablespace_parameters('foo', :seq_page_cost => 2.0, :random_page_cost => 5.0)
 
     assert_equal([ strip_heredoc(<<-SQL) ], statements)
@@ -50,7 +50,7 @@ class TablespaceTests < PostgreSQLExtensionsTestCase
     SQL
   end
 
-  def test_reset_tablespace_paramters
+  def test_reset_tablespace_parameters
     Mig.reset_tablespace_parameters('foo', :seq_page_cost, :random_page_cost)
 
     assert_equal([ strip_heredoc(<<-SQL) ], statements)
