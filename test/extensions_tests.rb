@@ -298,6 +298,8 @@ class ExtensionsTests < PostgreSQLExtensionsTestCase
   end
 
   def test_alter_extension_bad_action
+    skip if !ActiveRecord::PostgreSQLExtensions::Features.extensions?
+
     assert_raises(ArgumentError) do
       ARBC.alter_extension(:foo, {
         :blort_collation => :bar
