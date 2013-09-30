@@ -76,7 +76,7 @@ module ActiveRecord
 
         def assert_valid_tablespace_parameter(parameter)
           if !TABLESPACE_PARAMETERS.include? parameter.to_s.downcase
-            raise ActiveRecord::InvalidTablespaceParameter.new(option)
+            raise ActiveRecord::InvalidTablespaceParameter.new(parameter)
           end
         end
     end
