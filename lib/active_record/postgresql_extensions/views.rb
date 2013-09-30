@@ -27,6 +27,9 @@ module ActiveRecord
       #   necessary. Note that this can be an Array and that it must be
       #   the same length as the number of output columns created by
       #   +query+.
+      # * <tt>:with_options</tt> - sets view options. View options were added
+      #   in PostgreSQL 9.1. See the PostgreSQL docs for details on the
+      #   available options.
       #
       # ==== Examples
       #
@@ -62,17 +65,55 @@ module ActiveRecord
 
       # Renames a view.
       def rename_view(name, new_name, options = {})
-        execute "ALTER TABLE #{quote_view_name(name)} RENAME TO #{quote_generic_ignore_scoped_schema(new_name)};"
+        execute PostgreSQLViewAlterer.new(self, name, {
+          :rename_to => new_name
+        }, options).to_sql
       end
 
       # Change the ownership of a view.
       def alter_view_owner(name, role, options = {})
-        execute "ALTER TABLE #{quote_view_name(name)} OWNER TO #{quote_role(role)};"
+        execute PostgreSQLViewAlterer.new(self, name, {
+          :owner_to => role
+        }, options).to_sql
       end
 
       # Alter a view's schema.
       def alter_view_schema(name, schema, options = {})
-        execute "ALTER TABLE #{quote_view_name(name)} SET SCHEMA #{quote_schema(schema)};"
+        execute PostgreSQLViewAlterer.new(self, name, {
+          :set_schema => schema
+        }, options).to_sql
+      end
+
+      # Sets a view's options using a Hash.
+      def alter_view_set_options(name, set_options, options = {})
+        execute PostgreSQLViewAlterer.new(self, name, {
+          :set_options => set_options
+        }, options).to_sql
+      end
+
+      # Resets a view's options.
+      def alter_view_reset_options(name, *args)
+        options = args.extract_options!
+
+        execute PostgreSQLViewAlterer.new(self, name, {
+          :reset_options => args
+        }, options).to_sql
+      end
+
+      # Set a column default on a view.
+      def alter_view_set_column_default(name, column, expression, options = {})
+        execute PostgreSQLViewAlterer.new(self, name, {
+          :set_default => {
+            column => expression
+          }
+        }, options).to_sql
+      end
+
+      # Drop a column default from a view.
+      def alter_view_drop_column_default(name, column, options = {})
+        execute PostgreSQLViewAlterer.new(self, name, {
+          :drop_default => column
+        }, options).to_sql
       end
     end
 
@@ -91,15 +132,99 @@ module ActiveRecord
         sql << 'OR REPLACE ' if options[:replace]
         sql << 'TEMPORARY ' if options[:temporary]
         sql << "VIEW #{base.quote_view_name(name)} "
+
         if options[:columns]
           sql << '(' << Array(options[:columns]).collect do |c|
             base.quote_column_name(c)
           end.join(', ') << ') '
         end
+
+        if options[:with_options]
+          ActiveRecord::PostgreSQLExtensions::Features.check_feature(:view_set_options)
+
+          sql << 'WITH (' << options[:with_options].collect { |(k, v)|
+            "#{base.quote_generic(k)} = #{v}"
+          }.join(", ") << ') '
+        end
+
         sql << "AS #{query}"
         "#{sql};"
       end
       alias :to_s :to_sql
+    end
+
+    class PostgreSQLViewAlterer
+      attr_accessor :base, :name, :actions, :options
+
+      VALID_OPTIONS = %w{
+        set_default
+        drop_default
+        owner_to
+        rename_to
+        set_schema
+        set_options
+        reset_options
+      }.freeze
+
+      def initialize(base, name, actions, options = {}) #:nodoc:
+        @base, @name, @actions, @options = base, name, actions, options
+      end
+
+      def to_sql #:nodoc:
+        all_sql = []
+
+        VALID_OPTIONS.each do |key|
+          key = key.to_sym
+
+          if actions.key?(key)
+            sql = "ALTER VIEW "
+
+            if options.key?(:if_exists)
+              ActiveRecord::PostgreSQLExtensions::Features.check_feature(:view_if_exists)
+
+              sql << "IF EXISTS " if options[:if_exists]
+            end
+
+            sql << "#{base.quote_view_name(name)} "
+
+            sql << case key
+              when :set_default
+                column, expression = actions[:set_default].flatten
+                "ALTER COLUMN #{base.quote_column_name(column)} SET DEFAULT #{expression}"
+
+              when :drop_default
+                "ALTER COLUMN #{base.quote_column_name(actions[:drop_default])} DROP DEFAULT"
+
+              when :owner_to
+                "OWNER TO #{base.quote_role(actions[:owner_to])}"
+
+              when :rename_to
+                "RENAME TO #{base.quote_generic_ignore_scoped_schema(actions[:rename_to])}"
+
+              when :set_schema
+                "SET SCHEMA #{base.quote_schema(actions[:set_schema])}"
+
+              when :set_options
+                ActiveRecord::PostgreSQLExtensions::Features.check_feature(:view_set_options)
+
+                'SET (' << actions[:set_options].collect { |(k, v)|
+                  "#{base.quote_generic(k)} = #{v}"
+                }.join(", ") << ')'
+
+              when :reset_options
+                ActiveRecord::PostgreSQLExtensions::Features.check_feature(:view_set_options)
+
+                'RESET (' << Array.wrap(actions[:reset_options]).collect { |value|
+                  base.quote_generic(value)
+                }.join(", ") << ')'
+            end
+
+            all_sql << "#{sql};"
+          end
+        end
+
+        all_sql.join("\n")
+      end
     end
   end
 end

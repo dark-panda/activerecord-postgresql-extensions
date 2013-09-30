@@ -17,6 +17,8 @@ module ActiveRecord
           foreign_tables
           modify_mass_privileges
           postgis
+          view_if_exists
+          view_set_options
         }.each do |feature|
           self.class_eval(<<-RUBY, __FILE__, __LINE__ + 1)
             def #{feature}?
@@ -49,6 +51,8 @@ module ActiveRecord
               @has_extensions = true
               @has_foreign_tables = true
               @has_copy_from_encoding = true
+              @has_view_if_exists = true
+              @has_view_set_options = true
             end
 
             if ActiveRecord::PostgreSQLExtensions.SERVER_VERSION >= '9.0'
