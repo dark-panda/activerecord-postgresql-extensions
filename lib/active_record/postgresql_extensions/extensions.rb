@@ -8,8 +8,7 @@ module ActiveRecord
       # either a parser_name or a source_config option as per the PostgreSQL
       # text search docs.
       def create_extension(name, options = {})
-        raise ActiveRecord::PostgreSQLExtensions::FeatureNotSupportedError.new('extensions') if
-          !ActiveRecord::PostgreSQLExtensions::Features.extensions?
+        ActiveRecord::PostgreSQLExtensions::Features.check_feature(:extensions)
 
         sql = "CREATE EXTENSION "
         sql << "IF NOT EXISTS " if options[:if_not_exists]
@@ -26,8 +25,7 @@ module ActiveRecord
       # * <tt>if_exists</tt> - adds IF EXISTS.
       # * <tt>cascade</tt> - adds CASCADE.
       def drop_extension(*args)
-        raise ActiveRecord::PostgreSQLExtensions::FeatureNotSupportedError.new('extensions') if
-          !ActiveRecord::PostgreSQLExtensions::Features.extensions?
+        ActiveRecord::PostgreSQLExtensions::Features.check_feature(:extensions)
 
         options = args.extract_options!
 
@@ -40,8 +38,7 @@ module ActiveRecord
       end
 
       def update_extension(name, new_version = nil)
-        raise ActiveRecord::PostgreSQLExtensions::FeatureNotSupportedError.new('extensions') if
-          !ActiveRecord::PostgreSQLExtensions::Features.extensions?
+        ActiveRecord::PostgreSQLExtensions::Features.check_feature(:extensions)
 
         sql = "ALTER EXTENSION #{quote_generic(name)} UPDATE"
         sql << " TO #{quote_generic(new_version)}" if new_version;
@@ -49,8 +46,7 @@ module ActiveRecord
       end
 
       def alter_extension_schema(name, schema)
-        raise ActiveRecord::PostgreSQLExtensions::FeatureNotSupportedError.new('extensions') if
-          !ActiveRecord::PostgreSQLExtensions::Features.extensions?
+        ActiveRecord::PostgreSQLExtensions::Features.check_feature(:extensions)
 
         execute "ALTER EXTENSION #{quote_generic(name)} SET SCHEMA #{quote_schema(schema)};"
       end
@@ -124,8 +120,7 @@ module ActiveRecord
       # * <tt>:operator_class</tt> and <tt>:operator_family</tt> - <tt>:name</tt>
       #   and <tt>:indexing_method</tt>.
       def alter_extension(name, options = {})
-        raise ActiveRecord::PostgreSQLExtensions::FeatureNotSupportedError.new('extensions') if
-          !ActiveRecord::PostgreSQLExtensions::Features.extensions?
+        ActiveRecord::PostgreSQLExtensions::Features.check_feature(:extensions)
 
         alterer = PostgreSQLExtensionAlterer.new(self, name, options)
 
@@ -139,8 +134,7 @@ module ActiveRecord
 
     class PostgreSQLExtensionAlterer
       def initialize(base, name, options = {}) #:nodoc:
-        raise ActiveRecord::PostgreSQLExtensions::FeatureNotSupportedError.new('extensions') if
-          !ActiveRecord::PostgreSQLExtensions::Features.extensions?
+        ActiveRecord::PostgreSQLExtensions::Features.check_feature(:extensions)
 
         @base, @name, @options = base, name, options
         @sql = options.collect { |k, v| build_statement(k, v) }

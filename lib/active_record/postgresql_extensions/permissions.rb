@@ -245,9 +245,7 @@ module ActiveRecord
         sql = "GRANT #{Array(privileges).collect(&:to_s).collect(&:upcase).join(', ')} ON "
 
         if options[:all]
-          if !ActiveRecord::PostgreSQLExtensions::Features.modify_mass_privileges?
-            raise ActiveRecord::PostgreSQLExtensions::FeatureNotSupportedError.new('modify mass privileges')
-          end
+          ActiveRecord::PostgreSQLExtensions::Features.check_feature(:modify_mass_privileges)
 
           sql << "ALL #{type.to_s.upcase}S IN SCHEMA #{base.quote_schema(objects)}"
         else
@@ -327,9 +325,7 @@ module ActiveRecord
         sql << "#{Array(privileges).collect(&:to_s).collect(&:upcase).join(', ')} ON "
 
         if options[:all]
-          if !ActiveRecord::PostgreSQLExtensions::Features.modify_mass_privileges?
-            raise ActiveRecord::PostgreSQLExtensions::FeatureNotSupportedError.new('modify mass privileges')
-          end
+          ActiveRecord::PostgreSQLExtensions::Features.check_feature(:modify_mass_privileges)
 
           sql << "ALL #{type.to_s.upcase}S IN SCHEMA #{base.quote_schema(objects)}"
         else

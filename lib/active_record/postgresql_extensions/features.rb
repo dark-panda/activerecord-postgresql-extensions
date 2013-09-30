@@ -26,6 +26,12 @@ module ActiveRecord
           RUBY
         end
 
+        def check_feature(feature)
+          if !self.send("#{feature}?")
+            raise ActiveRecord::PostgreSQLExtensions::FeatureNotSupportedError.new(feature)
+          end
+        end
+
         private
           def sniffed?
             @sniffed
