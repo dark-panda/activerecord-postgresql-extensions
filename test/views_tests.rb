@@ -85,16 +85,23 @@ class ViewsTests < PostgreSQLExtensionsTestCase
 
   def test_create_view_with_options
     tester = proc {
-      Mig.create_view("foos_view", "SELECT * FROM foos", :with_options => {
-        :security_barrier => true
-      })
+      Mig.create_view("foos_view", "SELECT * FROM foos",
+        :with_options => "security_barrier = true"
+      )
+
+      Mig.create_view("foos_view", "SELECT * FROM foos",
+        :with_options => {
+          :security_barrier => true
+        }
+      )
     }
 
     if ActiveRecord::PostgreSQLExtensions::Features.view_set_options?
       tester.call
 
       assert_equal([
-        %{CREATE VIEW "foos_view" WITH ("security_barrier" = true) AS SELECT * FROM foos;}
+        %{CREATE VIEW "foos_view" WITH (security_barrier = true) AS SELECT * FROM foos;},
+        %{CREATE VIEW "foos_view" WITH ("security_barrier" = 't') AS SELECT * FROM foos;}
       ], statements)
     else
       assert_raises(ActiveRecord::PostgreSQLExtensions::FeatureNotSupportedError) do
@@ -105,6 +112,7 @@ class ViewsTests < PostgreSQLExtensionsTestCase
 
   def test_alter_view_set_options
     tester = proc {
+      Mig.alter_view_set_options(:foos_view, 'security_barrier = true')
       Mig.alter_view_set_options(:foos_view, {
         :security_barrier => true
       })
@@ -114,7 +122,8 @@ class ViewsTests < PostgreSQLExtensionsTestCase
       tester.call
 
       assert_equal([
-        %{ALTER VIEW "foos_view" SET ("security_barrier" = true);}
+        %{ALTER VIEW "foos_view" SET (security_barrier = true);},
+        %{ALTER VIEW "foos_view" SET ("security_barrier" = 't');}
       ], statements)
     else
       assert_raises(ActiveRecord::PostgreSQLExtensions::FeatureNotSupportedError) do

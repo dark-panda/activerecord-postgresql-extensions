@@ -22,6 +22,21 @@ module ActiveRecord
         str.gsub(/^[ \t]{#{indent}}/, '').strip
       end
 
+      def options_from_hash_or_string(value, base = self.base)
+        case value
+          when Hash
+            value.collect { |(k, v)|
+              "#{base.quote_generic(k)} = #{base.quote(v)}"
+            }.join(', ')
+
+          when String
+            value
+
+          else
+            value.to_s
+        end
+      end
+
       class << self
         include Utils
       end

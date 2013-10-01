@@ -88,6 +88,8 @@ module ActiveRecord
     # This is a base class for other PostgreSQL constraint classes. It
     # isn't really meant to be used directly.
     class PostgreSQLConstraint
+      include ActiveRecord::PostgreSQLExtensions::Utils
+
       attr_accessor :base, :options
 
       def initialize(base, options) #:nodoc:
@@ -123,7 +125,7 @@ module ActiveRecord
 
         def storage_parameters
           if options[:index_parameters] || options[:storage_parameters]
-            " WITH (#{options[:index_parameters] || options[:storage_parameters]})"
+            " WITH (#{options_from_hash_or_string(options[:index_parameters] || options[:storage_parameters])})"
           else
             ''
           end
@@ -389,8 +391,8 @@ module ActiveRecord
     # * <tt>:name</tt> - specifies a name for the constraint.
     # * <tt>:storage_parameters</tt> - PostgreSQL allows you to add a
     #   couple of additional parameters to indexes to govern disk usage and
-    #   such. This option is a simple String that lets you insert these
-    #   options as necessary. See the PostgreSQL documentation on index
+    #   such. This option is a simple String or a Hash that lets you insert
+    #   these options as necessary. See the PostgreSQL documentation on index
     #   storage parameters for details. <tt>:index_parameters</tt> can also
     #   be used.
     # * <tt>:tablespace</tt> - allows you to specify a tablespace for the
@@ -685,8 +687,8 @@ module ActiveRecord
     #   default which is <tt>:btree</tt>. See the PostgreSQL docs for details.
     # * <tt>:storage_parameters</tt> - PostgreSQL allows you to add a
     #   couple of additional parameters to indexes to govern disk usage and
-    #   such. This option is a simple String that lets you insert these
-    #   options as necessary. See the PostgreSQL documentation on index
+    #   such. This option is a simple String or a Hash that lets you insert
+    #   these options as necessary. See the PostgreSQL documentation on index
     #   storage parameters for details. <tt>:index_parameters</tt> can also
     #   be used.
     # * <tt>:tablespace</tt> - allows you to specify a tablespace for the
@@ -824,8 +826,8 @@ module ActiveRecord
     # * <tt>:name</tt> - specifies a name for the constraint.
     # * <tt>:storage_parameters</tt> - PostgreSQL allows you to add a
     #   couple of additional parameters to indexes to govern disk usage and
-    #   such. This option is a simple String that lets you insert these
-    #   options as necessary. See the PostgreSQL documentation on index
+    #   such. This option is a simple String or a Hash that lets you insert
+    #   these options as necessary. See the PostgreSQL documentation on index
     #   storage parameters for details. <tt>:index_parameters</tt> can also
     #   be used.
     # * <tt>:tablespace</tt> - allows you to specify a tablespace for the

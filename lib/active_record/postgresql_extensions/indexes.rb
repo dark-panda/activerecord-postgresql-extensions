@@ -62,6 +62,9 @@ module ActiveRecord
       # * <tt>:conditions</tt> - adds an optional WHERE clause to the
       #   index. (You can alternatively use the option <tt>:where</tt>
       #   instead.)
+      # * <tt>:index_parameters</tt> - a simple String or Hash used to
+      #   assign index storage parameters. See the PostgreSQL docs for
+      #   details on the various storage parameters available.
       #
       # ==== Column Options
       #
@@ -199,6 +202,7 @@ module ActiveRecord
         end.join(', ')
         sql << ')'
         sql << " WITH (FILLFACTOR = #{options[:fill_factor].to_i})" if options[:fill_factor]
+        sql << " WITH (#{ActiveRecord::PostgreSQLExtensions::Utils.options_from_hash_or_string(options[:index_parameters], base)})" if options[:index_parameters].present?
         sql << " TABLESPACE #{base.quote_tablespace(options[:tablespace])}" if options[:tablespace]
         sql << " WHERE (#{options[:conditions] || options[:where]})" if options[:conditions] || options[:where]
         "#{sql};"

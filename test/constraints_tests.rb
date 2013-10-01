@@ -14,6 +14,10 @@ class ConstraintTests < PostgreSQLExtensionsTestCase
       t.text :email
       t.unique_constraint [ :id, :bar_id ]
       t.unique_constraint [ :name, :email ], :tablespace => 'fubar'
+      t.unique_constraint :name, :storage_parameters => {
+        :fillfactor => 10
+      }
+      t.unique_constraint :email, :storage_parameters => 'FILLFACTOR = 10'
     end
 
     assert_equal(strip_heredoc(<<-SQL), statements[0])
@@ -23,7 +27,9 @@ class ConstraintTests < PostgreSQLExtensionsTestCase
         "name" text,
         "email" text,
         UNIQUE ("id", "bar_id"),
-        UNIQUE ("name", "email") USING INDEX TABLESPACE "fubar"
+        UNIQUE ("name", "email") USING INDEX TABLESPACE "fubar",
+        UNIQUE ("name") WITH ("fillfactor" = 10),
+        UNIQUE ("email") WITH (FILLFACTOR = 10)
       );
     SQL
   end
@@ -237,6 +243,16 @@ class ConstraintTests < PostgreSQLExtensionsTestCase
       :index_parameters => 'FILLFACTOR=10'
     })
 
+    Mig.add_exclude_constraint(:foo, {
+      :element => 'length(name)',
+      :with => '='
+    }, {
+      :tablespace => 'fubar',
+      :index_parameters => {
+        :fillfactor => 10
+      }
+    })
+
     escaped_array = if ActiveRecord::VERSION::STRING >= "3.0"
       "(1, 2, 3, 4)"
     else
@@ -249,7 +265,8 @@ class ConstraintTests < PostgreSQLExtensionsTestCase
       %{ALTER TABLE "foo" ADD CONSTRAINT "exclude_name_length" EXCLUDE USING "gist" (length(name) WITH =);},
       %{ALTER TABLE "foo" ADD EXCLUDE (length(name) WITH =, length(title) WITH =);},
       %{ALTER TABLE "foo" ADD EXCLUDE (length(name) WITH =) WHERE ("foos"."id" IN #{escaped_array});},
-      %{ALTER TABLE "foo" ADD EXCLUDE (length(name) WITH =) WITH (FILLFACTOR=10) USING INDEX TABLESPACE "fubar";}
+      %{ALTER TABLE "foo" ADD EXCLUDE (length(name) WITH =) WITH (FILLFACTOR=10) USING INDEX TABLESPACE "fubar";},
+      %{ALTER TABLE "foo" ADD EXCLUDE (length(name) WITH =) WITH ("fillfactor" = 10) USING INDEX TABLESPACE "fubar";}
     ], statements)
   end
 
@@ -262,6 +279,15 @@ class ConstraintTests < PostgreSQLExtensionsTestCase
       t.integer :foo_id, :primary_key => {
         :tablespace => 'fubar',
         :index_parameters => 'FILLFACTOR=10'
+      }
+    end
+
+    Mig.create_table('foo', :id => false) do |t|
+      t.integer :foo_id, :primary_key => {
+        :tablespace => 'fubar',
+        :index_parameters => {
+          :fillfactor => 10
+        }
       }
     end
 
@@ -278,6 +304,13 @@ class ConstraintTests < PostgreSQLExtensionsTestCase
       CREATE TABLE "foo" (
         "foo_id" integer,
         PRIMARY KEY ("foo_id") WITH (FILLFACTOR=10) USING INDEX TABLESPACE "fubar"
+      );
+    SQL
+
+    expected << strip_heredoc(<<-SQL)
+      CREATE TABLE "foo" (
+        "foo_id" integer,
+        PRIMARY KEY ("foo_id") WITH ("fillfactor" = 10) USING INDEX TABLESPACE "fubar"
       );
     SQL
 
@@ -308,6 +341,17 @@ class ConstraintTests < PostgreSQLExtensionsTestCase
       }
     end
 
+    Mig.create_table('foo', :id => false) do |t|
+      t.integer :foo_id
+      t.integer :bar_id
+      t.primary_key_constraint [ :foo_id, :bar_id ], {
+        :tablespace => 'fubar',
+        :index_parameters => {
+          :fillfactor => 10
+        }
+      }
+    end
+
     expected = []
 
     expected << strip_heredoc(<<-SQL)
@@ -332,6 +376,14 @@ class ConstraintTests < PostgreSQLExtensionsTestCase
       );
     SQL
 
+    expected << strip_heredoc(<<-SQL)
+      CREATE TABLE "foo" (
+        "foo_id" integer,
+        "bar_id" integer,
+        PRIMARY KEY ("foo_id", "bar_id") WITH ("fillfactor" = 10) USING INDEX TABLESPACE "fubar"
+      );
+    SQL
+
     assert_equal(expected, statements)
   end
 
@@ -340,12 +392,16 @@ class ConstraintTests < PostgreSQLExtensionsTestCase
     Mig.add_primary_key(:foo, [ :bar_id, :baz_id ])
     Mig.add_primary_key(:foo, :bar_id, :name => 'foo_pk')
     Mig.add_primary_key(:foo, :bar_id, :tablespace => 'fubar', :index_parameters => 'FILLFACTOR=10')
+    Mig.add_primary_key(:foo, :bar_id, :tablespace => 'fubar', :index_parameters => {
+      :fillfactor => 10
+    })
 
     assert_equal([
       %{ALTER TABLE "foo" ADD PRIMARY KEY ("bar_id");},
       %{ALTER TABLE "foo" ADD PRIMARY KEY ("bar_id", "baz_id");},
       %{ALTER TABLE "foo" ADD CONSTRAINT "foo_pk" PRIMARY KEY ("bar_id");},
-      %{ALTER TABLE "foo" ADD PRIMARY KEY ("bar_id") WITH (FILLFACTOR=10) USING INDEX TABLESPACE "fubar";}
+      %{ALTER TABLE "foo" ADD PRIMARY KEY ("bar_id") WITH (FILLFACTOR=10) USING INDEX TABLESPACE "fubar";},
+      %{ALTER TABLE "foo" ADD PRIMARY KEY ("bar_id") WITH ("fillfactor" = 10) USING INDEX TABLESPACE "fubar";}
     ], statements)
   end
 

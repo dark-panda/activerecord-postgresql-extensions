@@ -51,6 +51,9 @@ module ActiveRecord
       # * <tt>:of_type</tt> - for "OF type_name" clauses.
       # * <tt>:if_not_exists</tt> - adds the "IF NOT EXISTS" clause.
       # * <tt>:unlogged</tt> - creates an UNLOGGED table.
+      # * <tt>:storage_parameters</tt> - a simple String or Hash used to
+      #   assign table storage parameters. See the PostgreSQL docs for
+      #   details on the various storage parameters available.
       #
       # We're expanding the doors of table definition perception with
       # this exciting new addition to the world of ActiveRecord
@@ -224,6 +227,7 @@ module ActiveRecord
         end
 
         sql << "\nINHERITS (" << Array.wrap(options[:inherits]).collect { |i| base.quote_table_name(i) }.join(', ') << ')' if options[:inherits]
+        sql << "\nWITH (#{ActiveRecord::PostgreSQLExtensions::Utils.options_from_hash_or_string(options[:storage_parameters], base)})" if options[:storage_parameters].present?
         sql << "\nON COMMIT #{options[:on_commit].to_s.upcase.gsub(/_/, ' ')}" if options[:on_commit]
         sql << "\n#{options[:options]}" if options[:options]
         sql << "\nTABLESPACE #{base.quote_tablespace(options[:tablespace])}" if options[:tablespace]

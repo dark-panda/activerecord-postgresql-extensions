@@ -121,6 +121,8 @@ module ActiveRecord
     # to be used directly. Instead, see PostgreSQLAdapter#create_view
     # for usage.
     class PostgreSQLViewDefinition
+      include ActiveRecord::PostgreSQLExtensions::Utils
+
       attr_accessor :base, :name, :query, :options
 
       def initialize(base, name, query, options = {}) #:nodoc:
@@ -142,9 +144,7 @@ module ActiveRecord
         if options[:with_options]
           ActiveRecord::PostgreSQLExtensions::Features.check_feature(:view_set_options)
 
-          sql << 'WITH (' << options[:with_options].collect { |(k, v)|
-            "#{base.quote_generic(k)} = #{v}"
-          }.join(", ") << ') '
+          sql << "WITH (#{options_from_hash_or_string(options[:with_options])}) " if options.present?
         end
 
         sql << "AS #{query}"
@@ -154,6 +154,8 @@ module ActiveRecord
     end
 
     class PostgreSQLViewAlterer
+      include ActiveRecord::PostgreSQLExtensions::Utils
+
       attr_accessor :base, :name, :actions, :options
 
       VALID_OPTIONS = %w{
@@ -207,9 +209,7 @@ module ActiveRecord
               when :set_options
                 ActiveRecord::PostgreSQLExtensions::Features.check_feature(:view_set_options)
 
-                'SET (' << actions[:set_options].collect { |(k, v)|
-                  "#{base.quote_generic(k)} = #{v}"
-                }.join(", ") << ')'
+                "SET (#{options_from_hash_or_string(actions[:set_options])})" if actions[:set_options].present?
 
               when :reset_options
                 ActiveRecord::PostgreSQLExtensions::Features.check_feature(:view_set_options)

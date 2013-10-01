@@ -172,6 +172,9 @@ class TablesTests < PostgreSQLExtensionsTestCase
     Mig.create_table('foo') do |t|
       t.text :blort
       t.index :foo_blort_idx, :blort, :using => :gist
+      t.index :foo_blort_idx, :blort, :index_parameters => {
+        :fillfactor => 10
+      }
     end
 
     assert_equal([
@@ -184,6 +187,34 @@ class TablesTests < PostgreSQLExtensionsTestCase
 
       strip_heredoc(%{
         CREATE INDEX "foo_blort_idx" ON "foo" USING "gist"("blort");
+      }),
+
+      strip_heredoc(%{
+        CREATE INDEX "foo_blort_idx" ON "foo"("blort") WITH ("fillfactor" = 10);
+      })
+    ], statements)
+  end
+
+  def test_storage_parameters
+    Mig.create_table('foo', :storage_parameters => {
+      :fillfactor => 10
+    })
+
+    Mig.create_table('foo', :storage_parameters => "FILLFACTOR=10")
+
+    assert_equal([
+      strip_heredoc(%{
+        CREATE TABLE "foo" (
+          "id" serial primary key
+        )
+        WITH ("fillfactor" = 10);
+      }),
+
+      strip_heredoc(%{
+        CREATE TABLE "foo" (
+          "id" serial primary key
+        )
+        WITH (FILLFACTOR=10);
       })
     ], statements)
   end
