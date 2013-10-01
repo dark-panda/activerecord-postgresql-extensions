@@ -328,7 +328,7 @@ module ActiveRecord
         sql = "COPY #{quote_table_name(table_name)}"
 
         unless options[:columns].blank?
-          sql << ' (' << Array(options[:columns]).collect { |c| quote_column_name(c) }.join(', ') << ')'
+          sql << ' (' << Array.wrap(options[:columns]).collect { |c| quote_column_name(c) }.join(', ') << ')'
         end
 
         if options[:program]
@@ -352,7 +352,7 @@ module ActiveRecord
             sql << ' HEADER' if options[:csv][:header]
             sql << " QUOTE AS #{quote(options[:csv][:quote])}" if options[:csv][:quote]
             sql << " ESCAPE AS #{quote(options[:csv][:escape])}" if options[:csv][:escape]
-            sql << ' FORCE NOT NULL ' << Array(options[:csv][:not_null]).collect do |c|
+            sql << ' FORCE NOT NULL ' << Array.wrap(options[:csv][:not_null]).collect do |c|
               quote_column_name(c)
             end.join(', ') if options[:csv][:not_null]
           end
@@ -508,7 +508,7 @@ module ActiveRecord
           'ALL'
         end
 
-        Array(triggers).each do |trigger|
+        Array.wrap(triggers).each do |trigger|
           execute("ALTER TABLE #{quoted_table_name} ENABLE TRIGGER #{trigger};")
         end
       end
@@ -525,7 +525,7 @@ module ActiveRecord
           'ALL'
         end
 
-        Array(triggers).each do |trigger|
+        Array.wrap(triggers).each do |trigger|
           execute("ALTER TABLE #{quoted_table_name} DISABLE TRIGGER #{trigger};")
         end
       end

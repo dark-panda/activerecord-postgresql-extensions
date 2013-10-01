@@ -84,9 +84,9 @@ module ActiveRecord
       #   clause to the command.
       def grant_role_membership(roles, role_names, options = {})
         sql = "GRANT "
-        sql << Array(roles).collect { |r| quote_role(r) }.join(', ')
+        sql << Array.wrap(roles).collect { |r| quote_role(r) }.join(', ')
         sql << ' TO '
-        sql << Array(role_names).collect { |r| quote_role(r) }.join(', ')
+        sql << Array.wrap(role_names).collect { |r| quote_role(r) }.join(', ')
         sql << ' WITH ADMIN OPTION' if options[:with_admin_option]
         execute("#{sql};")
       end
@@ -167,9 +167,9 @@ module ActiveRecord
       def revoke_role_membership(roles, role_names, options = {})
         sql = 'REVOKE '
         sql << 'ADMIN_OPTION_FOR ' if options[:admin_option_for]
-        sql << Array(roles).collect { |r| quote_role(r) }.join(', ')
+        sql << Array.wrap(roles).collect { |r| quote_role(r) }.join(', ')
         sql << ' FROM '
-        sql << Array(role_names).collect { |r| quote_role(r) }.join(', ')
+        sql << Array.wrap(role_names).collect { |r| quote_role(r) }.join(', ')
         sql << ' CASCADE' if options[:cascade]
         execute("#{sql};")
       end
@@ -199,7 +199,7 @@ module ActiveRecord
         }.freeze
 
         def assert_valid_privileges type, privileges
-          check_privileges = Array(privileges).collect(&:to_s) - PRIVILEGE_TYPES[type]
+          check_privileges = Array.wrap(privileges).collect(&:to_s) - PRIVILEGE_TYPES[type]
           if !check_privileges.empty?
             raise ActiveRecord::InvalidPrivilegeTypes.new(type, check_privileges)
           end
@@ -242,16 +242,16 @@ module ActiveRecord
           :named_object_type => true
         }.merge query_options
 
-        sql = "GRANT #{Array(privileges).collect(&:to_s).collect(&:upcase).join(', ')} ON "
+        sql = "GRANT #{Array.wrap(privileges).collect(&:to_s).collect(&:upcase).join(', ')} ON "
 
         if options[:all]
           ActiveRecord::PostgreSQLExtensions::Features.check_feature(:modify_mass_privileges)
 
           sql << "ALL #{type.to_s.upcase}S IN SCHEMA #{base.quote_schema(objects)}"
         else
-          sql << "#{type.to_s.upcase} " if my_query_options[:named_object_type]
+          sql << "#{type.to_s.gsub('_', ' ').upcase} " if my_query_options[:named_object_type]
 
-          sql << Array(objects).collect do |t|
+          sql << Array.wrap(objects).collect do |t|
             if my_query_options[:quote_objects]
               if my_query_options[:ignore_schema]
                 base.quote_generic_ignore_scoped_schema(t)
@@ -264,7 +264,7 @@ module ActiveRecord
           end.join(', ')
         end
 
-        sql << ' TO ' << Array(roles).collect do |r|
+        sql << ' TO ' << Array.wrap(roles).collect do |r|
           r = r.to_s
           if r.upcase == 'PUBLIC'
             'PUBLIC'
@@ -322,7 +322,7 @@ module ActiveRecord
 
         sql = 'REVOKE '
         sql << 'GRANT OPTION FOR ' if options[:grant_option_for]
-        sql << "#{Array(privileges).collect(&:to_s).collect(&:upcase).join(', ')} ON "
+        sql << "#{Array.wrap(privileges).collect(&:to_s).collect(&:upcase).join(', ')} ON "
 
         if options[:all]
           ActiveRecord::PostgreSQLExtensions::Features.check_feature(:modify_mass_privileges)
@@ -331,7 +331,7 @@ module ActiveRecord
         else
           sql << "#{type.to_s.upcase} " if my_query_options[:named_object_type]
 
-          sql << Array(objects).collect do |t|
+          sql << Array.wrap(objects).collect do |t|
             if my_query_options[:quote_objects]
               if my_query_options[:ignore_schema]
                 base.quote_generic_ignore_scoped_schema(t)
@@ -344,7 +344,7 @@ module ActiveRecord
           end.join(', ')
         end
 
-        sql << ' FROM ' << Array(roles).collect do |r|
+        sql << ' FROM ' << Array.wrap(roles).collect do |r|
           r = r.to_s
           if r.upcase == 'PUBLIC'
             'PUBLIC'

@@ -88,7 +88,7 @@ module ActiveRecord
         sql << " #{base.quote_table_name(table)}" if self.table
 
         if options[:columns]
-          sql << ' (' << Array(options[:columns]).collect { |column|
+          sql << ' (' << Array.wrap(options[:columns]).collect { |column|
             base.quote_column_name(column)
           }.join(', ') << ')'
         end

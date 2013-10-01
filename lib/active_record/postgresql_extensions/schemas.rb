@@ -33,7 +33,7 @@ module ActiveRecord
 
         sql = 'DROP SCHEMA '
         sql << 'IF EXISTS ' if options[:if_exists]
-        sql << Array(args).collect { |s| quote_schema(s) }.join(', ')
+        sql << Array.wrap(args).collect { |s| quote_schema(s) }.join(', ')
         sql << ' CASCADE' if options[:cascade]
         execute("#{sql};")
       end

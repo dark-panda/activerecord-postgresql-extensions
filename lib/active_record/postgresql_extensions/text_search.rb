@@ -54,13 +54,13 @@ module ActiveRecord
         add_or_alter = options[:action].to_s.upcase
 
         sql = "ALTER TEXT SEARCH CONFIGURATION #{quote_generic_with_schema(name)} #{add_or_alter} MAPPING FOR "
-        sql << Array(tokens).collect { |token|
+        sql << Array.wrap(tokens).collect { |token|
           quote_generic(token)
         }.join(', ')
 
         sql << ' WITH '
 
-        sql << Array(dictionaries).collect { |dictionary|
+        sql << Array.wrap(dictionaries).collect { |dictionary|
           quote_generic(dictionary)
         }.join(', ')
 
@@ -80,7 +80,7 @@ module ActiveRecord
         end
 
         sql = "ALTER TEXT SEARCH CONFIGURATION #{quote_generic_with_schema(name)} ALTER MAPPING FOR "
-        sql << Array(mappings).collect { |token_type|
+        sql << Array.wrap(mappings).collect { |token_type|
           quote_generic(token_type)
         }.join(', ')
         sql << " REPLACE #{quote_generic(old_dictionary)} WITH #{quote_generic(new_dictionary)}"

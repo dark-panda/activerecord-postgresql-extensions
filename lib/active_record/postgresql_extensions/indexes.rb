@@ -143,7 +143,7 @@ module ActiveRecord
         sql = 'DROP INDEX '
         sql << 'CONCURRENTLY ' if options[:concurrently]
         sql << 'IF EXISTS ' if options[:if_exists]
-        sql << Array(args).collect { |i| quote_generic(i) }.join(', ')
+        sql << Array.wrap(args).collect { |i| quote_generic(i) }.join(', ')
         sql << ' CASCADE' if options[:cascade]
         execute("#{sql};")
       end
@@ -207,7 +207,7 @@ module ActiveRecord
 
       private
         def assert_valid_columns(columns) #:nodoc:
-          Array(columns).each do |column|
+          Array.wrap(columns).each do |column|
             if column.is_a?(Hash)
               if column.has_key?(:column) && column.has_key?(:expression)
                 raise ActiveRecord::InvalidIndexColumnDefinition.new("You can't specify both :column and :expression in a column definition", column)

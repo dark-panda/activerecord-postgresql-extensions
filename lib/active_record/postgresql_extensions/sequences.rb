@@ -69,7 +69,7 @@ module ActiveRecord
 
         sql = 'DROP SEQUENCE '
         sql << 'IF EXISTS ' if options[:if_exists]
-        sql << Array(args).collect { |s| quote_sequence(s) }.join(', ')
+        sql << Array.wrap(args).collect { |s| quote_sequence(s) }.join(', ')
         sql << ' CASCADE' if options[:cascade]
         execute("#{sql};")
       end

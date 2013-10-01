@@ -418,7 +418,7 @@ module ActiveRecord
 
       def to_sql #:nodoc:
         sql = "#{constraint_name}UNIQUE ("
-        sql << Array(columns).collect { |c| base.quote_column_name(c) }.join(', ')
+        sql << Array.wrap(columns).collect { |c| base.quote_column_name(c) }.join(', ')
         sql << ")"
         sql << storage_parameters
         sql << using_tablespace
@@ -595,9 +595,9 @@ module ActiveRecord
           end
 
           sql << "#{constraint_name}FOREIGN KEY ("
-          sql << Array(columns).collect { |c| base.quote_column_name(c) }.join(', ')
+          sql << Array.wrap(columns).collect { |c| base.quote_column_name(c) }.join(', ')
           sql << ") REFERENCES #{base.quote_table_name(table)}"
-          sql << ' (%s)' % Array(ref_columns).collect { |c| base.quote_column_name(c) }.join(', ') if ref_columns
+          sql << ' (%s)' % Array.wrap(ref_columns).collect { |c| base.quote_column_name(c) }.join(', ') if ref_columns
           sql << " MATCH #{options[:match].to_s.upcase}" if options[:match]
           sql << " ON DELETE #{options[:on_delete].to_s.gsub(/_/, ' ').upcase}" if options[:on_delete]
           sql << " ON UPDATE #{options[:on_update].to_s.gsub(/_/, ' ').upcase}" if options[:on_update]
@@ -849,7 +849,7 @@ module ActiveRecord
       def to_sql #:nodoc:
         sql = String.new
         sql << "#{constraint_name}PRIMARY KEY "
-        sql << "(" << Array(columns).collect { |column|
+        sql << "(" << Array.wrap(columns).collect { |column|
           base.quote_column_name(column)
         }.join(', ')
         sql << ")"

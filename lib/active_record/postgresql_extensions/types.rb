@@ -78,7 +78,7 @@ module ActiveRecord
 
         sql = 'DROP TYPE '
         sql << 'IF EXISTS ' if options[:if_exists]
-        sql << Array(args).collect { |i| quote_generic(i) }.join(', ')
+        sql << Array.wrap(args).collect { |i| quote_generic(i) }.join(', ')
         sql << ' CASCADE' if options[:cascade]
         execute("#{sql};")
       end

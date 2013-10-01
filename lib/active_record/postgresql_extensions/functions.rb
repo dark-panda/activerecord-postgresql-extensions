@@ -228,7 +228,7 @@ module ActiveRecord
               sql << set_me
             end
           else
-            sql << Array(opts).collect do |s|
+            sql << Array.wrap(opts).collect do |s|
               "SET #{s.to_s}"
             end
           end

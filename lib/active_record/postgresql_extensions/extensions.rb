@@ -31,7 +31,7 @@ module ActiveRecord
 
         sql = 'DROP EXTENSION '
         sql << 'IF EXISTS ' if options[:if_exists]
-        sql << Array(args).collect { |name| quote_generic(name) }.join(', ')
+        sql << Array.wrap(args).collect { |name| quote_generic(name) }.join(', ')
         sql << ' CASCADE' if options[:cascade]
 
         execute("#{sql};")
@@ -195,7 +195,7 @@ module ActiveRecord
 
               "AGGREGATE %s (%s)" % [
                 @base.quote_generic(name),
-                Array(types).collect { |t|
+                Array.wrap(types).collect { |t|
                   @base.quote_generic(t)
                 }.join(', ')
               ]
@@ -219,7 +219,7 @@ module ActiveRecord
                   [ args.shift, *args ]
               end
 
-              "FUNCTION #{@base.quote_function(name)}(#{Array(arguments).join(', ')})"
+              "FUNCTION #{@base.quote_function(name)}(#{Array.wrap(arguments).join(', ')})"
             when 'operator'
               name, left_type, right_type =
                 extract_hash_or_array_options(args, :name, :left_type, :right_type)

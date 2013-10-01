@@ -136,7 +136,7 @@ module ActiveRecord
 
         sql = 'DROP TABLE '
         sql << 'IF EXISTS ' if options[:if_exists]
-        sql << Array(args).collect { |t| quote_table_name(t) }.join(', ')
+        sql << Array.wrap(args).collect { |t| quote_table_name(t) }.join(', ')
         sql << ' CASCADE' if options[:cascade]
         execute("#{sql};")
       end
@@ -223,7 +223,7 @@ module ActiveRecord
           sql << "\n)"
         end
 
-        sql << "\nINHERITS (" << Array(options[:inherits]).collect { |i| base.quote_table_name(i) }.join(', ') << ')' if options[:inherits]
+        sql << "\nINHERITS (" << Array.wrap(options[:inherits]).collect { |i| base.quote_table_name(i) }.join(', ') << ')' if options[:inherits]
         sql << "\nON COMMIT #{options[:on_commit].to_s.upcase.gsub(/_/, ' ')}" if options[:on_commit]
         sql << "\n#{options[:options]}" if options[:options]
         sql << "\nTABLESPACE #{base.quote_tablespace(options[:tablespace])}" if options[:tablespace]
@@ -255,11 +255,11 @@ module ActiveRecord
         @like = "LIKE #{@base.quote_table_name(parent_table)}"
 
         if options[:including]
-          @like << Array(options[:including]).collect { |l| " INCLUDING #{l.to_s.upcase}" }.join
+          @like << Array.wrap(options[:including]).collect { |l| " INCLUDING #{l.to_s.upcase}" }.join
         end
 
         if options[:excluding]
-          @like << Array(options[:excluding]).collect { |l| " EXCLUDING #{l.to_s.upcase}" }.join
+          @like << Array.wrap(options[:excluding]).collect { |l| " EXCLUDING #{l.to_s.upcase}" }.join
         end
         @like
       end
@@ -370,7 +370,7 @@ module ActiveRecord
 
         def assert_valid_like_types(likes) #:nodoc:
           unless likes.blank?
-            check_likes = Array(likes).collect(&:to_s) - LIKE_TYPES
+            check_likes = Array.wrap(likes).collect(&:to_s) - LIKE_TYPES
             if !check_likes.empty?
               raise ActiveRecord::InvalidLikeTypes.new(check_likes)
             end
