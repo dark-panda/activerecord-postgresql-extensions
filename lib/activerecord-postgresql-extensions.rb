@@ -22,24 +22,24 @@ dirname = File.join(File.dirname(__FILE__), *%w{ active_record postgresql_extens
   features
   adapter_extensions
   constraints
-  tables
-  tablespaces
-  indexes
-  permissions
-  schemas
-  languages
-  rules
-  functions
-  sequences
-  triggers
-  views
-  geometry
-  types
-  roles
-  text_search
   extensions
   foreign_key_associations
+  functions
+  geometry
+  indexes
+  languages
+  permissions
+  roles
+  rules
+  schemas
+  sequences
+  tables
+  tablespaces
+  text_search
+  triggers
+  types
   vacuum
+  views
 }.each do |file|
   require File.join(dirname, file)
 end
