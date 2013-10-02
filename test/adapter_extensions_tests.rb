@@ -275,4 +275,29 @@ class AdapterExtensionTests < PostgreSQLExtensionsTestCase
       %{COPY "foo" FROM PROGRAM 'cat /dev/null';}
     ], statements)
   end
+
+  def test_cluster_all
+    ARBC.cluster_all
+    ARBC.cluster_all(:verbose => true)
+
+    assert_equal([
+      %{CLUSTER;},
+      %{CLUSTER VERBOSE;}
+    ], statements)
+  end
+
+
+  def test_cluster_table
+    Mig.cluster(:foo)
+    Mig.cluster(:foo, :verbose => true)
+    Mig.cluster(:foo, :using => "bar_idx")
+    ARBC.cluster(:foo => :bar)
+
+    assert_equal([
+      %{CLUSTER "foo";},
+      %{CLUSTER VERBOSE "foo";},
+      %{CLUSTER "foo" USING "bar_idx";},
+      %{CLUSTER "foo"."bar";}
+    ], statements)
+  end
 end

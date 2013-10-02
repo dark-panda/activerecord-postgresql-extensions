@@ -18,7 +18,8 @@ module ActiveRecord
     class PostgreSQLAdapter
       # Creates an index. This method is an alternative to the standard
       # ActiveRecord add_index method and includes PostgreSQL-specific
-      # options.
+      # options. Indexes can be created on tables as well as materialized views
+      # starting with PostgreSQL 9.3.
       #
       # === Differences to add_index
       #
@@ -109,8 +110,8 @@ module ActiveRecord
       #   # additional options
       #   create_index('search_idx', :foo, :tsvector, :using => :gin)
       #   # => CREATE INDEX "search_idx" ON "foo" USING "gin"("tsvector");
-      def create_index(name, table, columns, options = {})
-        execute PostgreSQLIndexDefinition.new(self, name, table, columns, options).to_s
+      def create_index(name, object, columns, options = {})
+        execute PostgreSQLIndexDefinition.new(self, name, object, columns, options).to_s
       end
 
       # PostgreSQL-specific version of the standard ActiveRecord
@@ -166,13 +167,13 @@ module ActiveRecord
     # to be used directly. Instead, see PostgreSQLAdapter#create_index
     # for usage.
     class PostgreSQLIndexDefinition
-      attr_accessor :base, :name, :table, :columns, :options
+      attr_accessor :base, :name, :object, :columns, :options
 
-      def initialize(base, name, table, columns, options = {}) #:nodoc:
+      def initialize(base, name, object, columns, options = {}) #:nodoc:
         assert_valid_columns(columns)
         assert_valid_fill_factor(options[:fill_factor])
 
-        @base, @name, @table, @columns, @options = base, name, table, columns, options
+        @base, @name, @object, @columns, @options = base, name, object, columns, options
       end
 
       def to_sql #:nodoc:
@@ -180,7 +181,7 @@ module ActiveRecord
         sql << 'UNIQUE ' if options[:unique]
         sql << 'INDEX '
         sql << 'CONCURRENTLY ' if options[:concurrently]
-        sql << "#{base.quote_generic(name)} ON #{base.quote_table_name(table)}"
+        sql << "#{base.quote_generic(name)} ON #{base.quote_table_name(object)}"
         sql << " USING #{base.quote_generic(options[:using])}" if options[:using]
         sql << '('
         sql << [ columns ].flatten.collect do |column|

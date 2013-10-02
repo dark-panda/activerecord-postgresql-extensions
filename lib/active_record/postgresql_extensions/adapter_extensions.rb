@@ -658,6 +658,36 @@ module ActiveRecord
         end
       end
 
+      # Run the CLUSTER command on all previously clustered tables available
+      # to be clustered by the current user.
+      #
+      # ==== Options
+      #
+      # * <tt>:verbose</tt> - Adds the VERBOSE clause.
+      def cluster_all(options = {})
+        sql = 'CLUSTER'
+        sql << ' VERBOSE' if options[:verbose]
+
+        execute "#{sql};"
+      end
+
+      # Cluster a table or materialized view on an index.
+      #
+      # ==== Options
+      #
+      # * <tt>:using</tt> - adds a USING clause to cluster on. If no
+      #   <tt>:using</tt> option is provided, the object itself will be
+      #   re-clustered.
+      # * <tt>:verbose</tt> - Adds the VERBOSE clause.
+      def cluster(name, options = {})
+        sql = 'CLUSTER '
+        sql << 'VERBOSE ' if options[:verbose]
+        sql << quote_table_name(name)
+        sql << " USING #{quote_generic(options[:using])}" if options[:using]
+
+        execute "#{sql};"
+      end
+
       def add_column_options_with_expression!(sql, options) #:nodoc:
         if options_include_default?(options) &&
           options[:default].is_a?(Hash) &&
