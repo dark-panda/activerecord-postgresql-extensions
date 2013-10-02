@@ -14,6 +14,7 @@ module ActiveRecord
           copy_from_freeze
           copy_from_encoding
           copy_from_program
+          create_schema_if_not_exists
           foreign_tables
           materialized_views
           modify_mass_privileges
@@ -48,6 +49,7 @@ module ActiveRecord
               @has_copy_from_freeze = true
               @has_copy_from_program = true
               @has_materialized_views = true
+              @has_create_schema_if_not_exists = true
               @has_view_recursive = true
             end
 

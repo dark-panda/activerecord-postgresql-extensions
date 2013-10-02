@@ -15,8 +15,18 @@ module ActiveRecord
       # * <tt>:authorization</tt> - adds an AUTHORIZATION clause. This is
       #   used to set the owner of the schema. This can be changed with
       #   alter_schema_owner as necessary.
+      # * <tt>:if_not_exists</tt> - adds an IF NOT EXISTS clause. Available
+      #   in PostgreSQL 9.3+.
       def create_schema(schema, options = {})
-        sql = "CREATE SCHEMA #{quote_schema(schema)}"
+        sql = 'CREATE SCHEMA '
+
+        if options.key?(:if_not_exists)
+          ActiveRecord::PostgreSQLExtensions::Features.check_feature(:create_schema_if_not_exists)
+
+          sql << 'IF NOT EXISTS ' if options[:if_not_exists]
+        end
+
+        sql << quote_schema(schema)
         sql << " AUTHORIZATION #{quote_role(options[:authorization])}" if options[:authorization]
         execute("#{sql};")
       end

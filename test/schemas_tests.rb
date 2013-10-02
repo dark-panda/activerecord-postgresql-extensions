@@ -13,6 +13,16 @@ class SchemasTests < PostgreSQLExtensionsTestCase
     ], statements)
   end
 
+  def test_create_schema_if_not_exists
+    skip unless ActiveRecord::PostgreSQLExtensions::Features.create_schema_if_not_exists?
+
+    Mig.create_schema(:foo, :if_not_exists => true)
+
+    assert_equal([
+      %{CREATE SCHEMA IF NOT EXISTS "foo";}
+    ], statements)
+  end
+
   def test_drop_schema
     Mig.drop_schema(:foo)
     Mig.drop_schema(:foo, :if_exists => true, :cascade => true)
