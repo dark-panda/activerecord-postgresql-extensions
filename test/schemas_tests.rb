@@ -58,7 +58,7 @@ class SchemasTests < PostgreSQLExtensionsTestCase
   end
 
   def test_create_schema_authorization_if_not_exists
-    skip unless ActiveRecord::PostgreSQLExtensions::Features.schema_create_if_not_exists?
+    skip unless ActiveRecord::PostgreSQLExtensions::Features.create_schema_if_not_exists?
 
     Mig.create_schema_authorization(:foo, :if_not_exists => true)
 

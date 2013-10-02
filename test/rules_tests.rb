@@ -27,4 +27,14 @@ class RulesTests < PostgreSQLExtensionsTestCase
       %{DROP RULE "foo" ON "bar";}
     ], statements)
   end
+
+  def test_rename_rule
+    skip unless ActiveRecord::PostgreSQLExtensions::Features.rename_rule?
+
+    Mig.rename_rule(:foo, :bar, :baz)
+
+    assert_equal([
+      %{ALTER RULE "foo" ON "bar" RENAME TO "baz";}
+    ], statements)
+  end
 end

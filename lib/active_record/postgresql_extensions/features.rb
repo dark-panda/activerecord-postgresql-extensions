@@ -19,6 +19,7 @@ module ActiveRecord
           materialized_views
           modify_mass_privileges
           postgis
+          rename_rule
           view_if_exists
           view_recursive
           view_set_options
@@ -50,6 +51,7 @@ module ActiveRecord
               @has_copy_from_program = true
               @has_materialized_views = true
               @has_create_schema_if_not_exists = true
+              @has_rename_rule = true
               @has_view_recursive = true
             end
 

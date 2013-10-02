@@ -53,6 +53,11 @@ module ActiveRecord
       def drop_rule(name, table)
         execute "DROP RULE #{quote_rule(name)} ON #{quote_table_name(table)};"
       end
+
+      # Renames a rule. Available in PostgreSQL 9.3+.
+      def rename_rule(old_name, table, new_name)
+        execute "ALTER RULE #{quote_rule(old_name)} ON #{quote_table_name(table)} RENAME TO #{quote_rule(new_name)};"
+      end
     end
 
     # Creates a PostgreSQL rule.
