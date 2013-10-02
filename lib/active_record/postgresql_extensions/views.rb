@@ -30,6 +30,8 @@ module ActiveRecord
       # * <tt>:with_options</tt> - sets view options. View options were added
       #   in PostgreSQL 9.1. See the PostgreSQL docs for details on the
       #   available options.
+      # * <tt>:recursive</tt> - adds the RECURSIVE clause. Available in
+      #   PostgreSQL 9.3+.
       #
       # ==== Examples
       #
@@ -133,6 +135,7 @@ module ActiveRecord
         sql = 'CREATE '
         sql << 'OR REPLACE ' if options[:replace]
         sql << 'TEMPORARY ' if options[:temporary]
+        sql << 'RECURSIVE ' if options[:recursive]
         sql << "VIEW #{base.quote_view_name(name)} "
 
         if options[:columns]

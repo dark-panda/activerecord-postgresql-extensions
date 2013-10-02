@@ -19,6 +19,7 @@ module ActiveRecord
           modify_mass_privileges
           postgis
           view_if_exists
+          view_recursive
           view_set_options
         }.each do |feature|
           self.class_eval(<<-RUBY, __FILE__, __LINE__ + 1)
@@ -47,6 +48,7 @@ module ActiveRecord
               @has_copy_from_freeze = true
               @has_copy_from_program = true
               @has_materialized_views = true
+              @has_view_recursive = true
             end
 
             if ActiveRecord::PostgreSQLExtensions.SERVER_VERSION >= '9.1'

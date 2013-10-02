@@ -22,6 +22,16 @@ class ViewsTests < PostgreSQLExtensionsTestCase
     ], statements)
   end
 
+  def test_create_view_with_recursive
+    skip unless ActiveRecord::PostgreSQLExtensions::Features.view_recursive?
+
+    Mig.create_view("foos_view", "SELECT * FROM foos", :recursive => true)
+
+    assert_equal([
+      %{CREATE RECURSIVE VIEW "foos_view" AS SELECT * FROM foos;}
+    ], statements)
+  end
+
   def test_drop_view
     Mig.drop_view(:foos_view)
     Mig.drop_view(:foos_view, :if_exists => true)
