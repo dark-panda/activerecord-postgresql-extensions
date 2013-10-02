@@ -57,6 +57,29 @@ module ActiveRecord
       def alter_schema_owner(schema, role)
         execute("ALTER SCHEMA #{quote_schema(schema)} OWNER TO #{quote_role(role)};")
       end
+
+      # Creates a schema based on a role name. This is a shortcut to using
+      # <tt>create_schema</tt> with the <tt>:authorization</tt> option and
+      # ensures that the schema created has the same name as the role
+      # specified.
+      #
+      # ==== Options
+      #
+      # * <tt>:if_not_exists</tt> - adds IF NOT EXISTS. Available in PostgreSQL
+      #   9.3+.
+      def create_schema_authorization(name, options = {})
+        sql = 'CREATE SCHEMA'
+
+        if options.key?(:if_not_exists)
+          ActiveRecord::PostgreSQLExtensions::Features.check_feature(:create_schema_if_not_exists)
+
+          sql << ' IF NOT EXISTS' if options[:if_not_exists]
+        end
+
+        sql << " AUTHORIZATION #{quote_role(name)}"
+
+        execute("#{sql};")
+      end
     end
   end
 end

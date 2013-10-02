@@ -48,4 +48,22 @@ class SchemasTests < PostgreSQLExtensionsTestCase
       %{ALTER SCHEMA "foo" OWNER TO "bar";}
     ], statements)
   end
+
+  def test_create_schema_authorization
+    Mig.create_schema_authorization(:foo)
+
+    assert_equal([
+      %{CREATE SCHEMA AUTHORIZATION "foo";}
+    ], statements)
+  end
+
+  def test_create_schema_authorization_if_not_exists
+    skip unless ActiveRecord::PostgreSQLExtensions::Features.schema_create_if_not_exists?
+
+    Mig.create_schema_authorization(:foo, :if_not_exists => true)
+
+    assert_equal([
+      %{CREATE SCHEMA IF NOT EXISTS AUTHORIZATION "foo";}
+    ], statements)
+  end
 end
