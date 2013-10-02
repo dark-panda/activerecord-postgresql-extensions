@@ -15,6 +15,7 @@ module ActiveRecord
           copy_from_encoding
           copy_from_program
           create_schema_if_not_exists
+          event_triggers
           foreign_tables
           materialized_views
           modify_mass_privileges
@@ -49,6 +50,7 @@ module ActiveRecord
             if ActiveRecord::PostgreSQLExtensions.SERVER_VERSION >= '9.3'
               @has_copy_from_freeze = true
               @has_copy_from_program = true
+              @has_event_triggers = true
               @has_materialized_views = true
               @has_create_schema_if_not_exists = true
               @has_rename_rule = true

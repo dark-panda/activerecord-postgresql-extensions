@@ -9,8 +9,8 @@ PostgreSQL adapter including:
   and per table.
 
 * some methods for manipulating all sorts of stuff like procedural languages,
-  functions, sequences, views, schemas, triggers, types, extensions and
-  materialized views.
+  functions, sequences, views, schemas, triggers, types, extensions,
+  materialized views and event triggers.
 
 * better support for creating indexes with expressions so you can use functions
   and GiST and GIN indexes.
