@@ -74,6 +74,16 @@ module ActiveRecord
         execute PostgreSQLGrantPrivilege.new(self, :view, views, privileges, roles, options, :named_object_type => false).to_sql
       end
 
+      # Grants privileges on views. You can specify multiple
+      # materialized views, roles and privileges all at once using Arrays for
+      # each of the desired parameters. See PostgreSQLGrantPrivilege for
+      # usage.
+      def grant_materialized_view_privileges(materialized_views, privileges, roles, options = {})
+        ActiveRecord::PostgreSQLExtensions::Features.check_feature(:materialized_views)
+
+        execute PostgreSQLGrantPrivilege.new(self, :materialized_view, materialized_views, privileges, roles, options, :named_object_type => false).to_sql
+      end
+
       # Grants role membership to another role. You can specify multiple
       # roles for both the roles and the role_names parameters using
       # Arrays.
@@ -147,6 +157,16 @@ module ActiveRecord
         execute PostgreSQLRevokePrivilege.new(self, :tablespace, tablespaces, privileges, roles, options).to_sql
       end
 
+      # Revokes materialized view privileges. You can specify multiple
+      # materialized views, roles and privileges all at once using Arrays for
+      # each of the desired parameters. See PostgreSQLRevokePrivilege for
+      # usage.
+      def revoke_materialized_view_privileges(materialized_views, privileges, roles, options = {})
+        ActiveRecord::PostgreSQLExtensions::Features.check_feature(:materialized_views)
+
+        execute PostgreSQLRevokePrivilege.new(self, :materialized_view, materialized_views, privileges, roles, options, :named_object_type => false).to_sql
+      end
+
       # Revokes view privileges. You can specify multiple views,
       # roles and privileges all at once using Arrays for each of the
       # desired parameters. See PostgreSQLRevokePrivilege for
@@ -195,7 +215,8 @@ module ActiveRecord
           :language      => [ 'usage', 'all' ],
           :schema        => [ 'create', 'usage', 'all' ],
           :tablespace    => [ 'create', 'all' ],
-          :view          => [ 'select', 'insert', 'update', 'delete', 'references', 'trigger', 'all' ]
+          :view          => [ 'select', 'insert', 'update', 'delete', 'references', 'trigger', 'all' ],
+          :materialized_view => [ 'select', 'insert', 'update', 'delete', 'references', 'trigger' ]
         }.freeze
 
         def assert_valid_privileges type, privileges

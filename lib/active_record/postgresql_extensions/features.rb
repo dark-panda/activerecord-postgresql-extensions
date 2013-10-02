@@ -15,6 +15,7 @@ module ActiveRecord
           copy_from_encoding
           copy_from_program
           foreign_tables
+          materialized_views
           modify_mass_privileges
           postgis
           view_if_exists
@@ -45,6 +46,7 @@ module ActiveRecord
             if ActiveRecord::PostgreSQLExtensions.SERVER_VERSION >= '9.3'
               @has_copy_from_freeze = true
               @has_copy_from_program = true
+              @has_materialized_views = true
             end
 
             if ActiveRecord::PostgreSQLExtensions.SERVER_VERSION >= '9.1'
