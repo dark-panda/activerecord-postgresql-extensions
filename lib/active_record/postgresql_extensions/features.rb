@@ -10,14 +10,14 @@ module ActiveRecord
     module Features
       class << self
         %w{
-          extensions
-          copy_from_freeze
           copy_from_encoding
+          copy_from_freeze
           copy_from_program
           create_schema_if_not_exists
           create_table_if_not_exists
           create_table_unlogged
           event_triggers
+          extensions
           foreign_tables
           materialized_views
           modify_mass_privileges
@@ -52,19 +52,19 @@ module ActiveRecord
             if ActiveRecord::PostgreSQLExtensions.SERVER_VERSION >= '9.3'
               @has_copy_from_freeze = true
               @has_copy_from_program = true
+              @has_create_schema_if_not_exists = true
               @has_event_triggers = true
               @has_materialized_views = true
-              @has_create_schema_if_not_exists = true
               @has_rename_rule = true
               @has_view_recursive = true
             end
 
             if ActiveRecord::PostgreSQLExtensions.SERVER_VERSION >= '9.1'
-              @has_extensions = true
-              @has_foreign_tables = true
               @has_copy_from_encoding = true
               @has_create_table_if_not_exists = true
               @has_create_table_unlogged = true
+              @has_extensions = true
+              @has_foreign_tables = true
               @has_view_if_exists = true
               @has_view_set_options = true
             end
