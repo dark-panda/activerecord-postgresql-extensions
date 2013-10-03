@@ -44,6 +44,8 @@ class TablesTests < PostgreSQLExtensionsTestCase
   end
 
   def test_option_unlogged
+    skip unless ActiveRecord::PostgreSQLExtensions::Features.create_table_unlogged?
+
     Mig.create_table('foo', :unlogged => true)
 
     assert_equal([ strip_heredoc(<<-SQL) ], statements)

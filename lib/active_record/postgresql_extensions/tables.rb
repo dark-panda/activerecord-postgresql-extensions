@@ -200,6 +200,8 @@ module ActiveRecord
 
         if options.key?(:if_not_exists)
           ActiveRecord::PostgreSQLExtensions::Features.check_feature(:create_table_if_not_exists)
+        elsif options.key?(:unlogged)
+          ActiveRecord::PostgreSQLExtensions::Features.check_feature(:create_table_unlogged)
         end
 
         unless options[:id] == false
