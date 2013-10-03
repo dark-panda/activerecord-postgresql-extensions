@@ -64,6 +64,8 @@ class TablesTests < PostgreSQLExtensionsTestCase
   end
 
   def test_option_if_not_exists
+    skip unless ActiveRecord::PostgreSQLExtensions::Features.create_table_if_not_exists?
+
     Mig.create_table('foo', :if_not_exists => true)
 
     assert_equal([ strip_heredoc(<<-SQL) ], statements)

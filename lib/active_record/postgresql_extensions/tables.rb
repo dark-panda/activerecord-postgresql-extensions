@@ -198,6 +198,10 @@ module ActiveRecord
           end
         end
 
+        if options.key?(:if_not_exists)
+          ActiveRecord::PostgreSQLExtensions::Features.check_feature(:create_table_if_not_exists)
+        end
+
         unless options[:id] == false
           self.primary_key(options[:primary_key] || Base.get_primary_key(table_name))
 

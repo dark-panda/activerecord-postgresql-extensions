@@ -15,6 +15,7 @@ module ActiveRecord
           copy_from_encoding
           copy_from_program
           create_schema_if_not_exists
+          create_table_if_not_exists
           event_triggers
           foreign_tables
           materialized_views
@@ -61,6 +62,7 @@ module ActiveRecord
               @has_extensions = true
               @has_foreign_tables = true
               @has_copy_from_encoding = true
+              @has_create_table_if_not_exists = true
               @has_view_if_exists = true
               @has_view_set_options = true
             end
