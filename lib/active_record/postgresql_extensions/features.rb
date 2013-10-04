@@ -23,6 +23,7 @@ module ActiveRecord
           modify_mass_privileges
           postgis
           rename_rule
+          type_if_not_exists
           view_if_exists
           view_recursive
           view_set_options
@@ -56,6 +57,7 @@ module ActiveRecord
               @has_event_triggers = true
               @has_materialized_views = true
               @has_rename_rule = true
+              @has_type_if_not_exists = true
               @has_view_recursive = true
             end
 

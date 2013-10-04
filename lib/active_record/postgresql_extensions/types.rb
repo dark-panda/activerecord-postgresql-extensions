@@ -51,8 +51,10 @@ module ActiveRecord
 
         sql = "ALTER TYPE #{quote_generic(enum)} ADD VALUE"
 
-        if options[:if_not_exists]
-          sql << " IF NOT EXISTS"
+        if options.key?(:if_not_exists)
+          ActiveRecord::PostgreSQLExtensions::Features.check_feature(:type_if_not_exists)
+
+          sql << " IF NOT EXISTS" if options[:if_not_exists]
         end
 
         sql << " #{quote(value)}"
@@ -92,10 +94,6 @@ module ActiveRecord
         def assert_valid_add_enum_value_options(options)
           if options[:before] && options[:after]
             raise InvalidAddEnumValueOptions.new("Can't use both :before and :after options together")
-          end
-
-          if options[:if_not_exists] && ActiveRecord::PostgreSQLExtensions.SERVER_VERSION < '9.3'
-            raise InvalidAddEnumValueOptions.new("The :if_not_exists option is only available in PostgreSQL 9.3+.")
           end
         end
     end
