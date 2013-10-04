@@ -43,4 +43,23 @@ class LanguagesTests < PostgreSQLExtensionsTestCase
       %{ALTER PROCEDURAL LANGUAGE "foo" OWNER TO "bar";}
     ], statements)
   end
+
+  def test_languages
+    ARBC.real_execute do
+      languages = ARBC.languages
+
+      assert_kind_of(Array, languages)
+      assert_includes(languages, "sql")
+      assert_includes(languages, "c")
+      assert_includes(languages, "internal")
+    end
+  end
+
+  def test_language_exists
+    ARBC.real_execute do
+      assert(ARBC.language_exists?("sql"))
+      assert(ARBC.language_exists?("c"))
+      assert(ARBC.language_exists?("internal"))
+    end
+  end
 end
