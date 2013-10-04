@@ -138,7 +138,7 @@ module ActiveRecord
         end
 
         def assert_valid_events(events) #:nodoc:
-          check_events = Array(events).collect(&:to_s) - EVENT_TYPES
+          check_events = Array.wrap(events).collect(&:to_s) - EVENT_TYPES
           if !check_events.empty?
             raise ActiveRecord::InvalidTriggerEvent.new(check_events)
           end

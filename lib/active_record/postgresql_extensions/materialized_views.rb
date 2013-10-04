@@ -59,7 +59,7 @@ module ActiveRecord
 
         sql = 'DROP MATERIALIZED VIEW '
         sql << 'IF EXISTS ' if options[:if_exists]
-        sql << Array(args).collect { |v| quote_view_name(v) }.join(', ')
+        sql << Array.wrap(args).collect { |v| quote_view_name(v) }.join(', ')
         sql << ' CASCADE' if options[:cascade]
         execute("#{sql};")
       end
@@ -168,7 +168,7 @@ module ActiveRecord
         sql = "CREATE MATERIALIZED VIEW #{base.quote_view_name(name)} "
 
         if options[:columns]
-          sql << '(' << Array(options[:columns]).collect do |c|
+          sql << '(' << Array.wrap(options[:columns]).collect do |c|
             base.quote_column_name(c)
           end.join(', ') << ') '
         end
