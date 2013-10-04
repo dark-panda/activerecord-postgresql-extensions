@@ -65,6 +65,30 @@ class MaterializedViewsTests < PostgreSQLExtensionsTestCase
     ], statements)
   end
 
+  def test_alter_materialized_view_set_column_default
+    skip unless ActiveRecord::PostgreSQLExtensions::Features.materialized_views?
+
+    Mig.alter_materialized_view_set_column_default(:foos, :name, "hello world")
+    Mig.alter_materialized_view_set_column_default(:foos, :name, nil)
+    Mig.alter_materialized_view_set_column_default(:foos, :name, :expression => "1 + 2")
+
+    assert_equal([
+      %{ALTER MATERIALIZED VIEW "foos" ALTER COLUMN "name" SET DEFAULT 'hello world';},
+      %{ALTER MATERIALIZED VIEW "foos" ALTER COLUMN "name" SET DEFAULT NULL;},
+      %{ALTER MATERIALIZED VIEW "foos" ALTER COLUMN "name" SET DEFAULT 1 + 2;}
+    ], statements)
+  end
+
+  def test_alter_materialized_view_drop_column_default
+    skip unless ActiveRecord::PostgreSQLExtensions::Features.materialized_views?
+
+    Mig.alter_materialized_view_drop_column_default(:foos, :name)
+
+    assert_equal([
+      %{ALTER MATERIALIZED VIEW "foos" ALTER COLUMN "name" DROP DEFAULT;}
+    ], statements)
+  end
+
   def test_alter_materialized_view_owner
     skip unless ActiveRecord::PostgreSQLExtensions::Features.materialized_views?
 

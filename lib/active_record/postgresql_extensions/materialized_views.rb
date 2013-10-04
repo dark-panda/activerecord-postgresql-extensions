@@ -71,6 +71,25 @@ module ActiveRecord
         }, options).to_sql
       end
 
+      # Change the default of a materialized view column. The default value can
+      # be either a straight-up value or a Hash containing an expression
+      # in the form <tt>:expression => value</tt> which will be passed
+      # through unescaped. This allows you to set expressions and use
+      # functions and the like.
+      def alter_materialized_view_set_column_default(name, column, default, options = {})
+        execute PostgreSQLMaterializedViewAlterer.new(self, name, {
+          :column => column,
+          :set_default => default
+        }, options).to_sql
+      end
+
+      # Drop the default value on a materialized view column
+      def alter_materialized_view_drop_column_default(name, column, options = {})
+        execute PostgreSQLMaterializedViewAlterer.new(self, name, {
+          :drop_default => column
+        }, options).to_sql
+      end
+
       # Change the ownership of a materialized view.
       def alter_materialized_view_owner(name, role, options = {})
         execute PostgreSQLMaterializedViewAlterer.new(self, name, {
@@ -201,8 +220,13 @@ module ActiveRecord
 
             sql << case key
               when :set_default
-                column, expression = actions[:set_default].flatten
-                "ALTER COLUMN #{base.quote_column_name(column)} SET DEFAULT #{expression}"
+                expression = if actions[:set_default].is_a?(Hash) && actions[:set_default].key?(:expression)
+                   actions[:set_default][:expression]
+                else
+                  base.quote(actions[:set_default])
+                end
+
+                "ALTER COLUMN #{base.quote_column_name(actions[:column])} SET DEFAULT #{expression}"
 
               when :drop_default
                 "ALTER COLUMN #{base.quote_column_name(actions[:drop_default])} DROP DEFAULT"
