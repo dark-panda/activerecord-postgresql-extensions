@@ -89,14 +89,22 @@ module ActiveRecord
       # convoluted as evidenced by the plethora of options we're
       # handling here.
       #
-      # ==== Example
+      # ==== Examples
       #
+      #   # With a string for the body:
+      #   create_function('tester_function', 'integer',
+      #     'integer', 'sql',
+      #     'select $1;'
+      #     :behavior => :immutable, :set => { :search_path => :from_current }, :force => true
+      #   )
+      #
+      #   # With a block:
       #   create_function('tester_function', 'integer',
       #     'integer', 'sql', :behavior => :immutable, :set => { :search_path => :from_current }, :force => true) do
       #     "select $1;"
       #   end
       #
-      #   # Produces:
+      #   # Both produce:
       #   #
       #   # CREATE OR REPLACE FUNCTION "tester_function"(integer) RETURNS integer AS $$
       #   #   select $1;
@@ -104,9 +112,20 @@ module ActiveRecord
       #   # LANGUAGE "sql"
       #   #   IMMUTABLE
       #   #   SET "search_path" FROM CURRENT;
-      def create_function(name, args, returns, language, options = {})
-        body = yield.to_s
-        execute PostgreSQLFunctionDefinition.new(self, name, args, returns, language, body, options).to_s
+      def create_function(name, arguments, returns, language, *args)
+        options = args.extract_options!
+
+        body = if args.first.present?
+          if block_given?
+            raise ArgumentError.new("Can't have both a function body argument as well as a block in create_function")
+          end
+
+          args.first
+        elsif block_given?
+          yield.to_s
+        end
+
+        execute PostgreSQLFunctionDefinition.new(self, name, arguments, returns, language, body, options).to_s
       end
 
       # Drops a function.

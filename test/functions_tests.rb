@@ -46,6 +46,45 @@ class FunctionsTests < PostgreSQLExtensionsTestCase
     assert_equal(expected, statements)
   end
 
+  def test_create_function_with_body_argument
+    ARBC.create_function(:test, :integer, :integer, :sql, "select 10;")
+
+    ARBC.create_function(:test, :integer, :integer, :sql, "return 10;", {
+      :force => true,
+      :delimiter => '$__$',
+      :behavior => :immutable,
+      :on_null_input => :strict,
+      :cost => 1,
+      :rows => 10,
+      :set => {
+        'TIME ZONE' => 'America/Halifax'
+      }
+    })
+
+    expected = []
+
+    expected << strip_heredoc(<<-SQL)
+      CREATE FUNCTION "test"(integer) RETURNS integer AS $$
+      select 10;
+      $$
+      LANGUAGE "sql";
+    SQL
+
+    expected << strip_heredoc(<<-SQL)
+      CREATE OR REPLACE FUNCTION "test"(integer) RETURNS integer AS $__$
+      return 10;
+      $__$
+      LANGUAGE "sql"
+          IMMUTABLE
+          STRICT
+          COST 1
+          ROWS 10
+          SET TIME ZONE "America/Halifax";
+    SQL
+
+    assert_equal(expected, statements)
+  end
+
   def test_drop_function
     ARBC.drop_function(:test, :integer)
     ARBC.drop_function(:test, :integer, :if_exists => true, :cascade => true)
