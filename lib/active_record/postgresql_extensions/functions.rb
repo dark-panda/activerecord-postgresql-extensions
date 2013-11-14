@@ -28,9 +28,14 @@ module ActiveRecord
 
   module ConnectionAdapters
     class PostgreSQLAdapter
+      # :call-seq:
+      #   create_function(name, arguments, returns, language, options = {}, &block)
+      #   create_function(name, arguments, returns, language, body, options = {})
+      #   create_function(name, returns, language, options = {}, &block)
+      #
       # Creates a PostgreSQL function/stored procedure.
       #
-      # +args+ is a simple String that you can use to represent the
+      # +arguments+ is a simple String that you can use to represent the
       # function arguments.
       #
       # +returns+ is the return type for the function.
@@ -44,7 +49,8 @@ module ActiveRecord
       # C, this will be an Array containing two items: the object file
       # the function is found in and the link symbol for the function.
       # In all other cases, this argument will be a String containing
-      # the actual function code.
+      # the actual function code. You can also provide either a block that
+      # returns the function body as a String or a :body option.
       #
       # ==== Options
       #
@@ -83,6 +89,8 @@ module ActiveRecord
       #   with the parameters as keys and the values to set as values.
       #   When using a Hash, the value <tt>:from_current</tt> can be
       #   used to specify the actual <tt>FROM CURRENT</tt> clause.
+      # * <tt>:body</tt> - allows you to set a function body when the arguments
+      #   to <tt>create_function</tt> are ambiguous.
       #
       # You should definitely check out the PostgreSQL documentation
       # on creating stored procedures, because it can get pretty
@@ -112,10 +120,25 @@ module ActiveRecord
       #   # LANGUAGE "sql"
       #   #   IMMUTABLE
       #   #   SET "search_path" FROM CURRENT;
-      def create_function(name, arguments, returns, language, *args)
+      def create_function(name, *args)
         options = args.extract_options!
 
-        body = if args.first.present?
+        raise ArgumentError.new("Expected 3-6 arguments") unless args.length.between?(2, 4)
+        raise ArgumentError.new("Ambiguous arguments: can't specify a function body as an argument without any function arguments. Hint: Use a :body option.") if args.length <= 3 && !block_given? && !options.key?(:body)
+
+        arguments, returns, language = if args.length >= 3
+          args.shift(3)
+        else
+          [ nil ] + args.shift(2)
+        end
+
+        body = if options.key?(:body)
+          if block_given? || args.first.present?
+            raise ArgumentError.new("Can't have both a :body option as well as a block or body argument in create_function")
+          end
+
+          options[:body].to_s
+        elsif args.first.present?
           if block_given?
             raise ArgumentError.new("Can't have both a function body argument as well as a block in create_function")
           end
@@ -135,27 +158,50 @@ module ActiveRecord
       # * <tt>:if_exists</tt> - adds an <tt>IF EXISTS</tt> clause.
       # * <tt>:cascade</tt> - cascades the operation on to any objects
       #   referring to the function.
-      def drop_function(name, args, options = {})
+      def drop_function(name, *args)
+        raise ArgumentError.new("Expected 2-3 arguments") unless args.length.between?(1, 2)
+
+        options = args.extract_options!
+        arguments = args.first
+
         sql = 'DROP FUNCTION '
         sql << 'IF EXISTS ' if options[:if_exists]
-        sql << "#{quote_function(name)}(#{args})"
+        sql << "#{quote_function(name)}(#{arguments})"
         sql << ' CASCADE' if options[:cascade]
         execute "#{sql};"
       end
 
       # Renames a function.
-      def rename_function(name, args, rename_to, options = {})
-        execute PostgreSQLFunctionAlterer.new(self, name, args, :rename_to => rename_to).to_s
+      def rename_function(name, *args)
+        raise ArgumentError.new("Expected 2-3 arguments") unless args.length.between?(1, 2)
+
+        options = args.extract_options!
+        rename_to = args.pop
+        arguments = args.pop
+
+        execute PostgreSQLFunctionAlterer.new(self, name, arguments, :rename_to => rename_to).to_s
       end
 
       # Changes the function's owner.
-      def alter_function_owner(name, args, owner_to, options = {})
-        execute PostgreSQLFunctionAlterer.new(self, name, args, :owner_to => owner_to).to_s
+      def alter_function_owner(name, *args)
+        raise ArgumentError.new("Expected 2-3 arguments") unless args.length.between?(1, 2)
+
+        options = args.extract_options!
+        owner_to = args.pop
+        arguments = args.pop
+
+        execute PostgreSQLFunctionAlterer.new(self, name, arguments, :owner_to => owner_to).to_s
       end
 
       # Changes the function's schema.
-      def alter_function_schema(name, args, set_schema, options = {})
-        execute PostgreSQLFunctionAlterer.new(self, name, args, :set_schema => set_schema).to_s
+      def alter_function_schema(name, *args)
+        raise ArgumentError.new("Expected 2-3 arguments") unless args.length.between?(1, 2)
+
+        options = args.extract_options!
+        set_schema = args.pop
+        arguments = args.pop
+
+        execute PostgreSQLFunctionAlterer.new(self, name, arguments, :set_schema => set_schema).to_s
       end
 
       # Alters a function. There's a ton of stuff you can do here, and
@@ -187,8 +233,12 @@ module ActiveRecord
       #   #
       #   # ALTER FUNCTION "my_function"(integer) OWNER TO "jdoe";
       #   # ALTER FUNCTION "my_function"(integer) RENAME TO "another_function";
-      def alter_function(name, args, options = {})
-        alterer = PostgreSQLFunctionAlterer.new(self, name, args, options)
+      def alter_function(name, *args)
+        raise ArgumentError.new("Expected 2-3 arguments") unless args.length.between?(0, 2)
+
+        options = args.extract_options!
+        arguments = args.pop
+        alterer = PostgreSQLFunctionAlterer.new(self, name, arguments, options)
 
         if block_given?
           yield alterer
