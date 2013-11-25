@@ -10,7 +10,7 @@ end
 
 gem "rdoc", "~> 3.12"
 gem "rake", "~> 10.0"
-gem "minitest"
+gem "minitest", "~> 4.7"
 gem "minitest-reporters"
 gem "guard-minitest"
 gem "simplecov"
