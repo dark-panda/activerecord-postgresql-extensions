@@ -27,6 +27,21 @@ module ActiveRecord
         })
       end
       alias_method_chain :native_database_types, :spatial_types
+
+      # Updates the definition of a geometry field to a new SRID value.
+      def update_geometry_srid(table_name, column_name, srid)
+        schema, table = extract_schema_and_table_names(table_name)
+
+        args = [
+          quote(table),
+          quote(column_name),
+          quote(srid)
+        ]
+
+        args.unshift(quote(schema)) if schema
+
+        execute(%{SELECT UpdateGeometrySRID(#{args.join(', ')});})
+      end
     end
 
     class PostgreSQLGeometryColumnDefinition
