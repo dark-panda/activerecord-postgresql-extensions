@@ -2,11 +2,18 @@
 $: << File.dirname(__FILE__)
 require 'test_helper'
 
+class GeometryTests < PostgreSQLExtensionsTestCase
+  include PostgreSQLExtensionsTestHelper
+
+  def setup
+    super
+    skip if !ActiveRecord::PostgreSQLExtensions::Features.postgis?
+  end
+end
+
 if (ActiveRecord::PostgreSQLExtensions::PostGIS.VERSION[:lib] rescue '') >= '2.0'
   class GeometryTests < PostgreSQLExtensionsTestCase
     def test_create_geometry
-      skip if !ActiveRecord::PostgreSQLExtensions::Features.postgis?
-
       Mig.create_table(:foo) do |t|
         t.geometry :the_geom, :srid => 4326
       end
@@ -28,8 +35,6 @@ if (ActiveRecord::PostgreSQLExtensions::PostGIS.VERSION[:lib] rescue '') >= '2.0
     end
 
     def test_create_geometry_with_spatial
-      skip if !ActiveRecord::PostgreSQLExtensions::Features.postgis?
-
       Mig.create_table(:foo) do |t|
         t.spatial :the_geom, :srid => 4326
       end
@@ -51,8 +56,6 @@ if (ActiveRecord::PostgreSQLExtensions::PostGIS.VERSION[:lib] rescue '') >= '2.0
     end
 
     def test_create_geometry_with_spatial_and_spatial_column_type
-      skip if !ActiveRecord::PostgreSQLExtensions::Features.postgis?
-
       Mig.create_table(:foo) do |t|
         t.spatial :the_geom, :srid => 4326, :spatial_column_type => :geography
       end
@@ -74,8 +77,6 @@ if (ActiveRecord::PostgreSQLExtensions::PostGIS.VERSION[:lib] rescue '') >= '2.0
     end
 
     def test_create_geography
-      skip if !ActiveRecord::PostgreSQLExtensions::Features.postgis?
-
       Mig.create_table(:foo) do |t|
         t.geography :the_geom, :srid => 4326
       end
@@ -97,8 +98,6 @@ if (ActiveRecord::PostgreSQLExtensions::PostGIS.VERSION[:lib] rescue '') >= '2.0
     end
 
     def test_create_geometry_with_force_constraints
-      skip if !ActiveRecord::PostgreSQLExtensions::Features.postgis?
-
       Mig.create_table(:foo) do |t|
         t.geometry :the_geom, :srid => 4326, :force_constraints => true
       end
@@ -143,8 +142,6 @@ if (ActiveRecord::PostgreSQLExtensions::PostGIS.VERSION[:lib] rescue '') >= '2.0
     end
 
     def test_create_geometry_with_not_null
-      skip if !ActiveRecord::PostgreSQLExtensions::Features.postgis?
-
       Mig.create_table(:foo) do |t|
         t.geometry :the_geom, :srid => 4326, :null => false
       end
@@ -166,8 +163,6 @@ if (ActiveRecord::PostgreSQLExtensions::PostGIS.VERSION[:lib] rescue '') >= '2.0
     end
 
     def test_create_geometry_with_null_and_type
-      skip if !ActiveRecord::PostgreSQLExtensions::Features.postgis?
-
       Mig.create_table(:foo) do |t|
         t.geometry :the_geom, :srid => 4326, :geometry_type => :polygon
       end
@@ -190,11 +185,7 @@ if (ActiveRecord::PostgreSQLExtensions::PostGIS.VERSION[:lib] rescue '') >= '2.0
   end
 else
   class GeometryTests < Test::Unit::TestCase
-    include PostgreSQLExtensionsTestHelper
-
     def test_create_geometry
-      skip if !ActiveRecord::PostgreSQLExtensions::Features.postgis?
-
       Mig.create_table(:foo) do |t|
         t.geometry :the_geom, :srid => 4326
       end
@@ -226,8 +217,6 @@ else
     end
 
     def test_create_geometry_with_spatial
-      skip if !ActiveRecord::PostgreSQLExtensions::Features.postgis?
-
       Mig.create_table(:foo) do |t|
         t.spatial :the_geom, :srid => 4326
       end
@@ -259,8 +248,6 @@ else
     end
 
     def test_create_geometry_with_spatial_and_spatial_column_type
-      skip if !ActiveRecord::PostgreSQLExtensions::Features.postgis?
-
       Mig.create_table(:foo) do |t|
         t.spatial :the_geom, :srid => 4326, :spatial_column_type => :geography
       end
@@ -284,8 +271,6 @@ else
     end
 
     def test_create_geography
-      skip if !ActiveRecord::PostgreSQLExtensions::Features.postgis?
-
       Mig.create_table(:foo) do |t|
         t.geography :the_geom, :srid => 4326
       end
@@ -309,8 +294,6 @@ else
     end
 
     def test_create_geometry_with_schema
-      skip if !ActiveRecord::PostgreSQLExtensions::Features.postgis?
-
       Mig.create_table('shabba.foo') do |t|
         t.geometry :the_geom, :srid => 4326
       end
@@ -342,8 +325,6 @@ else
     end
 
     def test_create_geometry_with_not_null
-      skip if !ActiveRecord::PostgreSQLExtensions::Features.postgis?
-
       Mig.create_table(:foo) do |t|
         t.geometry :the_geom, :srid => 4326, :null => false
       end
@@ -375,8 +356,6 @@ else
     end
 
     def test_create_geometry_with_null_and_type
-      skip if !ActiveRecord::PostgreSQLExtensions::Features.postgis?
-
       Mig.create_table(:foo) do |t|
         t.geometry :the_geom, :srid => 4326, :geometry_type => :polygon
       end
