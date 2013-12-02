@@ -300,4 +300,24 @@ class AdapterExtensionTests < PostgreSQLExtensionsTestCase
       %{CLUSTER "foo"."bar";}
     ], statements)
   end
+
+  def test_extract_schema_name
+    assert_equal("foo", ARBC.extract_schema_name(:foo => :bar))
+    assert_equal("foo", ARBC.extract_schema_name(%{foo.bar}))
+    assert_equal("foo", ARBC.extract_schema_name(%{"foo"."bar"}))
+    assert_nil(ARBC.extract_schema_name(%{"bar"}))
+  end
+
+  def test_extract_table_name
+    assert_equal("bar", ARBC.extract_table_name(:foo => :bar))
+    assert_equal("bar", ARBC.extract_table_name(%{foo.bar}))
+    assert_equal("bar", ARBC.extract_table_name(%{"foo"."bar"}))
+  end
+
+  def test_extract_schema_and_table_names
+    assert_equal([ "foo", "bar" ], ARBC.extract_schema_and_table_names(:foo => :bar))
+    assert_equal([ "foo", "bar" ], ARBC.extract_schema_and_table_names(%{foo.bar}))
+    assert_equal([ "foo", "bar" ], ARBC.extract_schema_and_table_names(%{"foo"."bar"}))
+    assert_equal([ nil, "bar" ], ARBC.extract_schema_and_table_names(%{"bar"}))
+  end
 end
