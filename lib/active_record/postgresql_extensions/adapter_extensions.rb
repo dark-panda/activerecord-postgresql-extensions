@@ -203,30 +203,27 @@ module ActiveRecord
       end
 
       def extract_schema_name(name)
-        schema, name_part = extract_pg_identifier_from_name(name.to_s)
-        schema if name_part
+        schema, _ = extract_schema_and_table_names(name)
+        schema if schema
       end
 
       def extract_table_name(name)
-        schema, name_part = extract_pg_identifier_from_name(name.to_s)
-
-        unless name_part
-          schema
-        else
-          table_name, name_part = extract_pg_identifier_from_name(name_part)
-          table_name
-        end
+        _, name_part = extract_schema_and_table_names(name)
+        name_part if name_part
       end
 
       def extract_schema_and_table_names(name)
-        schema, name_part = extract_pg_identifier_from_name(name.to_s)
-
-        unless name_part
-          quote_column_name(schema)
-          [ nil, schema ]
+        if name.is_a?(Hash)
+          [ name.keys.first.to_s, name.values.first.to_s ]
         else
-          table_name, name_part = extract_pg_identifier_from_name(name_part)
-          [ schema, table_name ]
+          schema, name_part = extract_pg_identifier_from_name(name.to_s)
+
+          unless name_part
+            [ nil, schema.to_s ]
+          else
+            table_name, name_part = extract_pg_identifier_from_name(name_part)
+            [ schema.to_s, table_name.to_s ]
+          end
         end
       end
 
