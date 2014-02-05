@@ -109,7 +109,12 @@ module ActiveRecord
           drop_table(table_name, { :if_exists => true, :cascade => options[:cascade_drop] })
         end
 
-        table_definition = PostgreSQLTableDefinition.new(self, table_name, options)
+        table_definition = if ActiveRecord::VERSION::STRING >= "4.0"
+          PostgreSQLTableDefinition.new(self, native_database_types, table_name, options)
+        else
+          PostgreSQLTableDefinition.new(self, table_name, options)
+        end
+
         yield table_definition if block_given?
 
         execute table_definition.to_s
@@ -180,9 +185,19 @@ module ActiveRecord
     class PostgreSQLTableDefinition < TableDefinition
       attr_accessor :base, :table_name, :options
 
-      def initialize(base, table_name, options = {}) #:nodoc:
-        @table_name, @options = table_name, options
-        super(base)
+
+      if ActiveRecord::VERSION::STRING >= "4.0"
+        def initialize(base, types, name, options = {}) #:nodoc:
+          @base = base
+          @table_constraints = Array.new
+          @table_name = name
+          super(types, name, options[:temporary], options)
+        end
+      else
+        def initialize(base, table_name, options = {}) #:nodoc:
+          @table_name, @options = table_name, options
+          super(base)
+        end
       end
 
       def to_sql #:nodoc:
