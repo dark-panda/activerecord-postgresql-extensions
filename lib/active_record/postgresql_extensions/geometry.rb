@@ -136,12 +136,13 @@ module ActiveRecord
           "#{opts[:spatial_column_type]}(#{column_args.join(', ')})"
         end
 
-        column = self[column_name] || ColumnDefinition.new(base, column_name, column_type)
+        column = fetch_spatial_column(column_name, column_type)
         column.default = opts[:default]
         column.null = opts[:null]
 
-        unless @columns.include?(column)
-          @columns << column
+        unless column_included?(column)
+          add_spatial_column(column_name, column)
+
           if opts[:add_constraints] && (
             ActiveRecord::PostgreSQLExtensions::PostGIS.VERSION[:lib] < '2.0' ||
             opts[:force_constraints]
@@ -271,6 +272,32 @@ module ActiveRecord
           'geometry',
           'geography'
         ].freeze
+
+        if ActiveRecord::VERSION::STRING >= "4.0"
+          def fetch_spatial_column(column_name, column_type)
+            @columns_hash[column_name] || ColumnDefinition.new(base, column_name, column_type)
+          end
+
+          def add_spatial_column(column_name, column)
+            @columns_hash[column_name] = column
+          end
+
+          def column_included?(column)
+            columns.include?(column)
+          end
+        else
+          def fetch_spatial_column(column_name, column_type)
+            self[column_name] || ColumnDefinition.new(base, column_name, column_type)
+          end
+
+          def add_spatial_column(column_name, column)
+            @columns << column
+          end
+
+          def column_included?(column)
+            @columns.include?(column)
+          end
+        end
 
         def assert_valid_geometry_type(type)
           if !GEOMETRY_TYPES.include?(type.to_s.upcase)
