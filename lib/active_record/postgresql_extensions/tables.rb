@@ -100,25 +100,11 @@ module ActiveRecord
       # Be sure to refer to the PostgreSQL documentation for details on
       # data definition and such.
       def create_table(table_name, options = {})
-        if options[:force]
-          drop_table(table_name, { :if_exists => true, :cascade => options[:cascade_drop] })
-        end
-
-        table_definition = if ActiveRecord::VERSION::STRING >= "4.0"
-          PostgreSQLTableDefinition.new(self, native_database_types, table_name, options)
-        else
-          PostgreSQLTableDefinition.new(self, table_name, options)
-        end
-
-        yield table_definition if block_given?
-
-        execute table_definition.to_s
-        unless table_definition.post_processing.blank?
-          table_definition.post_processing.each do |pp|
-            execute pp.to_s
-          end
-        end
+        # This is a stub method. The actual implementation is in Rails
+        # version-specific files.
       end
+      undef :create_table
+      alias :create_table :original_create_table
 
       alias :original_drop_table :drop_table
       # Drops a table. This method is expanded beyond the standard
