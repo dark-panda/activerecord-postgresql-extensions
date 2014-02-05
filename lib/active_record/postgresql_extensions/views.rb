@@ -45,7 +45,7 @@ module ActiveRecord
       #   )
       #   # => CREATE VIEW "geospatial"."foo_view" ("id", "name", "the_geom") AS SELECT * FROM bar;
       def create_view(name, query, options = {})
-        execute PostgreSQLViewDefinition.new(self, name, query, options).to_s
+        execute ActiveRecord::PostgreSQLExtensions::PostgreSQLViewDefinition.new(self, name, query, options).to_s
       end
 
       # Drops a view.
@@ -67,28 +67,28 @@ module ActiveRecord
 
       # Renames a view.
       def rename_view(name, new_name, options = {})
-        execute PostgreSQLViewAlterer.new(self, name, {
+        execute ActiveRecord::PostgreSQLExtensions::PostgreSQLViewAlterer.new(self, name, {
           :rename_to => new_name
         }, options).to_sql
       end
 
       # Change the ownership of a view.
       def alter_view_owner(name, role, options = {})
-        execute PostgreSQLViewAlterer.new(self, name, {
+        execute ActiveRecord::PostgreSQLExtensions::PostgreSQLViewAlterer.new(self, name, {
           :owner_to => role
         }, options).to_sql
       end
 
       # Alter a view's schema.
       def alter_view_schema(name, schema, options = {})
-        execute PostgreSQLViewAlterer.new(self, name, {
+        execute ActiveRecord::PostgreSQLExtensions::PostgreSQLViewAlterer.new(self, name, {
           :set_schema => schema
         }, options).to_sql
       end
 
       # Sets a view's options using a Hash.
       def alter_view_set_options(name, set_options, options = {})
-        execute PostgreSQLViewAlterer.new(self, name, {
+        execute ActiveRecord::PostgreSQLExtensions::PostgreSQLViewAlterer.new(self, name, {
           :set_options => set_options
         }, options).to_sql
       end
@@ -97,14 +97,14 @@ module ActiveRecord
       def alter_view_reset_options(name, *args)
         options = args.extract_options!
 
-        execute PostgreSQLViewAlterer.new(self, name, {
+        execute ActiveRecord::PostgreSQLExtensions::PostgreSQLViewAlterer.new(self, name, {
           :reset_options => args
         }, options).to_sql
       end
 
       # Set a column default on a view.
       def alter_view_set_column_default(name, column, expression, options = {})
-        execute PostgreSQLViewAlterer.new(self, name, {
+        execute ActiveRecord::PostgreSQLExtensions::PostgreSQLViewAlterer.new(self, name, {
           :set_default => {
             column => expression
           }
@@ -113,12 +113,14 @@ module ActiveRecord
 
       # Drop a column default from a view.
       def alter_view_drop_column_default(name, column, options = {})
-        execute PostgreSQLViewAlterer.new(self, name, {
+        execute ActiveRecord::PostgreSQLExtensions::PostgreSQLViewAlterer.new(self, name, {
           :drop_default => column
         }, options).to_sql
       end
     end
+  end
 
+  module PostgreSQLExtensions
     # Creates a PostgreSQL view definition. This class isn't really meant
     # to be used directly. Instead, see PostgreSQLAdapter#create_view
     # for usage.

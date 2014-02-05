@@ -15,7 +15,7 @@ module ActiveRecord
       # desired parameters. See PostgreSQLGrantPrivilege for
       # usage.
       def grant_table_privileges(tables, privileges, roles, options = {})
-        execute PostgreSQLGrantPrivilege.new(self, :table, tables, privileges, roles, options).to_sql
+        execute ActiveRecord::PostgreSQLExtensions::PostgreSQLGrantPrivilege.new(self, :table, tables, privileges, roles, options).to_sql
       end
 
       # Grants privileges on sequences. You can specify multiple
@@ -23,7 +23,7 @@ module ActiveRecord
       # of the desired parameters. See PostgreSQLGrantPrivilege for
       # usage.
       def grant_sequence_privileges(sequences, privileges, roles, options = {})
-        execute PostgreSQLGrantPrivilege.new(self, :sequence, sequences, privileges, roles, options).to_sql
+        execute ActiveRecord::PostgreSQLExtensions::PostgreSQLGrantPrivilege.new(self, :sequence, sequences, privileges, roles, options).to_sql
       end
 
       # Grants privileges on databases. You can specify multiple
@@ -31,7 +31,7 @@ module ActiveRecord
       # each of the desired parameters. See PostgreSQLGrantPrivilege for
       # usage.
       def grant_database_privileges(databases, privileges, roles, options = {})
-        execute PostgreSQLGrantPrivilege.new(self, :database, databases, privileges, roles, options).to_sql
+        execute ActiveRecord::PostgreSQLExtensions::PostgreSQLGrantPrivilege.new(self, :database, databases, privileges, roles, options).to_sql
       end
 
       # Grants privileges on functions. You can specify multiple
@@ -39,7 +39,7 @@ module ActiveRecord
       # each of the desired parameters. See PostgreSQLGrantPrivilege for
       # usage.
       def grant_function_privileges(function_prototypes, privileges, roles, options = {})
-        execute PostgreSQLGrantPrivilege.new(self, :function, function_prototypes, privileges, roles, options, :quote_objects => false).to_sql
+        execute ActiveRecord::PostgreSQLExtensions::PostgreSQLGrantPrivilege.new(self, :function, function_prototypes, privileges, roles, options, :quote_objects => false).to_sql
       end
 
       # Grants privileges on procedural languages. You can specify
@@ -47,7 +47,7 @@ module ActiveRecord
       # Arrays for each of the desired parameters. See
       # PostgreSQLGrantPrivilege for usage.
       def grant_language_privileges(languages, privileges, roles, options = {})
-        execute PostgreSQLGrantPrivilege.new(self, :language, languages, privileges, roles, options).to_sql
+        execute ActiveRecord::PostgreSQLExtensions::PostgreSQLGrantPrivilege.new(self, :language, languages, privileges, roles, options).to_sql
       end
 
       # Grants privileges on schemas. You can specify multiple schemas,
@@ -55,7 +55,7 @@ module ActiveRecord
       # desired parameters. See PostgreSQLGrantPrivilege for
       # usage.
       def grant_schema_privileges(schemas, privileges, roles, options = {})
-        execute PostgreSQLGrantPrivilege.new(self, :schema, schemas, privileges, roles, options, :ignore_schema => true).to_sql
+        execute ActiveRecord::PostgreSQLExtensions::PostgreSQLGrantPrivilege.new(self, :schema, schemas, privileges, roles, options, :ignore_schema => true).to_sql
       end
 
       # Grants privileges on tablespaces. You can specify multiple
@@ -63,7 +63,7 @@ module ActiveRecord
       # each of the desired parameters. See PostgreSQLGrantPrivilege for
       # usage.
       def grant_tablespace_privileges(tablespaces, privileges, roles, options = {})
-        execute PostgreSQLGrantPrivilege.new(self, :tablespace, tablespaces, privileges, roles, options).to_sql
+        execute ActiveRecord::PostgreSQLExtensions::PostgreSQLGrantPrivilege.new(self, :tablespace, tablespaces, privileges, roles, options).to_sql
       end
 
       # Grants privileges on views. You can specify multiple views,
@@ -71,7 +71,7 @@ module ActiveRecord
       # desired parameters. See PostgreSQLGrantPrivilege for
       # usage.
       def grant_view_privileges(views, privileges, roles, options = {})
-        execute PostgreSQLGrantPrivilege.new(self, :view, views, privileges, roles, options, :named_object_type => false).to_sql
+        execute ActiveRecord::PostgreSQLExtensions::PostgreSQLGrantPrivilege.new(self, :view, views, privileges, roles, options, :named_object_type => false).to_sql
       end
 
       # Grants privileges on views. You can specify multiple
@@ -81,7 +81,7 @@ module ActiveRecord
       def grant_materialized_view_privileges(materialized_views, privileges, roles, options = {})
         ActiveRecord::PostgreSQLExtensions::Features.check_feature(:materialized_views)
 
-        execute PostgreSQLGrantPrivilege.new(self, :materialized_view, materialized_views, privileges, roles, options, :named_object_type => false).to_sql
+        execute ActiveRecord::PostgreSQLExtensions::PostgreSQLGrantPrivilege.new(self, :materialized_view, materialized_views, privileges, roles, options, :named_object_type => false).to_sql
       end
 
       # Grants role membership to another role. You can specify multiple
@@ -106,7 +106,7 @@ module ActiveRecord
       # desired parameters. See PostgreSQLRevokePrivilege for
       # usage.
       def revoke_table_privileges(tables, privileges, roles, options = {})
-        execute PostgreSQLRevokePrivilege.new(self, :table, tables, privileges, roles, options).to_sql
+        execute ActiveRecord::PostgreSQLExtensions::PostgreSQLRevokePrivilege.new(self, :table, tables, privileges, roles, options).to_sql
       end
 
       # Revokes sequence privileges. You can specify multiple sequences,
@@ -114,7 +114,7 @@ module ActiveRecord
       # desired parameters. See PostgreSQLRevokePrivilege for
       # usage.
       def revoke_sequence_privileges(sequences, privileges, roles, options = {})
-        execute PostgreSQLRevokePrivilege.new(self, :sequence, sequences, privileges, roles, options).to_sql
+        execute ActiveRecord::PostgreSQLExtensions::PostgreSQLRevokePrivilege.new(self, :sequence, sequences, privileges, roles, options).to_sql
       end
 
       # Revokes database privileges. You can specify multiple databases,
@@ -122,7 +122,7 @@ module ActiveRecord
       # desired parameters. See PostgreSQLRevokePrivilege for
       # usage.
       def revoke_database_privileges(databases, privileges, roles, options = {})
-        execute PostgreSQLRevokePrivilege.new(self, :database, databases, privileges, roles, options).to_sql
+        execute ActiveRecord::PostgreSQLExtensions::PostgreSQLRevokePrivilege.new(self, :database, databases, privileges, roles, options).to_sql
       end
 
       # Revokes function privileges. You can specify multiple functions,
@@ -130,7 +130,7 @@ module ActiveRecord
       # desired parameters. See PostgreSQLRevokePrivilege for
       # usage.
       def revoke_function_privileges(function_prototypes, privileges, roles, options = {})
-        execute PostgreSQLRevokePrivilege.new(self, :function, function_prototypes, privileges, roles, options, :quote_objects => false).to_sql
+        execute ActiveRecord::PostgreSQLExtensions::PostgreSQLRevokePrivilege.new(self, :function, function_prototypes, privileges, roles, options, :quote_objects => false).to_sql
       end
 
       # Revokes language privileges. You can specify multiple languages,
@@ -138,7 +138,7 @@ module ActiveRecord
       # desired parameters. See PostgreSQLRevokePrivilege for
       # usage.
       def revoke_language_privileges(languages, privileges, roles, options = {})
-        execute PostgreSQLRevokePrivilege.new(self, :language, languages, privileges, roles, options).to_sql
+        execute ActiveRecord::PostgreSQLExtensions::PostgreSQLRevokePrivilege.new(self, :language, languages, privileges, roles, options).to_sql
       end
 
       # Revokes schema privileges. You can specify multiple schemas,
@@ -146,7 +146,7 @@ module ActiveRecord
       # desired parameters. See PostgreSQLRevokePrivilege for
       # usage.
       def revoke_schema_privileges(schemas, privileges, roles, options = {})
-        execute PostgreSQLRevokePrivilege.new(self, :schema, schemas, privileges, roles, options, :ignore_schema => true).to_sql
+        execute ActiveRecord::PostgreSQLExtensions::PostgreSQLRevokePrivilege.new(self, :schema, schemas, privileges, roles, options, :ignore_schema => true).to_sql
       end
 
       # Revokes tablespace privileges. You can specify multiple
@@ -154,7 +154,7 @@ module ActiveRecord
       # each of the desired parameters. See PostgreSQLRevokePrivilege for
       # usage.
       def revoke_tablespace_privileges(tablespaces, privileges, roles, options = {})
-        execute PostgreSQLRevokePrivilege.new(self, :tablespace, tablespaces, privileges, roles, options).to_sql
+        execute ActiveRecord::PostgreSQLExtensions::PostgreSQLRevokePrivilege.new(self, :tablespace, tablespaces, privileges, roles, options).to_sql
       end
 
       # Revokes materialized view privileges. You can specify multiple
@@ -164,7 +164,7 @@ module ActiveRecord
       def revoke_materialized_view_privileges(materialized_views, privileges, roles, options = {})
         ActiveRecord::PostgreSQLExtensions::Features.check_feature(:materialized_views)
 
-        execute PostgreSQLRevokePrivilege.new(self, :materialized_view, materialized_views, privileges, roles, options, :named_object_type => false).to_sql
+        execute ActiveRecord::PostgreSQLExtensions::PostgreSQLRevokePrivilege.new(self, :materialized_view, materialized_views, privileges, roles, options, :named_object_type => false).to_sql
       end
 
       # Revokes view privileges. You can specify multiple views,
@@ -172,7 +172,7 @@ module ActiveRecord
       # desired parameters. See PostgreSQLRevokePrivilege for
       # usage.
       def revoke_view_privileges(views, privileges, roles, options = {})
-        execute PostgreSQLRevokePrivilege.new(self, :view, views, privileges, roles, options, :named_object_type => false).to_sql
+        execute ActiveRecord::PostgreSQLExtensions::PostgreSQLRevokePrivilege.new(self, :view, views, privileges, roles, options, :named_object_type => false).to_sql
       end
 
       # Revokes role membership. You can specify multiple
@@ -194,7 +194,9 @@ module ActiveRecord
         execute("#{sql};")
       end
     end
+  end
 
+  module PostgreSQLExtensions
     # This is a base class for PostgreSQLGrantPrivilege and
     # PostgreSQLRevokePrivilege and is not meant to be used directly.
     class PostgreSQLPrivilege

@@ -266,35 +266,35 @@ module ActiveRecord
       # LIKE you use in a WHERE condition. This is, PostgreSQL's
       # own special LIKE clause for table definitions. Like.
       def like(parent_table, options = {})
-        @like_options = PostgreSQLLikeOptions.new(@base, parent_table, options)
+        @like_options = ActiveRecord::PostgreSQLExtensions::PostgreSQLLikeOptions.new(@base, parent_table, options)
       end
 
       # Add a CHECK constraint to the table. See
       # PostgreSQLCheckConstraint for more details.
       def check_constraint(expression, options = {})
-        table_constraints << PostgreSQLCheckConstraint.new(@base, expression, options)
+        table_constraints << ActiveRecord::PostgreSQLExtensions::PostgreSQLCheckConstraint.new(@base, expression, options)
       end
 
       # Add a UNIQUE constraint to the table. See
       # PostgreSQLUniqueConstraint for more details.
       def unique_constraint(columns, options = {})
-        table_constraints << PostgreSQLUniqueConstraint.new(@base, columns, options)
+        table_constraints << ActiveRecord::PostgreSQLExtensions::PostgreSQLUniqueConstraint.new(@base, columns, options)
       end
 
       # Add a FOREIGN KEY constraint to the table. See
       # PostgreSQLForeignKeyConstraint for more details.
       def foreign_key(columns, ref_table, *args)
-        table_constraints << PostgreSQLForeignKeyConstraint.new(@base, columns, ref_table, *args)
+        table_constraints << ActiveRecord::PostgreSQLExtensions::PostgreSQLForeignKeyConstraint.new(@base, columns, ref_table, *args)
       end
 
       # Add an EXCLUDE constraint to the table. See PostgreSQLExcludeConstraint
       # for more details.
       def exclude(excludes, options = {})
-        table_constraints << PostgreSQLExcludeConstraint.new(@base, table_name, excludes, options)
+        table_constraints << ActiveRecord::PostgreSQLExtensions::PostgreSQLExcludeConstraint.new(@base, table_name, excludes, options)
       end
 
       def primary_key_constraint(columns, options = {})
-        table_constraints << PostgreSQLPrimaryKeyConstraint.new(@base, columns, options)
+        table_constraints << ActiveRecord::PostgreSQLExtensions::PostgreSQLPrimaryKeyConstraint.new(@base, columns, options)
       end
 
       def column_with_constraints(name, type, *args) #:nodoc:
@@ -312,7 +312,7 @@ module ActiveRecord
             check
           end
 
-          table_constraints << PostgreSQLCheckConstraintCollection.new(@base, check)
+          table_constraints << ActiveRecord::PostgreSQLExtensions::PostgreSQLCheckConstraintCollection.new(@base, check)
         end
 
         if references
@@ -322,7 +322,7 @@ module ActiveRecord
             [ references, {} ]
           end
 
-          table_constraints << PostgreSQLForeignKeyConstraint.new(
+          table_constraints << ActiveRecord::PostgreSQLExtensions::PostgreSQLForeignKeyConstraint.new(
             @base,
             name,
             ref_table,
@@ -334,14 +334,14 @@ module ActiveRecord
           unless unique.is_a?(Hash)
             unique = {}
           end
-          table_constraints << PostgreSQLUniqueConstraint.new(@base, name, unique)
+          table_constraints << ActiveRecord::PostgreSQLExtensions::PostgreSQLUniqueConstraint.new(@base, name, unique)
         end
 
         if primary_key && type != :primary_key
           unless primary_key.is_a?(Hash)
             primary_key = {}
           end
-          table_constraints << PostgreSQLPrimaryKeyConstraint.new(@base, name, primary_key)
+          table_constraints << ActiveRecord::PostgreSQLExtensions::PostgreSQLPrimaryKeyConstraint.new(@base, name, primary_key)
         end
 
         self
@@ -352,7 +352,7 @@ module ActiveRecord
       # processing after the table has been created. See
       # PostgreSQLIndexDefinition for more details.
       def index(name, columns, options = {})
-        post_processing << PostgreSQLIndexDefinition.new(@base, name, self.table_name, columns, options)
+        post_processing << ActiveRecord::PostgreSQLExtensions::PostgreSQLIndexDefinition.new(@base, name, self.table_name, columns, options)
       end
 
       # Add statements to execute to after a table has been created.

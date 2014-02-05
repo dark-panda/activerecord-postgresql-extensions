@@ -9,7 +9,7 @@ module ActiveRecord
     end
   end
 
-  class PostgreSQLLikeOptions
+  class PostgreSQLExtensions::PostgreSQLLikeOptions
     attr_accessor :base, :parent_table, :options
 
     def initialize(base, parent_table, options = {})

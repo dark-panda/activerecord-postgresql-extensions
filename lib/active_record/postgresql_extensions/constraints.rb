@@ -27,7 +27,7 @@ module ActiveRecord
       # PostgreSQLCheckConstraint for usage.
       def add_check_constraint(table, expression, options = {})
         sql = "ALTER TABLE #{quote_table_name(table)} ADD "
-        sql << PostgreSQLCheckConstraint.new(self, expression, options).to_s
+        sql << ActiveRecord::PostgreSQLExtensions::PostgreSQLCheckConstraint.new(self, expression, options).to_s
         execute("#{sql};")
       end
 
@@ -35,7 +35,7 @@ module ActiveRecord
       # PostgreSQLUniqueConstraint for details.
       def add_unique_constraint(table, columns, options = {})
         sql = "ALTER TABLE #{quote_table_name(table)} ADD "
-        sql << PostgreSQLUniqueConstraint.new(self, columns, options).to_s
+        sql << ActiveRecord::PostgreSQLExtensions::PostgreSQLUniqueConstraint.new(self, columns, options).to_s
         execute("#{sql};")
       end
 
@@ -43,7 +43,7 @@ module ActiveRecord
       # PostgreSQLForeignKeyConstraint for details.
       def add_foreign_key_constraint(table, columns, ref_table, *args)
         sql = "ALTER TABLE #{quote_table_name(table)} ADD "
-        sql << PostgreSQLForeignKeyConstraint.new(self, columns, ref_table, *args).to_s
+        sql << ActiveRecord::PostgreSQLExtensions::PostgreSQLForeignKeyConstraint.new(self, columns, ref_table, *args).to_s
         execute("#{sql};")
       end
       alias :add_foreign_key :add_foreign_key_constraint
@@ -52,7 +52,7 @@ module ActiveRecord
       # PostgreSQLExcludeConstraint for details.
       def add_exclude_constraint(table, excludes, options = {})
         sql = "ALTER TABLE #{quote_table_name(table)} ADD "
-        sql << PostgreSQLExcludeConstraint.new(self, table, excludes, options).to_s
+        sql << ActiveRecord::PostgreSQLExtensions::PostgreSQLExcludeConstraint.new(self, table, excludes, options).to_s
         execute("#{sql};")
       end
 
@@ -60,7 +60,7 @@ module ActiveRecord
       # PostgreSQLPrimaryKeyConstraint for details.
       def add_primary_key_constraint(table, columns, options = {})
         sql = "ALTER TABLE #{quote_table_name(table)} ADD "
-        sql << PostgreSQLPrimaryKeyConstraint.new(self, columns, options).to_s
+        sql << ActiveRecord::PostgreSQLExtensions::PostgreSQLPrimaryKeyConstraint.new(self, columns, options).to_s
         execute("#{sql};")
       end
       alias :add_primary_key :add_primary_key_constraint
@@ -84,7 +84,9 @@ module ActiveRecord
         execute("ALTER TABLE #{quote_table_name(table)} VALIDATE CONSTRAINT #{quote_generic(name)};")
       end
     end
+  end
 
+  module PostgreSQLExtensions
     # This is a base class for other PostgreSQL constraint classes. It
     # isn't really meant to be used directly.
     class PostgreSQLConstraint

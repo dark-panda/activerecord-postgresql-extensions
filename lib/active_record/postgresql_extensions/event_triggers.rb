@@ -22,7 +22,7 @@ module ActiveRecord
       def create_event_trigger(name, event, function, options = {})
         ActiveRecord::PostgreSQLExtensions::Features.check_feature(:event_triggers)
 
-        execute PostgreSQLEventTriggerDefinition.new(self, name, event, function, options).to_s
+        execute ActiveRecord::PostgreSQLExtensions::PostgreSQLEventTriggerDefinition.new(self, name, event, function, options).to_s
       end
 
       # Drops an event trigger.
@@ -76,7 +76,9 @@ module ActiveRecord
         execute "ALTER EVENT TRIGGER #{quote_generic(name)} DISABLE;"
       end
     end
+  end
 
+  module PostgreSQLExtensions
     # Creates a PostgreSQL event trigger definition. This class isn't really
     # meant to be used directly. You'd be better off sticking to
     # PostgreSQLAdapter#create_event_trigger. Honestly.

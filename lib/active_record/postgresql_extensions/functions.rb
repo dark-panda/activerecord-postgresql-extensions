@@ -148,7 +148,7 @@ module ActiveRecord
           yield.to_s
         end
 
-        execute PostgreSQLFunctionDefinition.new(self, name, arguments, returns, language, body, options).to_s
+        execute ActiveRecord::PostgreSQLExtensions::PostgreSQLFunctionDefinition.new(self, name, arguments, returns, language, body, options).to_s
       end
 
       # Drops a function.
@@ -179,7 +179,7 @@ module ActiveRecord
         rename_to = args.pop
         arguments = args.pop
 
-        execute PostgreSQLFunctionAlterer.new(self, name, arguments, :rename_to => rename_to).to_s
+        execute ActiveRecord::PostgreSQLExtensions::PostgreSQLFunctionAlterer.new(self, name, arguments, :rename_to => rename_to).to_s
       end
 
       # Changes the function's owner.
@@ -190,7 +190,7 @@ module ActiveRecord
         owner_to = args.pop
         arguments = args.pop
 
-        execute PostgreSQLFunctionAlterer.new(self, name, arguments, :owner_to => owner_to).to_s
+        execute ActiveRecord::PostgreSQLExtensions::PostgreSQLFunctionAlterer.new(self, name, arguments, :owner_to => owner_to).to_s
       end
 
       # Changes the function's schema.
@@ -201,7 +201,7 @@ module ActiveRecord
         set_schema = args.pop
         arguments = args.pop
 
-        execute PostgreSQLFunctionAlterer.new(self, name, arguments, :set_schema => set_schema).to_s
+        execute ActiveRecord::PostgreSQLExtensions::PostgreSQLFunctionAlterer.new(self, name, arguments, :set_schema => set_schema).to_s
       end
 
       # Alters a function. There's a ton of stuff you can do here, and
@@ -238,7 +238,7 @@ module ActiveRecord
 
         options = args.extract_options!
         arguments = args.pop
-        alterer = PostgreSQLFunctionAlterer.new(self, name, arguments, options)
+        alterer = ActiveRecord::PostgreSQLExtensions::PostgreSQLFunctionAlterer.new(self, name, arguments, options)
 
         if block_given?
           yield alterer
@@ -247,7 +247,9 @@ module ActiveRecord
         execute alterer.to_s unless alterer.empty?
       end
     end
+  end
 
+  module PostgreSQLExtensions
     # This is a base class for our PostgreSQL function classes. You don't
     # want to be accessing this class directly.
     class PostgreSQLFunction

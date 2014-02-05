@@ -35,7 +35,7 @@ module ActiveRecord
       # Creates an ENUM TYPE. An ENUM can contain zero or more values. ENUMs
       # can be dropped with #drop_type.
       def create_enum(name, *values)
-        execute PostgreSQLEnumDefinition.new(self, name, *values).to_s
+        execute ActiveRecord::PostgreSQLExtensions::PostgreSQLEnumDefinition.new(self, name, *values).to_s
       end
 
       # Adds a new value to an ENUM.
@@ -102,7 +102,7 @@ module ActiveRecord
   # Creates a PostgreSQL enum type definition. This class isn't really meant
   # to be used directly. Instead, see PostgreSQLAdapter#create_enum for
   # usage.
-  class PostgreSQLEnumDefinition
+  class PostgreSQLExtensions::PostgreSQLEnumDefinition
     attr_accessor :base, :name, :values
 
     def initialize(base, name, *values)
