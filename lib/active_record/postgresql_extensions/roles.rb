@@ -12,13 +12,13 @@ module ActiveRecord
     class PostgreSQLAdapter
       # Creates a PostgreSQL ROLE. See PostgreSQLRole for details on options.
       def create_role(name, options = {})
-        execute PostgreSQLRole.new(self, :create, name, options).to_sql
+        execute ActiveRecord::PostgreSQLExtensions::PostgreSQLRole.new(self, :create, name, options).to_sql
       end
       alias :create_user :create_role
 
       # Alters a PostgreSQL ROLE. See PostgreSQLRole for details on options.
       def alter_role(name, options = {})
-        execute PostgreSQLRole.new(self, :alter, name, options).to_sql
+        execute ActiveRecord::PostgreSQLExtensions::PostgreSQLRole.new(self, :alter, name, options).to_sql
       end
       alias :alter_user :alter_role
 
@@ -39,7 +39,9 @@ module ActiveRecord
       end
       alias :drop_user :drop_role
     end
+  end
 
+  module PostgreSQLExtensions
     # This is a base class for creating and altering ROLEs and is not meant to
     # be used directly.
     class PostgreSQLRole

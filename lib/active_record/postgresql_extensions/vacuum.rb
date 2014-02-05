@@ -7,11 +7,13 @@ module ActiveRecord
       # VACUUMs a database, table or columns on a table. See
       # PostgreSQLVacuum for details.
       def vacuum(*args)
-        vacuumer = PostgreSQLVacuum.new(self, *args)
+        vacuumer = ActiveRecord::PostgreSQLExtensions::PostgreSQLVacuum.new(self, *args)
         execute("#{vacuumer};")
       end
     end
+  end
 
+  module PostgreSQLExtensions
     # Creates queries for invoking VACUUM.
     #
     # This class is meant to be used by the PostgreSQLAdapter#vacuum method.

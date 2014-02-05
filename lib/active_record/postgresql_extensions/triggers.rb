@@ -83,7 +83,7 @@ module ActiveRecord
       #   # => CREATE TRIGGER "willie_nelsons_trigger" BEFORE UPDATE
       #   #    ON "nylon"."guitar" FOR EACH ROW EXECUTE PROCEDURE "test_trigger"();
       def create_trigger(name, called, events, table, function, options = {})
-        execute PostgreSQLTriggerDefinition.new(self, name, called, events, table, function, options).to_s
+        execute ActiveRecord::PostgreSQLExtensions::PostgreSQLTriggerDefinition.new(self, name, called, events, table, function, options).to_s
       end
 
       # Drops a trigger.
@@ -106,7 +106,9 @@ module ActiveRecord
         execute "ALTER TRIGGER #{quote_generic(name)} ON #{quote_table_name(table)} RENAME TO #{quote_generic(new_name)};"
       end
     end
+  end
 
+  module PostgreSQLExtensions
     # Creates a PostgreSQL trigger definition. This class isn't really
     # meant to be used directly. You'd be better off sticking to
     # PostgreSQLAdapter#create_trigger. Honestly.

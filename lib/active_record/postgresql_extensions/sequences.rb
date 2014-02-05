@@ -53,7 +53,7 @@ module ActiveRecord
       #   # => CREATE SEQUENCE "what_a_sequence_of_events" INCREMENT BY 2
       #   #    NO MINVALUE MAXVALUE 10 CACHE 2 OWNED BY "foo"."id";
       def create_sequence(name, options = {})
-        execute PostgreSQLSequenceDefinition.new(self, :create, name, options).to_s
+        execute ActiveRecord::PostgreSQLExtensions::PostgreSQLSequenceDefinition.new(self, :create, name, options).to_s
       end
 
       # Drops a sequence.
@@ -93,7 +93,7 @@ module ActiveRecord
       # function <tt>setval</tt> with a false value in the third
       # parameter.
       def alter_sequence(name, options = {})
-        execute(PostgreSQLSequenceDefinition.new(self, :alter, name, options).to_s)
+        execute(ActiveRecord::PostgreSQLExtensions::PostgreSQLSequenceDefinition.new(self, :alter, name, options).to_s)
       end
 
       # Calls the <tt>setval</tt> function on the sequence.
@@ -130,7 +130,9 @@ module ActiveRecord
         sequences.include?(name.to_s)
       end
     end
+  end
 
+  module PostgreSQLExtensions
     # Class used to create or alter sequences. Generally you should be
     # using PostgreSQLAdapter#create_sequence and its various sequence
     # manipulation functions rather than using this class directly.

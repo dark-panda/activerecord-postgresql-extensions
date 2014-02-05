@@ -44,7 +44,7 @@ module ActiveRecord
       def create_materialized_view(name, query, options = {})
         ActiveRecord::PostgreSQLExtensions::Features.check_feature(:materialized_views)
 
-        execute PostgreSQLMaterializedViewDefinition.new(self, name, query, options).to_s
+        execute ActiveRecord::PostgreSQLExtensions::PostgreSQLMaterializedViewDefinition.new(self, name, query, options).to_s
       end
 
       # Drops a materialized view.
@@ -66,7 +66,7 @@ module ActiveRecord
 
       # Renames a materialized view.
       def rename_materialized_view(name, new_name, options = {})
-        execute PostgreSQLMaterializedViewAlterer.new(self, name, {
+        execute ActiveRecord::PostgreSQLExtensions::PostgreSQLMaterializedViewAlterer.new(self, name, {
           :rename_to => new_name
         }, options).to_sql
       end
@@ -77,7 +77,7 @@ module ActiveRecord
       # through unescaped. This allows you to set expressions and use
       # functions and the like.
       def alter_materialized_view_set_column_default(name, column, default, options = {})
-        execute PostgreSQLMaterializedViewAlterer.new(self, name, {
+        execute ActiveRecord::PostgreSQLExtensions::PostgreSQLMaterializedViewAlterer.new(self, name, {
           :column => column,
           :set_default => default
         }, options).to_sql
@@ -85,28 +85,28 @@ module ActiveRecord
 
       # Drop the default value on a materialized view column
       def alter_materialized_view_drop_column_default(name, column, options = {})
-        execute PostgreSQLMaterializedViewAlterer.new(self, name, {
+        execute ActiveRecord::PostgreSQLExtensions::PostgreSQLMaterializedViewAlterer.new(self, name, {
           :drop_default => column
         }, options).to_sql
       end
 
       # Change the ownership of a materialized view.
       def alter_materialized_view_owner(name, role, options = {})
-        execute PostgreSQLMaterializedViewAlterer.new(self, name, {
+        execute ActiveRecord::PostgreSQLExtensions::PostgreSQLMaterializedViewAlterer.new(self, name, {
           :owner_to => role
         }, options).to_sql
       end
 
       # Alter a materialized view's schema.
       def alter_materialized_view_schema(name, schema, options = {})
-        execute PostgreSQLMaterializedViewAlterer.new(self, name, {
+        execute ActiveRecord::PostgreSQLExtensions::PostgreSQLMaterializedViewAlterer.new(self, name, {
           :set_schema => schema
         }, options).to_sql
       end
 
       # Sets a materialized view's options using a Hash.
       def alter_materialized_view_set_options(name, set_options, options = {})
-        execute PostgreSQLMaterializedViewAlterer.new(self, name, {
+        execute ActiveRecord::PostgreSQLExtensions::PostgreSQLMaterializedViewAlterer.new(self, name, {
           :set_options => set_options
         }, options).to_sql
       end
@@ -115,21 +115,21 @@ module ActiveRecord
       def alter_materialized_view_reset_options(name, *args)
         options = args.extract_options!
 
-        execute PostgreSQLMaterializedViewAlterer.new(self, name, {
+        execute ActiveRecord::PostgreSQLExtensions::PostgreSQLMaterializedViewAlterer.new(self, name, {
           :reset_options => args
         }, options).to_sql
       end
 
       # Cluster a materialized view on an index.
       def cluster_materialized_view(name, index_name)
-        execute PostgreSQLMaterializedViewAlterer.new(self, name, {
+        execute ActiveRecord::PostgreSQLExtensions::PostgreSQLMaterializedViewAlterer.new(self, name, {
           :cluster_on => index_name
         }).to_sql
       end
 
       # Remove a cluster from materialized view.
       def remove_cluster_from_materialized_view(name)
-        execute PostgreSQLMaterializedViewAlterer.new(self, name, {
+        execute ActiveRecord::PostgreSQLExtensions::PostgreSQLMaterializedViewAlterer.new(self, name, {
           :remove_cluster => true
         }).to_sql
       end
@@ -151,7 +151,9 @@ module ActiveRecord
         execute "#{sql};"
       end
     end
+  end
 
+  module PostgreSQLExtensions
     # Creates a PostgreSQL materialized view definition. This class isn't
     # really meant to be used directly. Instead, see
     # PostgreSQLAdapter#create_materialized_view for usage.

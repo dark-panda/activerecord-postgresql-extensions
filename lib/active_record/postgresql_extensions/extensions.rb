@@ -122,7 +122,7 @@ module ActiveRecord
       def alter_extension(name, options = {})
         ActiveRecord::PostgreSQLExtensions::Features.check_feature(:extensions)
 
-        alterer = PostgreSQLExtensionAlterer.new(self, name, options)
+        alterer = ActiveRecord::PostgreSQLExtensions::PostgreSQLExtensionAlterer.new(self, name, options)
 
         if block_given?
           yield alterer
@@ -131,7 +131,9 @@ module ActiveRecord
         execute(alterer.to_s) unless alterer.empty?
       end
     end
+  end
 
+  module PostgreSQLExtensions
     class PostgreSQLExtensionAlterer
       def initialize(base, name, options = {}) #:nodoc:
         ActiveRecord::PostgreSQLExtensions::Features.check_feature(:extensions)

@@ -40,11 +40,13 @@ module ActiveRecord
         execute(%{SELECT UpdateGeometrySRID(#{args.join(', ')});})
       end
     end
+  end
 
+  module PostgreSQLExtensions
     class PostgreSQLGeometryColumnDefinition
     end
 
-    class PostgreSQLTableDefinition < TableDefinition
+    class PostgreSQLTableDefinition < ActiveRecord::ConnectionAdapters::TableDefinition
       # This is a special spatial type for the PostGIS extension's
       # data types. It is used in a table definition to define
       # a spatial column.
@@ -147,20 +149,20 @@ module ActiveRecord
             ActiveRecord::PostgreSQLExtensions::PostGIS.VERSION[:lib] < '2.0' ||
             opts[:force_constraints]
           )
-            table_constraints << PostgreSQLCheckConstraint.new(
+            table_constraints << ActiveRecord::PostgreSQLExtensions::PostgreSQLCheckConstraint.new(
               base,
               "ST_srid(#{base.quote_column_name(column_name)}) = (#{opts[:srid].to_i})",
               :name => "enforce_srid_#{column_name}"
             )
 
-            table_constraints << PostgreSQLCheckConstraint.new(
+            table_constraints << ActiveRecord::PostgreSQLExtensions::PostgreSQLCheckConstraint.new(
               base,
               "ST_ndims(#{base.quote_column_name(column_name)}) = #{opts[:ndims].to_i}",
               :name => "enforce_dims_#{column_name}"
             )
 
             if opts[:geometry_type].to_s.upcase != 'GEOMETRY'
-              table_constraints << PostgreSQLCheckConstraint.new(
+              table_constraints << ActiveRecord::PostgreSQLExtensions::PostgreSQLCheckConstraint.new(
                 base,
                 "geometrytype(#{base.quote_column_name(column_name)}) = '#{opts[:geometry_type].to_s.upcase}'::text OR #{base.quote_column_name(column_name)} IS NULL",
                 :name => "enforce_geotype_#{column_name}"
@@ -212,7 +214,7 @@ module ActiveRecord
             "#{current_table_name}_#{column_name}_gist_index"
           end
 
-          self.post_processing << PostgreSQLIndexDefinition.new(
+          self.post_processing << ActiveRecord::PostgreSQLExtensions::PostgreSQLIndexDefinition.new(
             base,
             index_name,
             { current_scoped_schema => current_table_name },
@@ -275,7 +277,7 @@ module ActiveRecord
 
         if ActiveRecord::VERSION::STRING >= "4.0"
           def fetch_spatial_column(column_name, column_type)
-            @columns_hash[column_name] || ColumnDefinition.new(base, column_name, column_type)
+            @columns_hash[column_name] || ActiveRecord::ConnectionAdapters::ColumnDefinition.new(column_name, column_type)
           end
 
           def add_spatial_column(column_name, column)
@@ -287,7 +289,7 @@ module ActiveRecord
           end
         else
           def fetch_spatial_column(column_name, column_type)
-            self[column_name] || ColumnDefinition.new(base, column_name, column_type)
+            self[column_name] || ActiveRecord::ConnectionAdapters::ColumnDefinition.new(base, column_name, column_type)
           end
 
           def add_spatial_column(column_name, column)

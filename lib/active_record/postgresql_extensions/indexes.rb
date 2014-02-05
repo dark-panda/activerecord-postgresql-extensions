@@ -111,7 +111,7 @@ module ActiveRecord
       #   create_index('search_idx', :foo, :tsvector, :using => :gin)
       #   # => CREATE INDEX "search_idx" ON "foo" USING "gin"("tsvector");
       def create_index(name, object, columns, options = {})
-        execute PostgreSQLIndexDefinition.new(self, name, object, columns, options).to_s
+        execute ActiveRecord::PostgreSQLExtensions::PostgreSQLIndexDefinition.new(self, name, object, columns, options).to_s
       end
 
       # PostgreSQL-specific version of the standard ActiveRecord
@@ -162,7 +162,9 @@ module ActiveRecord
         execute "ALTER INDEX #{quote_generic(name)} SET TABLESPACE #{quote_tablespace(tablespace)};"
       end
     end
+  end
 
+  module PostgreSQLExtensions
     # Creates a PostgreSQL index definition. This class isn't really meant
     # to be used directly. Instead, see PostgreSQLAdapter#create_index
     # for usage.

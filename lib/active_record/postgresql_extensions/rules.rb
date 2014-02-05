@@ -46,7 +46,7 @@ module ActiveRecord
       #   )
       #   # => CREATE RULE "check_it_out_rule" AS ON SELECT TO "child" WHERE id = 1 DO INSTEAD select * from public.another;
       def create_rule(name, event, table, action, commands, options = {})
-        execute PostgreSQLRuleDefinition.new(self, name, event, table, action, commands, options).to_s
+        execute ActiveRecord::PostgreSQLExtensions::PostgreSQLRuleDefinition.new(self, name, event, table, action, commands, options).to_s
       end
 
       # Drops a PostgreSQL rule.
@@ -59,7 +59,9 @@ module ActiveRecord
         execute "ALTER RULE #{quote_rule(old_name)} ON #{quote_table_name(table)} RENAME TO #{quote_rule(new_name)};"
       end
     end
+  end
 
+  module PostgreSQLExtensions
     # Creates a PostgreSQL rule.
     #
     # The PostgreSQL rule system is basically a query-rewriter. You should
