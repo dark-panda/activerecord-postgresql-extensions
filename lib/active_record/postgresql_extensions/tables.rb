@@ -2,12 +2,6 @@
 require 'active_record/connection_adapters/postgresql_adapter'
 
 module ActiveRecord
-  class InvalidLikeTypes < ActiveRecordError #:nodoc:
-    def initialize(likes)
-      super("Invalid LIKE INCLUDING/EXCLUDING types - #{likes.inspect}")
-    end
-  end
-
   class InvalidTableOptions < ActiveRecordError #:nodoc:
   end
 
@@ -183,7 +177,7 @@ module ActiveRecord
     # been created. See the source code for PostgreSQLAdapter#create_table
     # and PostgreSQLTableDefinition#geometry for an example of its use.
     class PostgreSQLTableDefinition < TableDefinition
-      attr_accessor :base, :table_name, :options
+      attr_accessor :base, :table_name, :options, :post_processing, :like_options
 
 
       if ActiveRecord::VERSION::STRING >= "4.0"
@@ -237,7 +231,7 @@ module ActiveRecord
         ary = []
         if !options[:of_type]
           ary << @columns.collect(&:to_sql)
-          ary << @like if defined?(@like) && @like
+          ary << like_options if like_options
         end
         ary << table_constraints unless table_constraints.empty?
 
@@ -272,21 +266,7 @@ module ActiveRecord
       # LIKE you use in a WHERE condition. This is, PostgreSQL's
       # own special LIKE clause for table definitions. Like.
       def like(parent_table, options = {})
-        assert_valid_like_types(options[:includes])
-        assert_valid_like_types(options[:excludes])
-
-        # Huh? Whyfor I dun this?
-        # @like = base.with_schema(@schema) { "LIKE #{base.quote_table_name(parent_table)}" }
-        @like = "LIKE #{@base.quote_table_name(parent_table)}"
-
-        if options[:including]
-          @like << Array.wrap(options[:including]).collect { |l| " INCLUDING #{l.to_s.upcase}" }.join
-        end
-
-        if options[:excluding]
-          @like << Array.wrap(options[:excluding]).collect { |l| " EXCLUDING #{l.to_s.upcase}" }.join
-        end
-        @like
+        @like_options = PostgreSQLLikeOptions.new(@base, parent_table, options)
       end
 
       # Add a CHECK constraint to the table. See
@@ -387,19 +367,8 @@ module ActiveRecord
       end
 
       private
-        LIKE_TYPES = %w{ defaults constraints indexes }.freeze
-
         def table_constraints
           @table_constraints ||= []
-        end
-
-        def assert_valid_like_types(likes) #:nodoc:
-          unless likes.blank?
-            check_likes = Array.wrap(likes).collect(&:to_s) - LIKE_TYPES
-            if !check_likes.empty?
-              raise ActiveRecord::InvalidLikeTypes.new(check_likes)
-            end
-          end
         end
     end
   end
