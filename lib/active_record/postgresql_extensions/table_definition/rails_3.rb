@@ -1,6 +1,32 @@
 
 module ActiveRecord
   module ConnectionAdapters
+    class PostgreSQLAdapter
+      def create_table_with_postgresql_extensions(table_name, options = {})
+        if options[:force]
+          drop_table(table_name, { :if_exists => true, :cascade => options[:cascade_drop] })
+        end
+
+        table_definition = if ActiveRecord::VERSION::STRING >= "4.0"
+          ActiveRecord::PostgreSQLExtensions::PostgreSQLTableDefinition.new(self, native_database_types, table_name, options)
+        else
+          ActiveRecord::PostgreSQLExtensions::PostgreSQLTableDefinition.new(self, table_name, options)
+        end
+
+        yield table_definition if block_given?
+
+        execute table_definition.to_s
+        unless table_definition.post_processing.blank?
+          table_definition.post_processing.each do |pp|
+            execute pp.to_s
+          end
+        end
+      end
+      alias_method_chain :create_table, :postgresql_extensions
+    end
+  end
+
+  module PostgreSQLExtensions
     # Creates a PostgreSQL table definition. This class isn't really meant
     # to be used directly. Instead, see PostgreSQLAdapter#create_table
     # for usage.
@@ -11,23 +37,14 @@ module ActiveRecord
     # should be an Array of SQL statements to run once the table has
     # been created. See the source code for PostgreSQLAdapter#create_table
     # and PostgreSQLTableDefinition#geometry for an example of its use.
-    class PostgreSQLTableDefinition < TableDefinition
+    class PostgreSQLTableDefinition < ActiveRecord::ConnectionAdapters::TableDefinition
       include ActiveRecord::PostgreSQLExtensions::SharedTableDefinition
 
       attr_accessor :base, :table_name, :options
 
-      if ActiveRecord::VERSION::STRING >= "4.0"
-        def initialize(base, types, name, options = {}) #:nodoc:
-          @base = base
-          @table_constraints = Array.new
-          @table_name = name
-          super(types, name, options[:temporary], options)
-        end
-      else
-        def initialize(base, table_name, options = {}) #:nodoc:
-          @table_name, @options = table_name, options
-          super(base)
-        end
+      def initialize(base, table_name, options = {}) #:nodoc:
+        @table_name, @options = table_name, options
+        super(base)
       end
 
       def to_sql #:nodoc:
