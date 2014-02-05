@@ -21,6 +21,6 @@ Gem::Specification.new do |s|
   s.homepage = "http://github.com/zoocasa/activerecord-postgresql-extensions"
   s.require_paths = ["lib"]
 
-  s.add_dependency("activerecord", [">= 2.3"])
+  s.add_dependency("activerecord", [">= 3.2"])
 end
 
