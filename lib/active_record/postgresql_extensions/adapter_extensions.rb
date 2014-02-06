@@ -499,7 +499,12 @@ module ActiveRecord
         quoted_table_name = quote_table_name(table)
         triggers = if triggers.present?
           triggers.collect { |trigger|
-            quote_generic(trigger)
+            case trigger
+              when :all, :user
+                trigger.to_s.upcase
+              else
+                quote_generic(trigger)
+            end
           }
         else
           'ALL'
@@ -511,12 +516,19 @@ module ActiveRecord
       end
 
       # Disable triggers. If no triggers are specified, all triggers will
-      # be disabled.
+      # be disabled. You can specify <tt>ALL</tt> or <tt>USER</tt> triggers
+      # by using the symbols <tt>:all</tt> or <tt>:user</tt>. If you have
+      # actual triggers named "all" or "user", use Strings instead of Symbols.
       def disable_triggers(table, *triggers)
         quoted_table_name = quote_table_name(table)
         triggers = if triggers.present?
           triggers.collect { |trigger|
-            quote_generic(trigger)
+            case trigger
+              when :all, :user
+                trigger.to_s.upcase
+              else
+                quote_generic(trigger)
+            end
           }
         else
           'ALL'
@@ -528,7 +540,10 @@ module ActiveRecord
       end
 
       # Temporarily disable triggers. If no triggers are specified, all
-      # triggers will be disabled.
+      # triggers will be disabled. You can specify <tt>ALL</tt> or
+      # <tt>USER</tt> triggers by using the symbols <tt>:all</tt> or
+      # <tt>:user</tt>. If you have actual triggers named "all" or "user", use
+      # Strings instead of Symbols.
       def without_triggers(table, *triggers)
         disable_triggers(table, *triggers)
         yield

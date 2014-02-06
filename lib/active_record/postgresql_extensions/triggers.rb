@@ -17,19 +17,26 @@ module ActiveRecord
   class Base
     class << self
       # Enable triggers. If no triggers are specified, all triggers will
-      # be enabled.
+      # be enabled. You can specify <tt>ALL</tt> or <tt>USER</tt> triggers
+      # by using the symbols <tt>:all</tt> or <tt>:user</tt>. If you have
+      # actual triggers named "all" or "user", use Strings instead of Symbols.
       def enable_triggers(*triggers)
         self.connection.enable_triggers(self.table_name, *triggers)
       end
 
       # Disable triggers. If no triggers are specified, all triggers will
-      # be disabled.
+      # be disabled. You can specify <tt>ALL</tt> or <tt>USER</tt> triggers
+      # by using the symbols <tt>:all</tt> or <tt>:user</tt>. If you have
+      # actual triggers named "all" or "user", use Strings instead of Symbols.
       def disable_triggers(*triggers)
         self.connection.disable_triggers(self.table_name, *triggers)
       end
 
       # Temporarily disable triggers. If no triggers are specified, all
-      # triggers will be disabled.
+      # triggers will be disabled. You can specify <tt>ALL</tt> or
+      # <tt>USER</tt> triggers by using the symbols <tt>:all</tt> or
+      # <tt>:user</tt>. If you have actual triggers named "all" or "user",
+      # use Strings instead of Symbols.
       def without_triggers(*triggers)
         self.connection.without_triggers(self.table_name, *triggers) do
           yield

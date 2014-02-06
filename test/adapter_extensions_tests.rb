@@ -82,11 +82,19 @@ class AdapterExtensionTests < PostgreSQLExtensionsTestCase
 
   def test_enable_triggers
     ARBC.enable_triggers(:foo)
+    ARBC.enable_triggers(:foo, :all)
+    ARBC.enable_triggers(:foo, "all")
+    ARBC.enable_triggers(:foo, :user)
+    ARBC.enable_triggers(:foo, "user")
     ARBC.enable_triggers(:foo, :bar)
     ARBC.enable_triggers(:foo, :bar, :baz)
 
     assert_equal([
       %{ALTER TABLE "foo" ENABLE TRIGGER ALL;},
+      %{ALTER TABLE "foo" ENABLE TRIGGER ALL;},
+      %{ALTER TABLE "foo" ENABLE TRIGGER "all";},
+      %{ALTER TABLE "foo" ENABLE TRIGGER USER;},
+      %{ALTER TABLE "foo" ENABLE TRIGGER "user";},
       %{ALTER TABLE "foo" ENABLE TRIGGER "bar";},
       %{ALTER TABLE "foo" ENABLE TRIGGER "bar";},
       %{ALTER TABLE "foo" ENABLE TRIGGER "baz";}
@@ -95,11 +103,19 @@ class AdapterExtensionTests < PostgreSQLExtensionsTestCase
 
   def test_disable_triggers
     ARBC.disable_triggers(:foo)
+    ARBC.disable_triggers(:foo, :all)
+    ARBC.disable_triggers(:foo, "all")
+    ARBC.disable_triggers(:foo, :user)
+    ARBC.disable_triggers(:foo, "user")
     ARBC.disable_triggers(:foo, :bar)
     ARBC.disable_triggers(:foo, :bar, :baz)
 
     assert_equal([
       %{ALTER TABLE "foo" DISABLE TRIGGER ALL;},
+      %{ALTER TABLE "foo" DISABLE TRIGGER ALL;},
+      %{ALTER TABLE "foo" DISABLE TRIGGER "all";},
+      %{ALTER TABLE "foo" DISABLE TRIGGER USER;},
+      %{ALTER TABLE "foo" DISABLE TRIGGER "user";},
       %{ALTER TABLE "foo" DISABLE TRIGGER "bar";},
       %{ALTER TABLE "foo" DISABLE TRIGGER "bar";},
       %{ALTER TABLE "foo" DISABLE TRIGGER "baz";}
