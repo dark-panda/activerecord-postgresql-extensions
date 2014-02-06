@@ -5,11 +5,19 @@ require 'test_helper'
 class TriggerTests < PostgreSQLExtensionsTestCase
   def test_enable_triggers
     Foo.enable_triggers
+    Foo.enable_triggers(:all)
+    Foo.enable_triggers("all")
+    Foo.enable_triggers(:user)
+    Foo.enable_triggers("user")
     Foo.enable_triggers(:bar)
     Foo.enable_triggers(:bar, :baz)
 
     assert_equal([
       %{ALTER TABLE "foos" ENABLE TRIGGER ALL;},
+      %{ALTER TABLE "foos" ENABLE TRIGGER ALL;},
+      %{ALTER TABLE "foos" ENABLE TRIGGER "all";},
+      %{ALTER TABLE "foos" ENABLE TRIGGER USER;},
+      %{ALTER TABLE "foos" ENABLE TRIGGER "user";},
       %{ALTER TABLE "foos" ENABLE TRIGGER "bar";},
       %{ALTER TABLE "foos" ENABLE TRIGGER "bar";},
       %{ALTER TABLE "foos" ENABLE TRIGGER "baz";}
@@ -18,11 +26,19 @@ class TriggerTests < PostgreSQLExtensionsTestCase
 
   def test_disable_triggers
     Foo.disable_triggers
+    Foo.disable_triggers(:all)
+    Foo.disable_triggers("all")
+    Foo.disable_triggers(:user)
+    Foo.disable_triggers("user")
     Foo.disable_triggers(:bar)
     Foo.disable_triggers(:bar, :baz)
 
     assert_equal([
       %{ALTER TABLE "foos" DISABLE TRIGGER ALL;},
+      %{ALTER TABLE "foos" DISABLE TRIGGER ALL;},
+      %{ALTER TABLE "foos" DISABLE TRIGGER "all";},
+      %{ALTER TABLE "foos" DISABLE TRIGGER USER;},
+      %{ALTER TABLE "foos" DISABLE TRIGGER "user";},
       %{ALTER TABLE "foos" DISABLE TRIGGER "bar";},
       %{ALTER TABLE "foos" DISABLE TRIGGER "bar";},
       %{ALTER TABLE "foos" DISABLE TRIGGER "baz";}
