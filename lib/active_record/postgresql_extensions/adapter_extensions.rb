@@ -216,14 +216,8 @@ module ActiveRecord
         if name.is_a?(Hash)
           [ name.keys.first.to_s, name.values.first.to_s ]
         else
-          schema, name_part = extract_pg_identifier_from_name(name.to_s)
-
-          unless name_part
-            [ nil, schema.to_s ]
-          else
-            table_name, name_part = extract_pg_identifier_from_name(name_part)
-            [ schema.to_s, table_name.to_s ]
-          end
+          parts = ActiveRecord::ConnectionAdapters::PostgreSQL::Utils.extract_schema_qualified_name(name.to_s)
+          [ parts.schema, parts.identifier ]
         end
       end
 
