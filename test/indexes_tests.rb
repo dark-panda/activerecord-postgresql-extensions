@@ -4,35 +4,37 @@ require 'test_helper'
 
 class IndexTests < PostgreSQLExtensionsTestCase
   def test_create_index
-    Mig.create_index(:foo_names_idx, :foo, [ :first_name, :last_name ])
-    Mig.create_index(:foo_bar_id_idx, :foo, :column => :bar_id)
-    Mig.create_index(:foo_coalesce_bar_id_idx, :foo, :expression => 'COALESCE(bar_id, 0)')
-    Mig.create_index(:foo_search_idx, :foo, :search, :using => :gin)
+    ARBC.stub(:tables, [ "foo" ]) do
+      Mig.create_index(:foo_names_idx, :foo, [ :first_name, :last_name ])
+      Mig.create_index(:foo_bar_id_idx, :foo, :column => :bar_id)
+      Mig.create_index(:foo_coalesce_bar_id_idx, :foo, :expression => 'COALESCE(bar_id, 0)')
+      Mig.create_index(:foo_search_idx, :foo, :search, :using => :gin)
 
-    Mig.create_index(:foo_names_idx, :foo, {
-      :column => :name,
-      :opclass => 'text_pattern_ops'
-    })
-
-    Mig.create_index(:foo_bar_id_idx, :foo, {
-      :column => :bar_id,
-      :order => :asc,
-      :nulls => :last
-    }, {
-      :fill_factor => 10,
-      :unique => true,
-      :concurrently => true,
-      :tablespace => 'fubar',
-      :conditions => 'bar_id IS NOT NULL'
-    })
-
-    Mig.create_index(:foo_bar_id_idx, :foo, {
-      :column => :bar_id
-    }, {
-      :conditions => Foo.send(:sanitize_sql, {
-        :id => [1, 2, 3, 4]
+      Mig.create_index(:foo_names_idx, :foo, {
+        :column => :name,
+        :opclass => 'text_pattern_ops'
       })
-    })
+
+      Mig.create_index(:foo_bar_id_idx, :foo, {
+        :column => :bar_id,
+        :order => :asc,
+        :nulls => :last
+      }, {
+        :fill_factor => 10,
+        :unique => true,
+        :concurrently => true,
+        :tablespace => 'fubar',
+        :conditions => 'bar_id IS NOT NULL'
+      })
+
+      Mig.create_index(:foo_bar_id_idx, :foo, {
+        :column => :bar_id
+      }, {
+        :conditions => Foo.send(:sanitize_sql, {
+          :id => [1, 2, 3, 4]
+        })
+      })
+    end
 
     assert_equal([
       %{CREATE INDEX "foo_names_idx" ON "foo"("first_name", "last_name");},

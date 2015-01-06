@@ -187,14 +187,22 @@ class AdapterExtensionTests < PostgreSQLExtensionsTestCase
   end
 
   def test_change_column_with_expression
-    Mig.change_column(:foo, :bar, :integer, :default => 100)
-    Mig.change_column(:foo, :bar, :integer, :default => {
-      :expression => '1 + 1'
-    })
+    column = OpenStruct.new(type: 'integer')
 
-    Mig.change_column(:foo, :bar, :integer, :null => false, :default => {
-      :expression => '1 + 1'
-    })
+    def column.type_cast_for_database(*)
+      100
+    end
+
+    ARBC.stub(:column_for, ActiveRecord::ConnectionAdapters::Column.new(:foo, nil, column)) do
+      Mig.change_column(:foo, :bar, :integer, :default => 100)
+      Mig.change_column(:foo, :bar, :integer, :default => {
+        :expression => '1 + 1'
+      })
+
+      Mig.change_column(:foo, :bar, :integer, :null => false, :default => {
+        :expression => '1 + 1'
+      })
+    end
 
     assert_equal([
       %{ALTER TABLE "foo" ALTER COLUMN "bar" TYPE integer},
@@ -209,17 +217,25 @@ class AdapterExtensionTests < PostgreSQLExtensionsTestCase
   end
 
   def test_change_column_without_expression
-    Mig.change_column(:foo, :bar, :integer, :null => false, :default => 100)
-    Mig.change_column(:foo, :bar, :integer, :null => true, :default => 100)
+    column = OpenStruct.new(type: 'integer')
 
-    assert_equal([
-      %{ALTER TABLE "foo" ALTER COLUMN "bar" TYPE integer},
-      %{ALTER TABLE "foo" ALTER COLUMN "bar" SET DEFAULT 100},
-      %{ALTER TABLE "foo" ALTER "bar" SET NOT NULL},
-      %{ALTER TABLE "foo" ALTER COLUMN "bar" TYPE integer},
-      %{ALTER TABLE "foo" ALTER COLUMN "bar" SET DEFAULT 100},
-      %{ALTER TABLE "foo" ALTER "bar" DROP NOT NULL},
-    ], statements)
+    def column.type_cast_for_database(*)
+      100
+    end
+
+    ARBC.stub(:column_for, ActiveRecord::ConnectionAdapters::Column.new(:foo, nil, column)) do
+      Mig.change_column(:foo, :bar, :integer, :null => false, :default => 100)
+      Mig.change_column(:foo, :bar, :integer, :null => true, :default => 100)
+
+      assert_equal([
+        %{ALTER TABLE "foo" ALTER COLUMN "bar" TYPE integer},
+        %{ALTER TABLE "foo" ALTER COLUMN "bar" SET DEFAULT 100},
+        %{ALTER TABLE "foo" ALTER "bar" SET NOT NULL},
+        %{ALTER TABLE "foo" ALTER COLUMN "bar" TYPE integer},
+        %{ALTER TABLE "foo" ALTER COLUMN "bar" SET DEFAULT 100},
+        %{ALTER TABLE "foo" ALTER "bar" DROP NOT NULL},
+      ], statements)
+    end
   end
 
   def stub_copy_from
