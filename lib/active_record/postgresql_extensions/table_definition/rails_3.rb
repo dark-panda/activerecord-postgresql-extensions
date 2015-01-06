@@ -2,6 +2,18 @@
 module ActiveRecord
   module ConnectionAdapters
     class PostgreSQLAdapter
+      def add_column_options_with_expression!(sql, options) #:nodoc:
+        if options_include_default?(options) &&
+          options[:default].is_a?(Hash) &&
+          options[:default].has_key?(:expression)
+
+          expression = options.delete(:default)
+          sql << " DEFAULT #{expression[:expression]}"
+        end
+        add_column_options_without_expression!(sql, options)
+      end
+      alias_method_chain :add_column_options!, :expression
+
       def create_table_with_postgresql_extensions(table_name, options = {})
         if options[:force]
           drop_table(table_name, { :if_exists => true, :cascade => options[:cascade_drop] })
