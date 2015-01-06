@@ -4,7 +4,26 @@ module ActiveRecord
   end
 
   module ConnectionAdapters
-    class PostgreSQLAdapter
+    # module PostgreSQL
+    #   module OID::TypeMap
+    #     unless self.registered_type?('geometry')
+    #       register_type('geometry', OID::Text.new)
+    #     end
+
+    #     unless self.registered_type?('geography')
+    #       register_type('geography', OID::Text.new)
+    #     end
+
+    #       # POSTGRESQL_EXTENSION_ADDITIONAL_TYPES['geometry'] = :geometry
+    #     # end
+
+    #     # unless col.send(:simplified_type, 'geography')
+    #     #   POSTGRESQL_EXTENSION_ADDITIONAL_TYPES['geography'] = :geography
+    #     # end
+    #   end
+    # end
+
+    class PostgreSQLAdapter < AbstractAdapter
       # with_schema is kind of like with_scope. It wraps various
       # object names in SQL statements into a PostgreSQL schema. You
       # can have multiple with_schemas wrapped around each other, and
@@ -750,13 +769,13 @@ module ActiveRecord
       ActiveRecord::ConnectionAdapters::PostgreSQLColumn.new('test_for_types', nil)
     end
 
-    unless col.send(:simplified_type, 'geometry')
-      POSTGRESQL_EXTENSION_ADDITIONAL_TYPES['geometry'] = :geometry
-    end
+    # unless col.send(:simplified_type, 'geometry')
+    #   POSTGRESQL_EXTENSION_ADDITIONAL_TYPES['geometry'] = :geometry
+    # end
 
-    unless col.send(:simplified_type, 'geography')
-      POSTGRESQL_EXTENSION_ADDITIONAL_TYPES['geography'] = :geography
-    end
+    # unless col.send(:simplified_type, 'geography')
+    #   POSTGRESQL_EXTENSION_ADDITIONAL_TYPES['geography'] = :geography
+    # end
 
     # There is a pull request to pull in these additional types at
     # https://github.com/rails/rails/pull/10802 .
@@ -765,33 +784,18 @@ module ActiveRecord
     # already detected elsewhere in AbstractAdapter#simplified_type, so
     # we'll assume if we can't detect for 'name' we  should bundle '"char"'
     # with it.
-    unless col.send(:simplified_type, 'name')
-      POSTGRESQL_EXTENSION_ADDITIONAL_TYPES['name'] = :string
-      POSTGRESQL_EXTENSION_ADDITIONAL_TYPES['"char"'] = :string
-    end
+    # unless col.send(:simplified_type, 'name')
+    #   POSTGRESQL_EXTENSION_ADDITIONAL_TYPES['name'] = :string
+    #   POSTGRESQL_EXTENSION_ADDITIONAL_TYPES['"char"'] = :string
+    # end
 
-    class PostgreSQLColumn
-      class << self
-        if !POSTGRESQL_EXTENSION_ADDITIONAL_TYPES['name']
-          def extract_value_from_default_with_additional_types(default)
-            case default
-              # Character types
-              when /\A\(?'(.*)'::.*\b(?:name|"char")\z/m
-                $1
-              else
-                extract_value_from_default_without_additional_types(default)
-            end
-          end
-          alias_method_chain :extract_value_from_default, :additional_types
-        end
-      end
-
-      def simplified_type_with_additional_types(field_type)
-        POSTGRESQL_EXTENSION_ADDITIONAL_TYPES[field_type] or
-          simplified_type_without_additional_types(field_type)
-      end
-      alias_method_chain :simplified_type, :additional_types
-    end
+    # class PostgreSQLColumn
+    #   def simplified_type_with_additional_types(field_type)
+    #     POSTGRESQL_EXTENSION_ADDITIONAL_TYPES[field_type] or
+    #       simplified_type_without_additional_types(field_type)
+    #   end
+    #   alias_method_chain :simplified_type, :additional_types
+    # end
   end
 end
 
