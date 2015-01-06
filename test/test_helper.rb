@@ -146,7 +146,7 @@ end
 class Foo < ActiveRecord::Base
 end
 
-class PostgreSQLExtensionsTestCase < ActiveRecord::TestCase
+class PostgreSQLExtensionsTestCase < (ActiveRecord::VERSION::STRING >= "4.1" ? ActiveSupport::TestCase : ActiveRecord::TestCase)
   include ActiveRecord::TestFixtures
   include PostgreSQLExtensionsTestHelper
 
