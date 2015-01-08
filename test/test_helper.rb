@@ -68,7 +68,7 @@ class ActiveRecord::ConnectionAdapters::PostgreSQLAdapter
   end
 
   def execute_with_statement_capture(*args)
-    PostgreSQLExtensionsTestHelper.add_statement(args.first)
+    PostgreSQLExtensionsTestHelper.add_statement(*args)
 
     if @real_execute || args.last == "SCHEMA"
       execute_without_statement_capture(*args)
@@ -89,7 +89,7 @@ class ActiveRecord::ConnectionAdapters::PostgreSQLAdapter
       if @real_execute
         query_without_statement_capture(*args)
       else
-        PostgreSQLExtensionsTestHelper.add_statement(args.first)
+        PostgreSQLExtensionsTestHelper.add_statement(*args)
       end
     end
     alias_method_chain :query, :statement_capture
@@ -108,7 +108,9 @@ module PostgreSQLExtensionsTestHelper
       @statements = []
     end
 
-    def add_statement(sql)
+    def add_statement(sql, name = nil)
+      return if name == "SCHEMA"
+
       case sql
         when /SHOW search_path;/, /pg_tables/
           # ignore
