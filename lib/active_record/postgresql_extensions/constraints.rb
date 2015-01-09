@@ -888,3 +888,7 @@ module ActiveRecord
     end
   end
 end
+
+if ActiveRecord::VERSION::STRING >= "4.2"
+  require 'active_record/postgresql_extensions/constraints/rails_4_2'
+end

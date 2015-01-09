@@ -31,6 +31,7 @@ dirname = File.join(File.dirname(__FILE__), *%w{ active_record postgresql_extens
   languages
   like_options
   materialized_views
+  migration
   permissions
   roles
   rules
