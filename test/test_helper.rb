@@ -86,7 +86,7 @@ class ActiveRecord::ConnectionAdapters::PostgreSQLAdapter
 
   unless RUBY_PLATFORM == 'java'
     def query_with_statement_capture(*args)
-      if @real_execute
+      if @real_execute || args.last == "SCHEMA"
         query_without_statement_capture(*args)
       else
         PostgreSQLExtensionsTestHelper.add_statement(*args)
