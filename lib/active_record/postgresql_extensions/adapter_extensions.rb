@@ -394,6 +394,8 @@ module ActiveRecord
 
       # Returns an Array of database views.
       def views(name = nil)
+        name ||= "SCHEMA"
+
         query(PostgreSQLExtensions::Utils.strip_heredoc(<<-SQL), name).map { |row| row[0] }
           SELECT viewname
           FROM pg_views
