@@ -178,11 +178,19 @@ class AdapterExtensionTests < PostgreSQLExtensionsTestCase
         %{ALTER TABLE "foo" ALTER "bar" SET NOT NULL},
       ], statements)
     else
-      assert_equal([
-        %{ALTER TABLE "foo" ADD COLUMN "bar" integer DEFAULT 100},
-        %{ALTER TABLE "foo" ADD COLUMN "bar" integer DEFAULT 1 + 1},
-        %{ALTER TABLE "foo" ADD COLUMN "bar" integer DEFAULT 1 + 1 NOT NULL}
-      ], statements)
+      if ActiveRecord::VERSION::STRING < "4.2"
+        assert_equal([
+          %{ALTER TABLE "foo" ADD COLUMN "bar" integer DEFAULT 100},
+          %{ALTER TABLE "foo" ADD COLUMN "bar" integer DEFAULT 1 + 1},
+          %{ALTER TABLE "foo" ADD COLUMN "bar" integer DEFAULT 1 + 1 NOT NULL}
+        ], statements)
+      else
+        assert_equal([
+          %{ALTER TABLE "foo" ADD "bar" integer DEFAULT 100},
+          %{ALTER TABLE "foo" ADD "bar" integer DEFAULT 1 + 1},
+          %{ALTER TABLE "foo" ADD "bar" integer DEFAULT 1 + 1 NOT NULL}
+        ], statements)
+      end
     end
   end
 
