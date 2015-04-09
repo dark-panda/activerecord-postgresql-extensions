@@ -23,45 +23,40 @@ module ActiveRecord
 
   module ConnectionAdapters
     class PostgreSQLAdapter
+      # Adds a generic constraint.
+      def add_constraint(table, constraint)
+        execute("ALTER TABLE #{quote_table_name(table)} ADD #{constraint};")
+      end
+
       # Adds a CHECK constraint to the table. See
       # PostgreSQLCheckConstraint for usage.
       def add_check_constraint(table, expression, options = {})
-        sql = "ALTER TABLE #{quote_table_name(table)} ADD "
-        sql << PostgreSQLCheckConstraint.new(self, expression, options).to_s
-        execute("#{sql};")
+        add_constraint(table, PostgreSQLCheckConstraint.new(self, expression, options))
       end
 
       # Adds a UNIQUE constraint to the table. See
       # PostgreSQLUniqueConstraint for details.
       def add_unique_constraint(table, columns, options = {})
-        sql = "ALTER TABLE #{quote_table_name(table)} ADD "
-        sql << PostgreSQLUniqueConstraint.new(self, columns, options).to_s
-        execute("#{sql};")
+        add_constraint(table, PostgreSQLUniqueConstraint.new(self, columns, options))
       end
 
       # Adds a FOREIGN KEY constraint to the table. See
       # PostgreSQLForeignKeyConstraint for details.
       def add_foreign_key_constraint(table, columns, ref_table, *args)
-        sql = "ALTER TABLE #{quote_table_name(table)} ADD "
-        sql << PostgreSQLForeignKeyConstraint.new(self, columns, ref_table, *args).to_s
-        execute("#{sql};")
+        add_constraint(table, PostgreSQLForeignKeyConstraint.new(self, columns, ref_table, *args))
       end
       alias :add_foreign_key :add_foreign_key_constraint
 
       # Adds an EXCLUDE constraint to the table. See
       # PostgreSQLExcludeConstraint for details.
       def add_exclude_constraint(table, excludes, options = {})
-        sql = "ALTER TABLE #{quote_table_name(table)} ADD "
-        sql << PostgreSQLExcludeConstraint.new(self, table, excludes, options).to_s
-        execute("#{sql};")
+        add_constraint(table, PostgreSQLExcludeConstraint.new(self, table, excludes, options))
       end
 
       # Adds a PRIMARY KEY constraint to the table. See
       # PostgreSQLPrimaryKeyConstraint for details.
       def add_primary_key_constraint(table, columns, options = {})
-        sql = "ALTER TABLE #{quote_table_name(table)} ADD "
-        sql << PostgreSQLPrimaryKeyConstraint.new(self, columns, options).to_s
-        execute("#{sql};")
+        add_constraint(table, PostgreSQLPrimaryKeyConstraint.new(self, columns, options))
       end
       alias :add_primary_key :add_primary_key_constraint
 

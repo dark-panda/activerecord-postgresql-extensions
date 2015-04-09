@@ -48,6 +48,33 @@ class ConstraintTests < PostgreSQLExtensionsTestCase
     SQL
   end
 
+  def test_add_constraint
+    Mig.add_constraint(:foo, ActiveRecord::ConnectionAdapters::PostgreSQLCheckConstraint.new(ARBC, "x = 10"))
+    Mig.add_constraint(:foo, ActiveRecord::ConnectionAdapters::PostgreSQLUniqueConstraint.new(ARBC, [ :bar_id, :baz_id ]))
+    Mig.add_constraint(:foo, ActiveRecord::ConnectionAdapters::PostgreSQLForeignKeyConstraint.new(ARBC, :bar_id, "bars"))
+    Mig.add_constraint(:foo, ActiveRecord::ConnectionAdapters::PostgreSQLExcludeConstraint.new(ARBC, :bars, { :element => :bar_id, :with => '=' }))
+    Mig.add_constraint(:foo, ActiveRecord::ConnectionAdapters::PostgreSQLPrimaryKeyConstraint.new(ARBC, [ :bar_id, :baz_id ]))
+
+    Mig.add_constraint(:foo, ActiveRecord::ConnectionAdapters::PostgreSQLCheckConstraint.new(ARBC, "x = 10", :name => "foo_check"))
+    Mig.add_constraint(:foo, ActiveRecord::ConnectionAdapters::PostgreSQLUniqueConstraint.new(ARBC, [ :bar_id, :baz_id ], :name => "foo_uniq"))
+    Mig.add_constraint(:foo, ActiveRecord::ConnectionAdapters::PostgreSQLForeignKeyConstraint.new(ARBC, :bar_id, "bars", :name => "foo_fk"))
+    Mig.add_constraint(:foo, ActiveRecord::ConnectionAdapters::PostgreSQLExcludeConstraint.new(ARBC, :bars, { :element => :bar_id, :with => '=' }, { :name => "foo_exclude" }))
+    Mig.add_constraint(:foo, ActiveRecord::ConnectionAdapters::PostgreSQLPrimaryKeyConstraint.new(ARBC, [ :bar_id, :baz_id ], :name => "foo_pk"))
+
+    assert_equal([
+      %{ALTER TABLE "foo" ADD CHECK (x = 10);},
+      %{ALTER TABLE "foo" ADD UNIQUE ("bar_id", "baz_id");},
+      %{ALTER TABLE "foo" ADD FOREIGN KEY ("bar_id") REFERENCES "bars";},
+      %{ALTER TABLE "foo" ADD EXCLUDE (bar_id WITH =);},
+      %{ALTER TABLE "foo" ADD PRIMARY KEY ("bar_id", "baz_id");},
+      %{ALTER TABLE "foo" ADD CONSTRAINT "foo_check" CHECK (x = 10);},
+      %{ALTER TABLE "foo" ADD CONSTRAINT "foo_uniq" UNIQUE ("bar_id", "baz_id");},
+      %{ALTER TABLE "foo" ADD CONSTRAINT "foo_fk" FOREIGN KEY ("bar_id") REFERENCES "bars";},
+      %{ALTER TABLE "foo" ADD CONSTRAINT "foo_exclude" EXCLUDE (bar_id WITH =);},
+      %{ALTER TABLE "foo" ADD CONSTRAINT "foo_pk" PRIMARY KEY ("bar_id", "baz_id");}
+    ], statements)
+  end
+
   def test_add_unique_constraint
     Mig.add_unique_constraint(:foo, :bar_id)
     Mig.add_unique_constraint(
