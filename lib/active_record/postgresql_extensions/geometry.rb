@@ -117,10 +117,12 @@ module ActiveRecord
         end
       end
 
-      def geometry_columns_entry
+      def geometry_columns_entry(table_name)
         return [] unless options[:add_geometry_columns_entry] &&
           options[:spatial_column_type].to_s != 'geography' &&
           ActiveRecord::PostgreSQLExtensions::PostGIS.VERSION[:lib] < '2.0'
+
+        current_scoped_schema, current_table_name = extract_schema_and_table_names(table_name)
 
         [
           sprintf(
@@ -148,16 +150,7 @@ module ActiveRecord
       def geometry_column_index(table_name)
         return [] unless options[:create_gist_index]
 
-        # We want to split up the schema and the table name for the
-        # upcoming geometry_columns rows and GiST index.
-        current_scoped_schema, current_table_name = if table_name.is_a?(Hash)
-          [ table_name.keys.first, table_name.values.first ]
-        elsif base.current_scoped_schema
-          [ base.current_scoped_schema, table_name ]
-        else
-          schema, table_name = base.extract_schema_and_table_names(table_name)
-          [ schema || 'public', table_name ]
-        end
+        current_scoped_schema, current_table_name = extract_schema_and_table_names(table_name)
 
         index_name = if options[:create_gist_index].is_a?(String)
           options[:create_gist_index]
@@ -245,6 +238,19 @@ module ActiveRecord
             end
           end
         end
+
+        def extract_schema_and_table_names(table_name)
+          # We want to split up the schema and the table name for the
+          # upcoming geometry_columns rows and GiST index.
+          if table_name.is_a?(Hash)
+            [ table_name.keys.first, table_name.values.first ]
+          elsif base.current_scoped_schema
+            [ base.current_scoped_schema, table_name ]
+          else
+            schema, table_name = base.extract_schema_and_table_names(table_name)
+            [ schema || 'public', table_name ]
+          end
+        end
     end
 
     class PostgreSQLTableDefinition < TableDefinition
@@ -312,15 +318,38 @@ module ActiveRecord
         end
 
         table_constraints.concat(column.table_constraints)
-        post_processing.concat(column.geometry_columns_entry)
+        post_processing.concat(column.geometry_columns_entry(table_name))
         post_processing.concat(column.geometry_column_index(table_name))
 
         self
       end
+      alias_method :geometry, :spatial
 
-      def geometry(column_name, opts = {})
-        self.spatial(column_name, opts)
+      def geography(column_name, opts = {})
+        opts = {
+          :srid => ActiveRecord::PostgreSQLExtensions::PostGIS.UNKNOWN_SRIDS[:geography]
+        }.merge(opts)
+
+        self.spatial(column_name, opts.merge(
+          :spatial_column_type => :geography
+        ))
       end
+    end
+
+    class PostgreSQLTable < Table
+      def spatial(column_name, opts = {})
+        column = PostgreSQLGeometryColumnDefinition.new(@base, column_name, opts)
+
+        post_processing.concat(column.geometry_columns_entry(@table_name))
+        post_processing.concat(column.geometry_column_index(@table_name))
+
+        @base.add_column(@table_name, column_name, column.sql_type, opts)
+
+        column.table_constraints.each do |constraint|
+          @base.add_constraint(@table_name, constraint)
+        end
+      end
+      alias_method :geometry, :spatial
 
       def geography(column_name, opts = {})
         opts = {

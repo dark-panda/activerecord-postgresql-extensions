@@ -120,6 +120,18 @@ module ActiveRecord
         end
       end
 
+      alias :original_change_table :change_table
+      def change_table(table_name, options = {})
+        table = PostgreSQLTable.new(table_name, self)
+        yield table
+
+        unless table.post_processing.blank?
+          table.post_processing.each do |pp|
+            execute pp.to_s
+          end
+        end
+      end
+
       alias :original_drop_table :drop_table
       # Drops a table. This method is expanded beyond the standard
       # ActiveRecord drop_table method to allow for a couple of
@@ -385,6 +397,18 @@ module ActiveRecord
               raise ActiveRecord::InvalidLikeTypes.new(check_likes)
             end
           end
+        end
+    end
+
+    class PostgreSQLTable < Table
+      # Add statements to execute to after a table has been created.
+      def post_processing
+        @post_processing ||= []
+      end
+
+      private
+        def table_constraints
+          @table_constraints ||= []
         end
     end
   end
