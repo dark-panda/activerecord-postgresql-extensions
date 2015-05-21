@@ -712,6 +712,21 @@ module ActiveRecord
       end
       alias_method_chain :add_column_options!, :expression
 
+      def change_column_with_using(table_name, column_name, type, options = {}) #:nodoc:
+        if options.has_key?(:using) && options[:using].present?
+          clear_cache!
+          quoted_table_name = quote_table_name(table_name)
+
+          execute "ALTER TABLE #{quoted_table_name} ALTER COLUMN #{quote_column_name(column_name)} TYPE #{type_to_sql(type, options[:limit], options[:precision], options[:scale])} USING #{options[:using]}"
+
+          change_column_default(table_name, column_name, options[:default]) if options_include_default?(options)
+          change_column_null(table_name, column_name, options[:null], options[:default]) if options.key?(:null)
+        else
+          change_column_without_using(table_name, column_name, type, options)
+        end
+      end
+      alias_method_chain :change_column, :using
+
       def change_column_default_with_expression(table_name, column_name, default) #:nodoc:
         if default.is_a?(Hash) && default.has_key?(:expression)
           execute "ALTER TABLE #{quote_table_name(table_name)} ALTER COLUMN #{quote_column_name(column_name)} SET DEFAULT #{default[:expression]};"

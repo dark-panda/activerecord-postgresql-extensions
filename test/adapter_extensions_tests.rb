@@ -186,6 +186,28 @@ class AdapterExtensionTests < PostgreSQLExtensionsTestCase
     end
   end
 
+  def test_change_column_with_using
+    Mig.change_column(:foo, :bar, :integer, :using => '100', :default => 100)
+    Mig.change_column(:foo, :bar, :integer, :using => '100', :default => {
+      :expression => '1 + 1'
+    })
+
+    Mig.change_column(:foo, :bar, :integer, :null => false, :using => '100', :default => {
+      :expression => '1 + 1'
+    })
+
+    assert_equal([
+      %{ALTER TABLE "foo" ALTER COLUMN "bar" TYPE integer USING 100},
+      %{ALTER TABLE "foo" ALTER COLUMN "bar" SET DEFAULT 100},
+      %{ALTER TABLE "foo" ALTER COLUMN "bar" TYPE integer USING 100},
+      %{ALTER TABLE "foo" ALTER COLUMN "bar" SET DEFAULT 1 + 1;},
+      %{ALTER TABLE "foo" ALTER COLUMN "bar" TYPE integer USING 100},
+      %{ALTER TABLE "foo" ALTER COLUMN "bar" SET DEFAULT 1 + 1;},
+      %{UPDATE "foo" SET "bar" = 1 + 1 WHERE "bar" IS NULL},
+      %{ALTER TABLE "foo" ALTER "bar" SET NOT NULL},
+    ], statements)
+  end
+
   def test_change_column_with_expression
     Mig.change_column(:foo, :bar, :integer, :default => 100)
     Mig.change_column(:foo, :bar, :integer, :default => {
