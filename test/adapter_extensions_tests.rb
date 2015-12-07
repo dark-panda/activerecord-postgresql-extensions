@@ -71,13 +71,20 @@ class AdapterExtensionTests < PostgreSQLExtensionsTestCase
   end
 
   def test_current_role
-    ARBC.current_role
-    ARBC.current_user
+    ARBC.real_execute do
+      current_role = ARBC.current_role
+      current_user = ARBC.current_user
 
-    assert_equal([
-      'SELECT current_role;',
-      'SELECT current_role;'
-    ], statements)
+      assert_equal([
+        'SELECT current_role;',
+        'SELECT current_role;'
+      ], statements)
+
+      real_user = ARBC.execute('SELECT current_role;').first['current_user']
+
+      assert_equal(real_user, current_user);
+      assert_equal(real_user, current_role);
+    end
   end
 
   def test_enable_triggers

@@ -443,7 +443,11 @@ module ActiveRecord
       end
 
       def current_role
-        execute('SELECT current_role;')
+        current_role = execute('SELECT current_role;').try(:first)
+
+        if current_role
+          current_role['current_user']
+        end
       end
       alias :current_user :current_role
 
