@@ -1,7 +1,7 @@
 
 module ActiveRecord
   module PostgreSQLExtensions
-    VERSION = "0.10.0.dev".freeze
+    VERSION = "0.10.0".freeze
   end
 end
 
